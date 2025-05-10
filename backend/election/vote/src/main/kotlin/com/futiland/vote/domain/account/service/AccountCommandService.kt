@@ -8,7 +8,9 @@ import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.common.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
 
+@Service
 class AccountCommandService(
     private val accountRepository: AccountRepository,
     private val jwtTokenProvider: JwtTokenProvider,
