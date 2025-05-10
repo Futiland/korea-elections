@@ -2,7 +2,9 @@ package com.futiland.vote.domain.account.service
 
 import com.futiland.vote.application.dto.response.ProfileResponse
 import com.futiland.vote.domain.account.repository.AccountRepository
+import org.springframework.stereotype.Service
 
+@Service
 class AccountQueryService(
     private val accountRepository: AccountRepository
 ):AccountQueryUseCase {
