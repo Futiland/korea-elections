@@ -6,8 +6,8 @@ CREATE TABLE account
     name         VARCHAR(100) not null comment '이름',
     password     VARCHAR(100) not null comment '해싱한 비밀번호',
     gender       ENUM('MALE', 'FEMALE') not null comment '성별',
-    birth_date   DATETIME     not null comment '생년월일',
+    birth_date   DATE         not null comment '생년월일',
     status       ENUM('ACTIVE', 'INACTIVE') not null comment '상태',
-    deleted_at   DATETIME null comment '삭제일',
-    UNIQUE INDEX unique_phone_number_active ON account (phone_number, status) WHERE status = 'ACTIVE'
+    created_at   DATETIME     not null comment '생성일',
+    deleted_at   DATETIME null comment '삭제일'
 );
