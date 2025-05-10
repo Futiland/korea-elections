@@ -5,6 +5,7 @@ import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.application.dto.response.ProfileResponse
 import com.futiland.vote.domain.account.service.AccountQueryUseCase
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 class QueryController(
     private val accountQueryUseCase: AccountQueryUseCase,
 ) {
-    @RequestMapping("/info/profile")
+    @GetMapping("/info/profile")
     fun getAccountInfo(
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<ProfileResponse> {

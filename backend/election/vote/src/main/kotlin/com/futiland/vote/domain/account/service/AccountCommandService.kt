@@ -31,10 +31,10 @@ class AccountCommandService(
             birthDate = identityVerifiedInfoResponse.birthDate,
             ci = identityVerifiedInfoResponse.ci
         )
-        accountRepository.save(account)
+        val savedAccount = accountRepository.save(account)
         return SignupSuccessResponse(
-            id = account.id,
-            createdAt = account.createdAt,
+            id = savedAccount.id,
+            createdAt = savedAccount.createdAt,
         )
     }
 

@@ -6,29 +6,16 @@ access_token:
 jwt:
   secret-key: test
 
+
 spring:
   datasource:
-    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:13306/elections
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root1234
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-
-#spring:
-#  datasource:
-#    url: jdbc:mysql://localhost:13306/nota_rbac
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    username: root
-#    password: root1234
-#  jpa:
-#    hibernate:
-#      ddl-auto: validate
-#    properties:
-#      hibernate:
-#        format_sql: true
+        format_sql: true

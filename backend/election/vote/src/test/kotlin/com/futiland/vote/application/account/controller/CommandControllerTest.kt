@@ -9,10 +9,12 @@ import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import kotlin.test.Test
 
 @SpringBootTest
+@ActiveProfiles("h2-test")
 @Transactional
 class CommandControllerTest {
     @Autowired
