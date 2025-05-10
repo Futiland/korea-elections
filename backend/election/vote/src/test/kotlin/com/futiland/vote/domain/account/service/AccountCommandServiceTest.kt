@@ -8,7 +8,6 @@ import com.futiland.vote.domain.account.entity.Gender
 import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.common.JwtTokenProvider
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import java.time.LocalDate
