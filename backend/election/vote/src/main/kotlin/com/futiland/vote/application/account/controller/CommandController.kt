@@ -1,6 +1,7 @@
 package com.futiland.vote.application.account.controller
 
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
+import com.futiland.vote.application.dto.request.SignInRequest
 import com.futiland.vote.application.dto.request.SignUpRequest
 import com.futiland.vote.application.dto.response.IdentityVerifiedInfoResponse
 import com.futiland.vote.application.dto.response.SignInSuccessResponse
@@ -34,8 +35,14 @@ class CommandController(
     }
 
     @PostMapping("/signin")
-    fun signIn(): HttpApiResponse<SignInSuccessResponse> {
-        TODO("Not yet implemented")
+    fun signIn(
+        @RequestBody request: SignInRequest
+    ): HttpApiResponse<SignInSuccessResponse> {
+        val response = accountCommandUseCase.signIn(
+            phoneNumber = request.phoneNumber,
+            password = request.password,
+        )
+        return HttpApiResponse.of(response)
     }
 
 
