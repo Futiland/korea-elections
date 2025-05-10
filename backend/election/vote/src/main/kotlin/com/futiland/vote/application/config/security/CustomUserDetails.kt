@@ -25,5 +25,5 @@ class CustomUserDetails(
 }
 
 data class CustomUserDto(
-    val accountId: Long = 1L,
+    val accountId: Long,
 )
