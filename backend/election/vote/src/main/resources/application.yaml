@@ -1,2 +1,5 @@
 server:
   port: 8080
+
+access_token:
+  ttl: 86400000 # 1 day(테스트용

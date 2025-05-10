@@ -3,11 +3,17 @@ package com.futiland.vote.domain.account.service
 import com.futiland.vote.application.dto.response.IdentityVerifiedInfoResponse
 import com.futiland.vote.application.dto.response.SignInSuccessResponse
 import com.futiland.vote.application.dto.response.SignupSuccessResponse
+import com.futiland.vote.domain.account.dto.AccountJwtPayload
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository
+import com.futiland.vote.domain.common.JwtTokenProvider
+import org.springframework.beans.factory.annotation.Value
 
 class AccountCommandService(
     private val accountRepository: AccountRepository,
+    private val jwtTokenProvider: JwtTokenProvider,
+    @Value("\${access_token.ttl}")
+    private val accessTokenTtl: Int
 ) : AccountCommandUseCase {
     override fun singUp(
         phoneNumber: String,
@@ -32,8 +38,14 @@ class AccountCommandService(
         val account = accountRepository.getByPhoneNumberAndPassword(
             phoneNumber = phoneNumber, password = password
         )
+
+        val payload = AccountJwtPayload(
+            accountId = account.id,
+        ).toMap()
+
+        val token = jwtTokenProvider.generateToken(payload = payload, ttl = accessTokenTtl)
         return SignInSuccessResponse(
-            token = "token",
+            token = token,
         )
     }
 }
