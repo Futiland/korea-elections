@@ -16,11 +16,13 @@ class AccountCommandService(
     private val accessTokenTtl: Int
 ) : AccountCommandUseCase {
     override fun singUp(
+        name: String,
         phoneNumber: String,
         password: String,
         identityVerifiedInfoResponse: IdentityVerifiedInfoResponse
     ): SignupSuccessResponse {
         val account = Account.create(
+            name = name,
             phoneNumber = phoneNumber,
             password = password,
             gender = identityVerifiedInfoResponse.gender,

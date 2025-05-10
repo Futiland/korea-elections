@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 
 class Account(
     val phoneNumber: String,
+    val name: String,
     status: AccountStatus,
     password: String,
     val gender: Gender,
@@ -21,6 +22,7 @@ class Account(
 
     companion object {
         fun create(
+            name: String,
             phoneNumber: String,
             password: String,
             gender: Gender,
@@ -28,6 +30,7 @@ class Account(
             ci: String
         ): Account {
             return Account(
+                name = name,
                 phoneNumber = phoneNumber,
                 status = AccountStatus.ACTIVE,
                 password = password,
