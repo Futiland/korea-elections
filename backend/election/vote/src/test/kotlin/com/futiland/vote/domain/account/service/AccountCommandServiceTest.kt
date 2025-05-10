@@ -39,6 +39,7 @@ class AccountCommandServiceTest {
         fun `회원가입 성공`() {
             // Arrange
             val account = Account.create(
+                name = "test",
                 phoneNumber = "01012345678",
                 password = "password",
                 gender = Gender.MALE,
@@ -47,6 +48,7 @@ class AccountCommandServiceTest {
             )
             // Action
             val newAccount = accountCommandUseCase.singUp(
+                name = account.name,
                 phoneNumber = account.phoneNumber,
                 password = account.password,
                 identityVerifiedInfoResponse = IdentityVerifiedInfoResponse(
@@ -71,6 +73,7 @@ class AccountCommandServiceTest {
         fun `로그인 성공`() {
             // Arrange
             val account = Account.create(
+                name = "test",
                 phoneNumber = "01012345678",
                 password = "password",
                 gender = Gender.MALE,
@@ -78,6 +81,7 @@ class AccountCommandServiceTest {
                 ci = "ci",
             )
             val newAccount = accountCommandUseCase.singUp(
+                name = account.name,
                 phoneNumber = account.phoneNumber,
                 password = account.password,
                 identityVerifiedInfoResponse = IdentityVerifiedInfoResponse(
