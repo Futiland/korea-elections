@@ -1,6 +1,7 @@
 package com.futiland.vote.domain.vote.service
 
 import com.futiland.vote.application.vote.dto.response.ElectionCreateResponse
+import com.futiland.vote.application.vote.dto.response.ElectionDeleteResponse
 import com.futiland.vote.domain.vote.entity.Election
 import com.futiland.vote.domain.vote.repository.ElectionRepository
 import org.springframework.stereotype.Service
@@ -24,16 +25,19 @@ class ElectionCommandService(
         )
         val savedElection = electionRepository.save(election)
         return ElectionCreateResponse(
-            id= savedElection.id,
+            id = savedElection.id,
             createdAt = savedElection.createdAt,
         )
     }
 
-    override fun delete(id: Long): Long {
+    override fun delete(id: Long): ElectionDeleteResponse {
         val election = electionRepository.getById(id = id)
         election.delete()
         val savedElection = electionRepository.save(election)
-        return savedElection.id
+        return ElectionDeleteResponse(
+            id = savedElection.id,
+            deletedAt = savedElection.deletedAt ?: throw IllegalArgumentException("시스템 오류"),
+        )
     }
 
 }

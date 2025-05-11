@@ -1,6 +1,7 @@
 package com.futiland.vote.domain.vote.service
 
 import com.futiland.vote.application.vote.dto.response.ElectionCreateResponse
+import com.futiland.vote.application.vote.dto.response.ElectionDeleteResponse
 import java.time.LocalDateTime
 
 interface ElectionCommandUseCase {
@@ -12,5 +13,5 @@ interface ElectionCommandUseCase {
 //        candidates: List<String>,
     ): ElectionCreateResponse
 
-    fun delete(id: Long): Long
+    fun delete(id: Long): ElectionDeleteResponse
 }
