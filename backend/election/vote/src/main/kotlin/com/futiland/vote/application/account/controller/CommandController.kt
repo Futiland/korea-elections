@@ -1,11 +1,11 @@
 package com.futiland.vote.application.account.controller
 
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
-import com.futiland.vote.application.dto.request.SignInRequest
-import com.futiland.vote.application.dto.request.SignUpRequest
-import com.futiland.vote.application.dto.response.IdentityVerifiedInfoResponse
-import com.futiland.vote.application.dto.response.SignInSuccessResponse
-import com.futiland.vote.application.dto.response.SignupSuccessResponse
+import com.futiland.vote.application.account.dto.request.SignInRequest
+import com.futiland.vote.application.account.dto.request.SignUpRequest
+import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
+import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
+import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
 import com.futiland.vote.domain.account.service.AccountCommandUseCase
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

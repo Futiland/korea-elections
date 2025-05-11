@@ -1,4 +1,4 @@
-package com.futiland.vote.application.dto.response
+package com.futiland.vote.application.account.dto.response
 
 import com.futiland.vote.domain.account.entity.Gender
 import java.time.LocalDate
