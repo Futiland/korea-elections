@@ -1,4 +1,4 @@
-package com.futiland.vote.application.dto.response
+package com.futiland.vote.application.account.dto.response
 
 data class SignInSuccessResponse(
     val token: String

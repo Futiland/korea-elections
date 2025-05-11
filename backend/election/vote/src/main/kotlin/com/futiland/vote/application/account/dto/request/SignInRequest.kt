@@ -1,4 +1,4 @@
-package com.futiland.vote.application.dto.request
+package com.futiland.vote.application.account.dto.request
 
 data class SignInRequest(
     val phoneNumber: String,

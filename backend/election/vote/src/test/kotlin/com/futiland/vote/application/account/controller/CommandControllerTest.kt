@@ -1,7 +1,7 @@
 package com.futiland.vote.application.account.controller
 
-import com.futiland.vote.application.dto.request.SignInRequest
-import com.futiland.vote.application.dto.request.SignUpRequest
+import com.futiland.vote.application.account.dto.request.SignInRequest
+import com.futiland.vote.application.account.dto.request.SignUpRequest
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.entity.Gender
 import com.futiland.vote.domain.account.repository.AccountRepository

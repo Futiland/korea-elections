@@ -1,8 +1,8 @@
 package com.futiland.vote.domain.account.service
 
-import com.futiland.vote.application.dto.response.IdentityVerifiedInfoResponse
-import com.futiland.vote.application.dto.response.SignInSuccessResponse
-import com.futiland.vote.application.dto.response.SignupSuccessResponse
+import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
+import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
+import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
 import com.futiland.vote.domain.account.dto.AccountJwtPayload
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository

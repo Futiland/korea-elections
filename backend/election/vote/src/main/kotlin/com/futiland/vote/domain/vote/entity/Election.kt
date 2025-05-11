@@ -1,9 +1,6 @@
 package com.futiland.vote.domain.vote.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
@@ -16,6 +13,7 @@ class Election(
     val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
     @Enumerated(EnumType.STRING)

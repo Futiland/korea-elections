@@ -1,9 +1,6 @@
 package com.futiland.vote.domain.account.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.Id
+import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -20,6 +17,7 @@ class Account(
     val ci: String,    // TODO 현재는 본인인증 못해서 못넣는데 곧 넣을 예정
 ) {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
     var password: String = password
         private set

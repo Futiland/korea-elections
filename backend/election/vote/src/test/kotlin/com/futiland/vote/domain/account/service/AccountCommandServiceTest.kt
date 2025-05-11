@@ -2,7 +2,7 @@ package com.futiland.vote.domain.account.service
 
 import com.futiland.vote.application.account.repository.FakeAccountRepository
 import com.futiland.vote.application.common.JwtTokenProviderImpl
-import com.futiland.vote.application.dto.response.IdentityVerifiedInfoResponse
+import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.entity.Gender
 import com.futiland.vote.domain.account.repository.AccountRepository
