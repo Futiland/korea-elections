@@ -1,6 +1,7 @@
 package com.futiland.vote.domain.vote.service
 
 import com.futiland.vote.application.vote.dto.response.CandidateCreateResponse
+import com.futiland.vote.application.vote.dto.response.CandidateDeleteResponse
 import com.futiland.vote.application.vote.dto.response.ElectionCreateResponse
 import com.futiland.vote.application.vote.dto.response.ElectionDeleteResponse
 import com.futiland.vote.domain.vote.dto.candidate.CandidateDto
@@ -58,6 +59,16 @@ class ElectionCommandService(
         return CandidateCreateResponse(
             ids = savedCandidates.map { it.id },
             createdAt = savedCandidates.first().createdAt,
+        )
+    }
+
+    override fun deleteCandidate(electionId: Long, candidateIds: List<Long>): CandidateDeleteResponse {
+        val candidates = candidateRepository.findByIds(candidateIds).onEach  {
+            it.delete()
+        }
+        candidateRepository.saveAll(candidates)
+        return CandidateDeleteResponse(
+            ids = candidates.map { it.id },
         )
     }
 

@@ -12,7 +12,12 @@ class CandidateRepositoryImpl(
     override fun saveAll(candidates: List<Candidate>): List<Candidate> {
         return repository.saveAll(candidates)
     }
+
+    override fun findByIds(ids: List<Long>): List<Candidate> {
+        return repository.findByIdIn(ids)
+    }
 }
 
 interface JpaCandidateRepository : JpaRepository<Candidate, Long> {
+    fun findByIdIn(ids: List<Long>): List<Candidate>
 }
