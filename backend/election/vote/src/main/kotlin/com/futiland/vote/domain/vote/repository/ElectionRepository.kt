@@ -1,6 +1,5 @@
 package com.futiland.vote.domain.vote.repository
 
-import com.futiland.vote.domain.vote.dto.election.ElectionDto
 import com.futiland.vote.domain.vote.entity.Election
 import com.futiland.vote.util.SliceContent
 

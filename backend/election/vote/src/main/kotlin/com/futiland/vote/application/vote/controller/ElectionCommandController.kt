@@ -1,8 +1,10 @@
 package com.futiland.vote.application.vote.controller
 
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
+import com.futiland.vote.application.vote.dto.request.CandidateAddRequest
 import com.futiland.vote.application.vote.dto.request.ElectionCreateRequest
 import com.futiland.vote.application.vote.dto.request.ElectionDeleteRequest
+import com.futiland.vote.application.vote.dto.response.CandidateCreateResponse
 import com.futiland.vote.application.vote.dto.response.ElectionCreateResponse
 import com.futiland.vote.application.vote.dto.response.ElectionDeleteResponse
 import com.futiland.vote.domain.vote.service.ElectionCommandUseCase
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/election/v1")
 class ElectionCommandController(
     private val electionCommandUseCase: ElectionCommandUseCase,
+    private val candidateCommandUseCase: ElectionCommandUseCase
 ) {
     @PostMapping("")
     fun create(
@@ -36,4 +39,14 @@ class ElectionCommandController(
         return HttpApiResponse.of(response)
     }
 
+    @PostMapping("/candidate")
+    fun addCandidate(
+        @RequestBody request: CandidateAddRequest
+    ): HttpApiResponse<CandidateCreateResponse> {
+        val response = candidateCommandUseCase.addCandidate(
+            electionId = request.electionId,
+            candidateDto = request.candidates
+        )
+        return HttpApiResponse.of(response)
+    }
 }
