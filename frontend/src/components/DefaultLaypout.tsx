@@ -1,4 +1,6 @@
 import { ReactNode } from 'react';
+import Header from './Header';
+import Footer from './Footer';
 
 interface LayoutProps {
 	children: ReactNode;
@@ -6,8 +8,10 @@ interface LayoutProps {
 
 export default function DefaultLaypout({ children }: LayoutProps) {
 	return (
-		<div>
-			<main>{children}</main>
-		</div>
+		<>
+			<Header />
+			<main className="min-h-[calc(100vh-100px)]">{children}</main>
+			<Footer />
+		</>
 	);
 }
