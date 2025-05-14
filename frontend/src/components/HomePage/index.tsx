@@ -14,40 +14,46 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	});
 
 	return {
-		props: {
-			dehydratedState: dehydrate(queryClient),
-		},
+		props: {},
+		// props: {
+		// 	dehydratedState: dehydrate(queryClient),
+		// },
 	};
 };
 
 export default function ElectionList() {
-	const { data, isLoading, isError } = useQuery<
-		ListResponseInfinity<ElectionItem>,
-		Error
-	>({
-		queryKey: ['electionList'],
-		queryFn: () => getElectionList(10),
-		retry: 3,
-		refetchOnWindowFocus: false,
-	});
+	// const { data, isLoading, isError } = useQuery<
+	// 	ListResponseInfinity<ElectionItem>,
+	// 	Error
+	// >({
+	// 	queryKey: ['electionList'],
+	// 	queryFn: () => getElectionList(10),
+	// 	retry: 3,
+	// 	refetchOnWindowFocus: false,
+	// });
 
-	if (isLoading) return <div>로딩 중...</div>;
-	if (isError) return <div>에러 발생!</div>;
+	// if (isLoading) return <div>로딩 중...</div>;
+	// if (isError) return <div>에러 발생!</div>;
 
+	// return (
+	// 	<div>
+	// 		<h1>선거 리스트</h1>
+	// 		<ul>
+	// 			{data?.content.map((item) => (
+	// 				<li key={item.id}>
+	// 					<h3>{item.title}</h3>
+	// 					<p>{item.description}</p>
+	// 					<p>
+	// 						기간: {item.startDate} ~ {item.endDate}
+	// 					</p>
+	// 				</li>
+	// 			))}
+	// 		</ul>
+	// 	</div>
+	// );
 	return (
 		<div>
 			<h1>선거 리스트</h1>
-			<ul>
-				{data?.content.map((item) => (
-					<li key={item.id}>
-						<h3>{item.title}</h3>
-						<p>{item.description}</p>
-						<p>
-							기간: {item.startDate} ~ {item.endDate}
-						</p>
-					</li>
-				))}
-			</ul>
 		</div>
 	);
 }
