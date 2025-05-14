@@ -1,6 +1,10 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+	QueryClient,
+	QueryClientProvider,
+	HydrationBoundary,
+} from '@tanstack/react-query';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import DefaultLaypout from '@/components/DefaultLaypout';
 import { useState } from 'react';
@@ -18,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
 						fallbackRender={(props) => <ErrorFallback {...props} />}
 					>
 						<DefaultLaypout>
-							<Component {...pageProps} />
+							<HydrationBoundary state={pageProps.dehydratedState}>
+								<Component {...pageProps} />
+							</HydrationBoundary>
 						</DefaultLaypout>
 					</ErrorBoundary>
 				)}
