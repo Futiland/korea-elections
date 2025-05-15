@@ -17,7 +17,7 @@ export default function Header() {
 			<div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
 				{/* 로고 */}
 				<Link href="/">
-					<span className="text-lg font-semibold">election.io</span>
+					<span className="text-lg font-semibold">Korea Elections Project</span>
 				</Link>
 
 				{/* 네비게이션 */}
