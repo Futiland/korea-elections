@@ -52,8 +52,8 @@ export default function ElectionList() {
 	// 	</div>
 	// );
 	return (
-		<div>
-			<h1>선거 리스트</h1>
+		<div className="flex justify-around items-center h-14 ">
+			<h1>Introduce Korea Elections Project</h1>
 		</div>
 	);
 }
