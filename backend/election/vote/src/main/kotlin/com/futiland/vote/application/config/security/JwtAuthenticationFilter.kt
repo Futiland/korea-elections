@@ -21,6 +21,7 @@ class JwtAuthenticationFilter(
 ) : OncePerRequestFilter() {
 
     private val excludedPaths = listOf(
+        "/",
         "/account/v1/signup",
         "/account/v1/signin",
         "/swagger/**",
