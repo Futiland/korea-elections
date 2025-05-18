@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { FallbackProps } from 'react-error-boundary';
 
 interface CustomErrorFallbackProps extends FallbackProps {}

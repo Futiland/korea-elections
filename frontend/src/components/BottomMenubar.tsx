@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { Home, Vote, CircleUserRound } from 'lucide-react';
-CircleUserRound;
+
 const menus = [
 	{ href: '/', label: '홈', icon: Home },
 	{ href: '/vote', label: 'vote', icon: Vote },
