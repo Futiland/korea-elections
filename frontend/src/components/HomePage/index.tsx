@@ -29,7 +29,7 @@ export default function ElectionList() {
 	// >({
 	// 	queryKey: ['electionList'],
 	// 	queryFn: () => getElectionList(10),
-	// 	retry: 3,
+	// 	retry: 2,
 	// 	refetchOnWindowFocus: false,
 	// });
 
