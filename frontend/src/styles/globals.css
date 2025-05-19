@@ -4,6 +4,20 @@
 @import 'pretendard/dist/web/static/pretendard.css';
 
 /* @custom-variant dark (&:is(.dark *)); */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+	font-family: 'Pretendard', 'ui-sans-serif', 'system-ui', -apple-system,
+		'BlinkMacSystemFont', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+		'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
 
 :root {
 	--background: oklch(1 0 0);
@@ -80,21 +94,6 @@
 	--radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
-}
-
-body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: 'Pretendard', 'ui-sans-serif', 'system-ui', -apple-system,
-		'BlinkMacSystemFont', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-		'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-}
-
 .dark {
 	--background: oklch(0.145 0 0);
 	--foreground: oklch(0.985 0 0);
@@ -131,9 +130,11 @@ body {
 
 @layer base {
 	* {
-		@apply border-border outline-ring/50;
+		border-color: var(--border);
+		outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
 	}
 	body {
-		@apply bg-background text-foreground;
+		background: var(--background);
+		color: var(--foreground);
 	}
 }
