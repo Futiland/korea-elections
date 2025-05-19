@@ -37,7 +37,7 @@ export default function ElectionList() {
 	// if (isError) return <div>에러 발생!</div>;
 
 	return (
-		<div>
+		<div className="min-h-screen">
 			{/* <h1>선거 리스트</h1> */}
 			{/* <ul>
 				{data?.content?.map((item) => (
