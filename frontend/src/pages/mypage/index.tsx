@@ -1,37 +1,60 @@
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import Head from 'next/head';
+import Image from 'next/image';
 
 export default function MyPage() {
-	const [username] = useState('홍길동');
-	const [email] = useState('hong@example.com');
-
-	const handleLogout = () => {
-		// TODO: 실제 로그아웃 처리 (예: 쿠키 제거, 토큰 삭제 등)
-		console.log('로그아웃 처리');
-		alert('로그아웃 되었습니다.');
-	};
-
 	return (
-		<div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-			<div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-				<h1 className="text-2xl font-semibold mb-6 text-center">마이페이지</h1>
+		<>
+			<Head>
+				<title>마이페이지 | KEP</title>
+			</Head>
 
-				<div className="mb-4">
-					<p className="text-sm text-gray-600">이름</p>
-					<p className="text-lg font-medium">{username}</p>
+			<div className="min-h-screen bg-stale-100 px-4 py-6">
+				<div className="w-full max-w-md mx-auto p-6 space-y-6">
+					{/* 마이페이지 제목 */}
+					<div className="flex justify-between items-center">
+						<h1 className="text-xl font-bold">마이페이지</h1>
+
+						{/* 프로필 이미지 (예시용) */}
+						{/* <Image
+							src="/profile.png" // public 폴더 기준
+							alt="프로필"
+							width={48}
+							height={48}
+							className="rounded-full"
+						/> */}
+					</div>
+
+					{/* 휴대폰 번호 */}
+					<div>
+						<label className="text-sm font-medium">휴대폰 번호</label>
+						<Input value="010-1234-****" disabled className="bg-white" />
+					</div>
+
+					{/* 가입일 */}
+					<div>
+						<label className="text-sm font-medium">가입일</label>
+						<Input value="2025-05-04" disabled className="bg-white" />
+					</div>
+
+					{/* 비밀번호 변경 */}
+					<div className="flex gap-2">
+						<div className="flex-1">
+							<label className="text-sm font-medium">비밀번호</label>
+							<Input
+								type="password"
+								value="******"
+								disabled
+								className="bg-white"
+							/>
+						</div>
+						<Button className="mt-6 bg-gray-900 text-white hover:bg-gray-800">
+							비밀번호 변경
+						</Button>
+					</div>
 				</div>
-
-				<div className="mb-6">
-					<p className="text-sm text-gray-600">이메일</p>
-					<p className="text-lg font-medium">{email}</p>
-				</div>
-
-				<button
-					onClick={handleLogout}
-					className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
-				>
-					로그아웃
-				</button>
 			</div>
-		</div>
+		</>
 	);
 }
