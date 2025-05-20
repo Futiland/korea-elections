@@ -21,6 +21,8 @@ class SecurityConfig {
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf("http://localhost:3000") // 클라이언트 origin
+        configuration.allowedOrigins = listOf("http://korea-election.com") // 클라이언트 origin
+        configuration.allowedOriginPatterns = listOf("*.korea-election.com") // 모든 서브도메인 허용
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
