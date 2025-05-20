@@ -2,8 +2,35 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useState } from 'react';
+import { getUserInfo } from '@/lib/api/account';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
+import type { UserInfo } from '@/lib/types/account';
 
 export default function MyPage() {
+	const {
+		data: user,
+		isLoading,
+		isError,
+	} = useQuery<UserInfo>({
+		queryKey: ['userInfo'],
+		queryFn: getUserInfo,
+		refetchOnWindowFocus: false,
+	});
+
+	if (isLoading) {
+		return <div className="text-center py-10">로딩 중...</div>;
+	}
+
+	if (isError || !user) {
+		return (
+			<div className="text-center text-red-500 py-10">
+				사용자 정보를 불러올 수 없습니다.
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<Head>
@@ -29,7 +56,11 @@ export default function MyPage() {
 					{/* 휴대폰 번호 */}
 					<div>
 						<label className="text-sm font-medium">휴대폰 번호</label>
-						<Input value="010-1234-****" disabled className="bg-white" />
+						<Input
+							value={user.data.phoneNumber}
+							disabled
+							className="bg-white"
+						/>
 					</div>
 
 					{/* 가입일 */}
