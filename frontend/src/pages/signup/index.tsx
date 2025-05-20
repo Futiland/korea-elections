@@ -1,8 +1,41 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useMutation } from '@tanstack/react-query';
+import { signup } from '@/lib/api/account';
+import type { SignupData } from '@/lib/types/account';
 
 export default function SignupPage() {
+	const router = useRouter();
+
+	const redirectPath =
+		typeof router.query.redirect === 'string' ? router.query.redirect : '/';
+
+	const signupMutation = useMutation({
+		mutationFn: (data: SignupData) => signup(data),
+		onSuccess: () => {
+			alert('회원가입이 완료되었습니다.');
+			router.push(redirectPath);
+		},
+		onError: (error: any) => {
+			alert('회원가입 실패: ' + (error?.message || '알 수 없는 오류'));
+		},
+	});
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		signupMutation.mutate({
+			name: 'front테스트',
+			phoneNumber: '01012345678',
+			password: '1122',
+			gender: 'MALE',
+			birthDate: new Date('1990-01-01'),
+			ci: 'ci1234',
+		});
+	};
+
 	return (
 		<>
 			<Head>
@@ -16,7 +49,7 @@ export default function SignupPage() {
 						<h1 className="text-xl font-bold mb-6">회원가입</h1>
 
 						{/* 가입 폼 */}
-						<form className="space-y-4 mb-8">
+						<form className="space-y-4 mb-8" onSubmit={handleSubmit}>
 							<div>
 								<label className="text-sm font-medium">휴대폰 번호</label>
 								<Input placeholder="휴대폰 번호를 입력해 주세요." />
@@ -25,8 +58,11 @@ export default function SignupPage() {
 								<label className="text-sm font-medium">비밀번호</label>
 								<Input type="password" placeholder="비밀번호를 입력해주세요." />
 							</div>
-							<Button className="w-full bg-blue-900 text-white hover:bg-blue-800">
-								가입하기
+							<Button
+								className="w-full bg-blue-900 text-white hover:bg-blue-800"
+								type="submit"
+							>
+								{signupMutation.isPending ? '가입하는 중...' : '가입하기'}
 							</Button>
 						</form>
 					</div>
