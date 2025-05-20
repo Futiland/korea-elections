@@ -7,6 +7,7 @@ import { getUserInfo } from '@/lib/api/account';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import type { UserInfo } from '@/lib/types/account';
+import { formatDate } from '@/lib/date';
 
 export default function MyPage() {
 	const {
@@ -66,7 +67,11 @@ export default function MyPage() {
 					{/* 가입일 */}
 					<div>
 						<label className="text-sm font-medium">가입일</label>
-						<Input value="2025-05-04" disabled className="bg-white" />
+						<Input
+							value={formatDate(user.data.createdAt)}
+							disabled
+							className="bg-white"
+						/>
 					</div>
 
 					{/* 비밀번호 변경 */}
