@@ -52,6 +52,7 @@ class ElectionCommandService(
                 electionId = electionId,
                 number = it.number,
                 name = it.name,
+                party = it.party,
                 description = it.description,
             )
         }
