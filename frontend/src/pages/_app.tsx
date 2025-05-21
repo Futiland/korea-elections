@@ -10,11 +10,13 @@ import DefaultLaypout from '@/components/DefaultLaypout';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ErrorBoundary';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
 	return (
 		<QueryClientProvider client={queryClient}>
+			<Toaster position="top-center" />
 			<QueryErrorResetBoundary>
 				{({ reset }) => (
 					<ErrorBoundary

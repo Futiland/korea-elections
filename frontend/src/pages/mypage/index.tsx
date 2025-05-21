@@ -2,8 +2,36 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
 import Image from 'next/image';
+import { useState } from 'react';
+import { getUserInfo } from '@/lib/api/account';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
+import type { UserInfo } from '@/lib/types/account';
+import { formatDate } from '@/lib/date';
 
 export default function MyPage() {
+	const {
+		data: user,
+		isLoading,
+		isError,
+	} = useQuery<UserInfo>({
+		queryKey: ['userInfo'],
+		queryFn: getUserInfo,
+		refetchOnWindowFocus: false,
+	});
+
+	if (isLoading) {
+		return <div className="text-center py-10">로딩 중...</div>;
+	}
+
+	if (isError || !user) {
+		return (
+			<div className="text-center text-red-500 py-10">
+				사용자 정보를 불러올 수 없습니다.
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<Head>
@@ -11,7 +39,7 @@ export default function MyPage() {
 			</Head>
 
 			<div className="min-h-screen bg-stale-100 px-4 py-6">
-				<div className="w-full max-w-md mx-auto p-6 space-y-6">
+				<div className="w-full max-w-lg mx-auto p-6 space-y-6">
 					{/* 마이페이지 제목 */}
 					<div className="flex justify-between items-center">
 						<h1 className="text-xl font-bold">마이페이지</h1>
@@ -29,13 +57,21 @@ export default function MyPage() {
 					{/* 휴대폰 번호 */}
 					<div>
 						<label className="text-sm font-medium">휴대폰 번호</label>
-						<Input value="010-1234-****" disabled className="bg-white" />
+						<Input
+							value={user.data.phoneNumber}
+							disabled
+							className="bg-white"
+						/>
 					</div>
 
 					{/* 가입일 */}
 					<div>
 						<label className="text-sm font-medium">가입일</label>
-						<Input value="2025-05-04" disabled className="bg-white" />
+						<Input
+							value={formatDate(user.data.createdAt)}
+							disabled
+							className="bg-white"
+						/>
 					</div>
 
 					{/* 비밀번호 변경 */}
