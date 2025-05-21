@@ -29,7 +29,7 @@ export default function Header() {
 				{/* 우측 */}
 				<div className="flex items-center gap-2">
 					<Button variant="outline" size="sm" className="py-1 px-4">
-						KEP 란?
+						KEP 프로젝트 소개
 					</Button>
 				</div>
 			</div>
