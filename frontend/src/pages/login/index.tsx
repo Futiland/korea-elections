@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import Image from 'next/image';
 import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ export default function LoginPage() {
 			router.push(redirectPath);
 		},
 		onError: (error: any) => {
-			alert('로그인 실패: ' + (error?.message || '알 수 없는 오류'));
+			toast('로그인 실패: ' + (error?.message || '알 수 없는 오류'));
 		},
 	});
 

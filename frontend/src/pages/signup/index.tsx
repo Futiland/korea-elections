@@ -1,12 +1,12 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import Head from 'next/head';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
 import type { SignupData } from '@/lib/types/account';
-
 export default function SignupPage() {
 	const router = useRouter();
 
@@ -16,11 +16,11 @@ export default function SignupPage() {
 	const signupMutation = useMutation({
 		mutationFn: (data: SignupData) => signup(data),
 		onSuccess: () => {
-			alert('회원가입이 완료되었습니다.');
+			toast('회원가입이 완료되었습니다.');
 			router.push(redirectPath);
 		},
 		onError: (error: any) => {
-			alert('회원가입 실패: ' + (error?.message || '알 수 없는 오류'));
+			toast('회원가입 실패: ' + (error?.message || '알 수 없는 오류'));
 		},
 	});
 
