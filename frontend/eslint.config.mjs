@@ -12,6 +12,13 @@ const compat = new FlatCompat({
 const eslintConfig = [
 	...compat.extends('next/core-web-vitals', 'next/typescript'),
 	{
+		extends: [
+			'plugin:@typescript-eslint/recommended',
+			'prettier',
+			'prettier/prettier',
+			'plugin:prettier/recommended',
+			'next/core-web-vitals',
+		],
 		rules: {
 			'@typescript-eslint/no-unused-vars': 'warn',
 			'no-unused-vars': 'warn',
@@ -22,6 +29,29 @@ const eslintConfig = [
 			'@typescript-eslint/no-unused-vars': 'warn',
 			'no-unused-vars': 'warn',
 			'@typescript-eslint/no-non-null-assertion': 'warn',
+			'import/order': [
+				'warn',
+				{
+					groups: [
+						['builtin', 'external'],
+						'internal',
+						['parent', 'sibling', 'index'],
+					],
+					pathGroups: [
+						{
+							pattern: '{react,react/**,next,next/**}',
+							group: 'external',
+							position: 'before',
+						},
+					],
+					pathGroupsExcludedImportTypes: ['react', 'next'],
+					'newlines-between': 'always',
+					alphabetize: {
+						order: 'asc',
+						caseInsensitive: true,
+					},
+				},
+			],
 		},
 	},
 ];
