@@ -39,7 +39,7 @@ export default function MyPage() {
 			</Head>
 
 			<div className="min-h-screen bg-stale-100 px-4 py-6">
-				<div className="w-full max-w-md mx-auto p-6 space-y-6">
+				<div className="w-full max-w-lg mx-auto p-6 space-y-6">
 					{/* 마이페이지 제목 */}
 					<div className="flex justify-between items-center">
 						<h1 className="text-xl font-bold">마이페이지</h1>

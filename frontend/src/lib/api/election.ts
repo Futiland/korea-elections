@@ -1,6 +1,5 @@
 import { apiGet } from './common';
-import { ElectionItem } from '../types/election';
-import { ListResponseInfinity } from '../types/common';
+import { CandidateResponse } from '../types/election';
 
-export const getElectionList = (size: number = 10) =>
-	apiGet<ListResponseInfinity<ElectionItem>>('/election/v1', { size });
+export const getCandidateList = (electionId: number = 2) =>
+	apiGet<CandidateResponse>(`/election/v1/${electionId}/vote`);

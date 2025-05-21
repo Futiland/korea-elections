@@ -44,7 +44,7 @@ export default function SignupPage() {
 
 			<div className="min-h-screen ">
 				<div className="bg-white px-4 py-6">
-					<div className="w-full max-w-md mx-auto  p-6">
+					<div className="w-full max-w-lg mx-auto  p-6">
 						{/* 로고 + KEP ? 버튼은 Header 컴포넌트에서 이미 처리 */}
 						<h1 className="text-xl font-bold mb-6">회원가입</h1>
 
@@ -69,7 +69,7 @@ export default function SignupPage() {
 				</div>
 
 				{/* 정보 안내 영역 */}
-				<div className="w-full max-w-md mx-auto mt-6 space-y-5 bg-slate-100">
+				<div className="w-full max-w-lg mx-auto mt-6 space-y-5 bg-slate-100">
 					<div className="text-center ">
 						<h2 className="text-lg font-semibold mb-1 py-7.5">
 							KEP는 어떤 서비스 인가요 ?
