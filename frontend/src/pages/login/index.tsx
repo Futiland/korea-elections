@@ -60,19 +60,21 @@ export default function LoginPage() {
 					{/* 입력 폼 */}
 					<form className="space-y-4" onSubmit={handleSubmit}>
 						<div>
-							<label className="text-sm font-medium">휴대폰 번호</label>
+							<label className="text-sm">휴대폰 번호</label>
 							<Input
 								placeholder="휴대폰 번호를 입력해 주세요."
 								value={phoneNumber}
+								className="h-10"
 								onChange={(e) => setPhoneNumber(e.target.value)}
 							/>
 						</div>
 						<div>
-							<label className="text-sm font-medium">비밀번호</label>
+							<label className="text-sm">비밀번호</label>
 							<Input
 								type="password"
 								placeholder="비밀번호를 입력해 주세요."
 								value={password}
+								className="h-10"
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</div>
@@ -80,8 +82,6 @@ export default function LoginPage() {
 						{/* 로그인 버튼 */}
 						<Button
 							type="submit"
-							size="default"
-							variant="default"
 							className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 							disabled={loginMutation.isPending}
 						>

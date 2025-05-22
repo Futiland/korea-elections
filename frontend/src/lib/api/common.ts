@@ -29,9 +29,9 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 	}
 
 	// ✅ localStorage 없으면 .env에서 대체
-	if (!token && process.env.NEXT_PUBLIC_DEV_TOKEN) {
-		token = process.env.NEXT_PUBLIC_DEV_TOKEN;
-	}
+	// if (!token && process.env.NEXT_PUBLIC_DEV_TOKEN) {
+	// 	token = process.env.NEXT_PUBLIC_DEV_TOKEN;
+	// }
 
 	const res = await fetch(url, {
 		method,

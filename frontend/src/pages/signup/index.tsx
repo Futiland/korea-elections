@@ -44,20 +44,20 @@ export default function SignupPage() {
 				<title>회원가입 | KEP</title>
 			</Head>
 
-			<div className="min-h-screen ">
-				<div className="bg-white px-4 py-6">
-					<div className="w-full max-w-lg mx-auto p-6">
+			<div className="min-h-screen">
+				<div className="bg-white py-6 px-4">
+					<div className="w-full max-w-lg mx-auto">
 						{/* 로고 + KEP ? 버튼은 Header 컴포넌트에서 이미 처리 */}
 						<h1 className="text-xl font-bold mb-6">회원가입</h1>
 
 						{/* 가입 폼 */}
 						<form className="space-y-4 mb-8" onSubmit={handleSubmit}>
 							<div>
-								<label className="text-sm font-medium">휴대폰 번호</label>
+								<label className="text-sm">휴대폰 번호</label>
 								<Input placeholder="휴대폰 번호를 입력해 주세요." />
 							</div>
 							<div>
-								<label className="text-sm font-medium">비밀번호</label>
+								<label className="text-sm">비밀번호</label>
 								<Input type="password" placeholder="비밀번호를 입력해주세요." />
 							</div>
 							<Button

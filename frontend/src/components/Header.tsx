@@ -18,7 +18,7 @@ export default function Header() {
 	};
 
 	return (
-		<header className="w-full border-b bg-slate-100 dark:bg-gray-950 shadow-sm">
+		<header className="w-full border-b bg-slate-50 dark:bg-gray-950 shadow-sm">
 			<div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
 				{/* 로고 */}
 				<Link href="/">
