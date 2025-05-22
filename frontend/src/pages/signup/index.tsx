@@ -29,12 +29,12 @@ export default function SignupPage() {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		signupMutation.mutate({
-			name: 'front테스트',
-			phoneNumber: '01012345678',
+			name: '채현',
+			phoneNumber: '01031817072',
 			password: '1122',
-			gender: 'MALE',
+			gender: 'FEMALE',
 			birthDate: new Date('1990-01-01'),
-			ci: 'ci1234',
+			ci: 'ci1235',
 		});
 	};
 
@@ -61,7 +61,7 @@ export default function SignupPage() {
 								<Input type="password" placeholder="비밀번호를 입력해주세요." />
 							</div>
 							<Button
-								className="w-full bg-blue-900 text-white hover:bg-blue-800"
+								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
 								type="submit"
 							>
 								{signupMutation.isPending ? '가입하는 중...' : '가입하기'}

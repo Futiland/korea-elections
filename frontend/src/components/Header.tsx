@@ -4,19 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-// import {
-// 	Dialog,
-// 	DialogContent,
-// 	DialogFooter,
-// 	DialogHeader,
-// } from '@/components/ui/dialog';
+
 import IntroduceLayout from '@/components/IntroduceLayout';
-import {
-	Dialog,
-	DialogTrigger,
-	DialogContent,
-	DialogFooter,
-} from '@/components/CustomDialog';
+import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 
 export default function Header() {
 	const router = useRouter();
@@ -53,26 +43,6 @@ export default function Header() {
 				</div>
 			</div>
 
-			{/* <Dialog open={isOpen} onOpenChange={setIsOpen}>
-				<DialogContent className="bg-slate-100 px-5 py-6 [&_[data-dialog-close]]:hidden">
-					<IntroduceLayout />
-					<DialogFooter>
-						<Button
-							className="w-full bg-blue-900 text-white hover:bg-blue-800"
-							onClick={() => {
-								setIsOpen(false);
-							}}
-						>
-							확인
-						</Button>
-					</DialogFooter>
-					<style jsx global>{`
-						button[data-dialog-close] {
-							display: none !important;
-						}
-					`}</style>
-				</DialogContent>
-			</Dialog> */}
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
 				<DialogContent className="bg-slate-100 px-5 py-6">
 					<IntroduceLayout />

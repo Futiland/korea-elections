@@ -8,10 +8,14 @@ import { login } from '@/lib/api/account';
 import type { LoginData } from '@/lib/types/account';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
+import IntroduceLayout from '@/components/IntroduceLayout';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
 	const [password, setPassword] = useState('');
+	const [isOpen, setIsOpen] = useState(false);
+
 	const router = useRouter();
 
 	// 쿼리에서 redirect 경로 가져오기 (ex: /login?redirect=/vote)
@@ -41,19 +45,17 @@ export default function LoginPage() {
 				<title>로그인 | KEP</title>
 			</Head>
 
-			<div className="min-h-screen flex items-center justify-center px-4 bg-white">
-				<div className="w-full max-w-sm p-6 rounded-md">
+			<div className="min-h-screen flex items-center justify-center p-5 bg-white">
+				<div className="w-full max-w-lg mx-auto">
 					{/* 로고 */}
-					<div className="flex flex-col items-center mb-6">
+					<h1 className="flex flex-col items-center my-25">
 						<Image
-							src="/img/logo-c.svg"
+							src="/img/main-logo.svg"
 							alt="KEP 로고"
-							width={80}
-							height={80}
-							className="mb-2"
+							width={148}
+							height={55}
 						/>
-						<h1 className="text-5xl font-bold">KEP</h1>
-					</div>
+					</h1>
 
 					{/* 입력 폼 */}
 					<form className="space-y-4" onSubmit={handleSubmit}>
@@ -78,7 +80,9 @@ export default function LoginPage() {
 						{/* 로그인 버튼 */}
 						<Button
 							type="submit"
-							className="w-full bg-blue-900 hover:bg-blue-800 text-white"
+							size="default"
+							variant="default"
+							className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 							disabled={loginMutation.isPending}
 						>
 							{loginMutation.isPending ? '로그인 중...' : '로그인'}
@@ -86,19 +90,35 @@ export default function LoginPage() {
 
 						{/* 회원가입 버튼 */}
 						<Button
-							type="button"
+							type="submit"
 							onClick={() => router.push('/signup')}
-							className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200"
+							className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
 						>
 							회원가입
 						</Button>
-
-						<div className="flex flex-col items-center">
-							<Button variant="outline" className="py-2 px-4 mt-4">
-								KEP는 어떤 서비스 인가요 ?
-							</Button>
-						</div>
 					</form>
+					<div className="flex flex-col items-center mt-26">
+						<Button
+							variant="outline"
+							className="py-2 px-4 mt-4 h-10"
+							onClick={() => setIsOpen(true)}
+						>
+							KEP는 어떤 서비스 인가요 ?
+						</Button>
+					</div>
+					<Dialog open={isOpen} onOpenChange={setIsOpen}>
+						<DialogContent className="bg-slate-100 px-5 py-6">
+							<IntroduceLayout />
+							<DialogFooter>
+								<Button
+									className="w-full bg-blue-900 text-white hover:bg-blue-800"
+									onClick={() => setIsOpen(false)}
+								>
+									확인
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 				</div>
 			</div>
 		</>
