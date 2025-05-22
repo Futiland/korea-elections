@@ -6,6 +6,7 @@ import type { ListResponseInfinity } from '@/lib/types/common';
 import type { CandidateResponse } from '@/lib/types/election';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
+import { Spinner } from '../ui/spinner';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -31,7 +32,12 @@ export default function ElectionList() {
 		refetchOnWindowFocus: false,
 	});
 
-	if (isFetching) return <div>로딩 중...</div>;
+	if (isFetching)
+		return (
+			<div className="text-center py-10 min-h-screen">
+				<Spinner />
+			</div>
+		);
 	if (isError) return <div>에러 발생!</div>;
 
 	return (
