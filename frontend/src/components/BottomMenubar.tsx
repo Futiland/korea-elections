@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Home, History, User } from 'lucide-react';
+import { Home, ClipboardCheck, User } from 'lucide-react';
 
 const menus = [
 	{ href: '/', label: '홈', icon: Home },
-	{ href: '/vote', label: '선거결과', icon: History },
+	{ href: '/resultPage', label: '결과보기', icon: ClipboardCheck },
 	{ href: '/mypage', label: '마이페이지', icon: User },
 ];
 
@@ -14,7 +14,7 @@ export default function BottomMenuBar() {
 
 	return (
 		<nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white dark:bg-gray-950 p-3">
-			<div className="flex justify-around items-center h-14 text-sm">
+			<div className="flex justify-around items-center text-xs">
 				{menus.map(({ href, label, icon: Icon }) => {
 					const isActive = router.pathname === href;
 					return (

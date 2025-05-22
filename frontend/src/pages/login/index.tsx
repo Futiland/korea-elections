@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import IntroduceLayout from '@/components/IntroduceLayout';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -85,7 +86,10 @@ export default function LoginPage() {
 							className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 							disabled={loginMutation.isPending}
 						>
-							{loginMutation.isPending ? '로그인 중...' : '로그인'}
+							{loginMutation.isPending && (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							)}
+							로그인
 						</Button>
 
 						{/* 회원가입 버튼 */}
@@ -93,6 +97,7 @@ export default function LoginPage() {
 							type="submit"
 							onClick={() => router.push('/signup')}
 							className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
+							disabled={loginMutation.isPending}
 						>
 							회원가입
 						</Button>

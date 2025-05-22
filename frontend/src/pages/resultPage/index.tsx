@@ -1,10 +1,10 @@
 import { GetServerSideProps } from 'next';
 
-type VotePageProps = {
+type resultPageProps = {
 	questions: string[];
 };
 
-export default function VotePage({ questions }: VotePageProps) {
+export default function resultPage({ questions }: resultPageProps) {
 	return (
 		<div className="p-8">
 			<h1 className="text-2xl font-bold mb-4">투표하기</h1>

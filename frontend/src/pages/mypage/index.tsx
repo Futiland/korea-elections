@@ -9,15 +9,16 @@ import { useRouter } from 'next/router';
 import type { UserInfo } from '@/lib/types/account';
 import { formatDate } from '@/lib/date';
 import IntroduceLayout from '@/components/IntroduceLayout';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function MyPage() {
 	const router = useRouter();
 
-	const [token, setToken] = useState<string | null>(null);
+	const [token, setToken] = useState<string | null | undefined>(undefined);
 
 	const {
 		data: user,
-		isLoading,
+		isFetching,
 		isError,
 	} = useQuery<UserInfo>({
 		queryKey: ['userInfo'],
@@ -33,11 +34,15 @@ export default function MyPage() {
 		}
 	}, []);
 
-	if (isLoading) {
-		return <div className="text-center py-10">로딩 중...</div>;
+	if (isFetching || token === undefined) {
+		return (
+			<div className="text-center py-10 min-h-screen">
+				<Spinner />
+			</div>
+		);
 	}
 
-	if (isError || !user) {
+	if (!token || !user) {
 		return (
 			<div className="min-h-screen bg-slate-100 ">
 				<div className="bg-white">
