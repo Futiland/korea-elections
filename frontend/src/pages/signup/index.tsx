@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
 import type { SignupData } from '@/lib/types/account';
 import IntroduceLayout from '@/components/IntroduceLayout';
+import { Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -63,8 +64,12 @@ export default function SignupPage() {
 							<Button
 								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
 								type="submit"
+								disabled={signupMutation.isPending}
 							>
-								{signupMutation.isPending ? '가입하는 중...' : '가입하기'}
+								{signupMutation.isPending && (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								)}
+								가입하기
 							</Button>
 						</form>
 					</div>
