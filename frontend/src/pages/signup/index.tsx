@@ -46,7 +46,7 @@ export default function SignupPage() {
 
 			<div className="min-h-screen ">
 				<div className="bg-white px-4 py-6">
-					<div className="w-full max-w-lg mx-auto  p-6">
+					<div className="w-full max-w-lg mx-auto p-6">
 						{/* 로고 + KEP ? 버튼은 Header 컴포넌트에서 이미 처리 */}
 						<h1 className="text-xl font-bold mb-6">회원가입</h1>
 
