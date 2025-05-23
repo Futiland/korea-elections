@@ -33,14 +33,19 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 	// 	token = process.env.NEXT_PUBLIC_DEV_TOKEN;
 	// }
 
+	const customHeaders: Record<string, string> = {
+		...(token ? { Authorization: `Bearer ${token}` } : {}),
+		...(headers as Record<string, string>),
+	};
+
+	if (body && method !== 'GET' && method !== 'DELETE') {
+		customHeaders['Content-Type'] = 'application/json';
+	}
+
 	const res = await fetch(url, {
 		method,
 		credentials: 'include',
-		headers: {
-			'Content-Type': 'application/json',
-			...(token ? { Authorization: `Bearer ${token}` } : {}),
-			...headers,
-		},
+		headers: customHeaders,
 		body: body ? JSON.stringify(body) : undefined,
 	});
 
