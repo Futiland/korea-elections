@@ -17,10 +17,17 @@ export type CandidateDate = {
 	createdAt: Date;
 	id: number;
 	deletedAt: Date | null;
+	party: string;
 };
 
 export type CandidateResponse = {
 	code: string;
 	message: string;
 	data: CandidateDate[];
+};
+
+export type ElectionResponse = {
+	code: string;
+	message: string;
+	data: ElectionItem[];
 };
