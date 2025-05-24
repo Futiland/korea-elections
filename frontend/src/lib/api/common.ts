@@ -46,7 +46,7 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 
 	const res = await fetch(url, {
 		method,
-		credentials: 'include',
+		// credentials: 'include',
 		headers: customHeaders,
 		body: body ? JSON.stringify(body) : undefined,
 	});
