@@ -16,6 +16,7 @@ import { election } from '@/lib/api/election';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
+import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 export default function ElectionList() {
 	const router = useRouter();
+	const { showDialog, hideDialog } = useAlertDialog();
 
 	const [token, setToken] = useState<string | null | undefined>(undefined);
 	const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(
@@ -69,8 +71,20 @@ export default function ElectionList() {
 	const handleVote = () => {
 		if (!token) {
 			// 토큰이 없으면 로그인 페이지로 이동
-			// TODO: alert로 변경
-			router.push('/login');
+			showDialog({
+				message: '투표는 로그인 후 가능합니다.',
+				actions: (
+					<Button
+						className="w-full bg-blue-900 text-white"
+						onClick={() => {
+							router.push('/login');
+							hideDialog();
+						}}
+					>
+						로그인하고 투표하기
+					</Button>
+				),
+			});
 			return;
 		}
 
