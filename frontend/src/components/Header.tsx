@@ -22,12 +22,14 @@ export default function Header() {
 			<div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
 				{/* 로고 */}
 				<Link href="/">
-					<Image
-						src="/img/logo-g.svg" // public 폴더 기준
-						alt="KEP 로고"
-						width={76}
-						height={24}
-					/>
+					<div className="relative w-[76px] h-[24px]">
+						<Image
+							src="/img/logo-g.svg"
+							alt="KEP 로고"
+							fill
+							className="object-contain"
+						/>
+					</div>
 				</Link>
 
 				{/* 우측 */}

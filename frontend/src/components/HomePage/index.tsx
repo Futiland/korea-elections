@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import {
 	dehydrate,
@@ -7,9 +7,7 @@ import {
 	useMutation,
 } from '@tanstack/react-query';
 import { getCandidateList } from '@/lib/api/election';
-import type { ListResponseInfinity } from '@/lib/types/common';
 import type { CandidateResponse } from '@/lib/types/election';
-import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { Spinner } from '../ui/spinner';
 import { CandidateCard } from './CandidateCard';
@@ -18,6 +16,7 @@ import { election } from '@/lib/api/election';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
+import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -28,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	});
 
 	return {
-		// props: {},
 		props: {
 			dehydratedState: dehydrate(queryClient),
 		},
@@ -37,7 +35,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 export default function ElectionList() {
 	const router = useRouter();
-	const [selectedCandidate, setSelectedCandidate] = useState<number | null>(
+	const { showDialog, hideDialog } = useAlertDialog();
+
+	const [token, setToken] = useState<string | null | undefined>(undefined);
+	const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(
 		null
 	);
 
@@ -49,24 +50,63 @@ export default function ElectionList() {
 	});
 
 	const electionMutation = useMutation({
-		mutationFn: (electionId: number) => election(electionId),
+		mutationFn: ({
+			electionId,
+			candidateId,
+		}: {
+			electionId: number;
+			candidateId: number;
+		}) => election(electionId, candidateId),
+
 		onSuccess: (data) => {
 			toast.success('투표 성공!');
 			// 투표 성공 시 결과 페이지로 이동
 			router.push('/resultPage');
 		},
 		onError: (error: any) => {
-			toast.error('투표 실패: ' + (error?.message || '알 수 없는 오류'));
+			toast.error('투표 실패: ' + (error?.message || '다시 시도해주세요.'));
 		},
 	});
 
-	const handleVote = (electionId: number) => {
-		electionMutation.mutate(electionId);
+	const handleVote = () => {
+		if (!token) {
+			// 토큰이 없으면 로그인 페이지로 이동
+			showDialog({
+				message: '투표는 로그인 후 가능합니다.',
+				actions: (
+					<Button
+						className="w-full bg-blue-900 text-white"
+						onClick={() => {
+							router.push('/login');
+							hideDialog();
+						}}
+					>
+						로그인하고 투표하기
+					</Button>
+				),
+			});
+			return;
+		}
+
+		if (selectedCandidateId === null) {
+			toast('후보를 선택해주세요.');
+			return;
+		}
+
+		const electionId = 1;
+		electionMutation.mutate({ electionId, candidateId: selectedCandidateId });
 	};
 
-	const handleVoteClick = (electionId: number) => {
-		handleVote(electionId);
+	const handleVoteClick = (candidateId: number) => {
+		setSelectedCandidateId(candidateId);
+		console.log('candidateId', candidateId);
 	};
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			setToken(localStorage.getItem('token'));
+		}
+	}, []);
 
 	if (isFetching)
 		return (
@@ -84,20 +124,22 @@ export default function ElectionList() {
 						우리는 선거의 공정성과 <br />
 						시민의 의견을 최우선으로 생각합니다.
 					</div>
-					<Image
-						src="/img/vote.svg"
-						alt="K제 21대 대통령 선거"
-						width={300}
-						height={150}
-						className="mb-2"
-					/>
+					<div className="relative w-[300px] h-[150px]">
+						<Image
+							src="/img/vote.svg"
+							alt="K제 21대 대통령 선거"
+							fill
+							className="object-contain"
+							priority
+						/>
+					</div>
 				</div>
 
 				<div className="max-w-lg mx-auto px-5">
 					<ul className="flex flex-col space-y-3">
 						{data?.data?.map((item) => (
 							<li key={item.id}>
-								<CandidateCard item={item} />
+								<CandidateCard item={item} handleVoteClick={handleVoteClick} />
 							</li>
 						))}
 					</ul>
@@ -107,13 +149,7 @@ export default function ElectionList() {
 					<Button
 						className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 						disabled={electionMutation.isPending}
-						onClick={() => {
-							if (selectedCandidate) {
-								handleVoteClick(selectedCandidate);
-							} else {
-								toast.error('후보를 선택해주세요.');
-							}
-						}}
+						onClick={() => handleVote()}
 					>
 						{electionMutation.isPending && (
 							<Loader2 className="h-4 w-4 animate-spin" />
