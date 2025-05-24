@@ -124,13 +124,15 @@ export default function ElectionList() {
 						우리는 선거의 공정성과 <br />
 						시민의 의견을 최우선으로 생각합니다.
 					</div>
-					<Image
-						src="/img/vote.svg"
-						alt="K제 21대 대통령 선거"
-						width={300}
-						height={150}
-						className="mb-2"
-					/>
+					<div className="relative w-[300px] h-[150px]">
+						<Image
+							src="/img/vote.svg"
+							alt="K제 21대 대통령 선거"
+							fill
+							className="object-contain"
+							priority
+						/>
+					</div>
 				</div>
 
 				<div className="max-w-lg mx-auto px-5">
