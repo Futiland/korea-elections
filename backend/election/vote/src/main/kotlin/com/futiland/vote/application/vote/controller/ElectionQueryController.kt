@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("election/v1")
+@RequestMapping("/election/v1")
 class ElectionQueryController(
     private val electionQueryUseCase: ElectionQueryUseCase,
 ) {

@@ -32,9 +32,12 @@ class AccountCommandService(
             ci = identityVerifiedInfoResponse.ci
         )
         val savedAccount = accountRepository.save(account)
+        val payload = getAccountJwtPayload(account)
+        val token = jwtTokenProvider.generateToken(payload, accessTokenTtl)
         return SignupSuccessResponse(
             id = savedAccount.id,
             createdAt = savedAccount.createdAt,
+            token =token
         )
     }
 
@@ -43,13 +46,17 @@ class AccountCommandService(
             phoneNumber = phoneNumber, password = password
         )
 
-        val payload = AccountJwtPayload(
-            accountId = account.id,
-        ).toMap()
+        val payload = getAccountJwtPayload(account)
 
         val token = jwtTokenProvider.generateToken(payload = payload, ttl = accessTokenTtl)
         return SignInSuccessResponse(
             token = token,
         )
+    }
+
+    private fun getAccountJwtPayload(account: Account): Map<String, Any> {
+        return AccountJwtPayload(
+            accountId = account.id,
+        ).toMap()
     }
 }
