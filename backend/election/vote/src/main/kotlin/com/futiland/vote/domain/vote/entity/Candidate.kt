@@ -10,6 +10,7 @@ class Candidate(
     val name: String,
     @Comment("후보자 번호")
     val number: Int,
+    val party: String,
     val description: String,
     status:CandidateStatus,
     val createdAt: LocalDateTime,
@@ -30,12 +31,14 @@ class Candidate(
             electionId: Long,
             number: Int,
             name: String,
+            party: String,
             description: String,
         ): Candidate {
             return Candidate(
                 electionId = electionId,
                 number = number,
                 name = name,
+                party = party,
                 description = description,
                 status = CandidateStatus.ACTIVE,
                 createdAt = LocalDateTime.now(),

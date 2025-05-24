@@ -24,6 +24,7 @@ class JwtAuthenticationFilter(
         "/",
         "/account/v1/signup",
         "/account/v1/signin",
+        "/election/v1/*/vote",  // 후보자 조회 허용
         "/swagger/**",
         "/swagger-ui/**",
         "/api-docs/**"

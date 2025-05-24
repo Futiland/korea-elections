@@ -4,5 +4,6 @@ import java.time.LocalDateTime
 
 data class SignupSuccessResponse(
     val id: Long,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    val token: String
 )
