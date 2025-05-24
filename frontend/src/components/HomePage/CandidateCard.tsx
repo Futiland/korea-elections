@@ -4,9 +4,10 @@ import { CandidateDate } from '@/lib/types/election';
 
 type CandidateCardProps = {
 	item: CandidateDate;
+	handleVoteClick: (candidateId: number) => void;
 };
 
-export function CandidateCard({ item }: CandidateCardProps) {
+export function CandidateCard({ item, handleVoteClick }: CandidateCardProps) {
 	const { name, party, number } = item;
 
 	return (
@@ -14,6 +15,7 @@ export function CandidateCard({ item }: CandidateCardProps) {
 			className="flex items-center justify-between p-4 rounded-xl shadow-md bg-white
 			border border-gray-200 hover:border-gray-200 transition-all duration-200 ease-in-out
 		"
+			onClick={() => handleVoteClick(item.id)}
 		>
 			<div className="flex items-center gap-4">
 				<Image
