@@ -2,7 +2,7 @@ export type ElectionItem = {
 	id: string;
 	title: string;
 	description: string;
-	status: 'ACTIVE' | 'INACTIVE' | 'COMPLETED';
+	status: 'ACTIVE' | 'INACTIVE';
 	startDate: string;
 	endDate: string;
 	createdAt: string;
@@ -13,7 +13,7 @@ export type CandidateDate = {
 	name: string;
 	number: number;
 	description: string;
-	status: 'ACTIVE';
+	status: 'ACTIVE' | 'INACTIVE';
 	createdAt: Date;
 	id: number;
 	deletedAt: Date | null;
