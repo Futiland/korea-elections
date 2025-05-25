@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
-import { ErrorFallback } from '../ErrorBoundary';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -52,7 +51,7 @@ export default function ElectionList() {
 		isError: isMyVotedCandidateError,
 	} = useQuery<MyVotedCandidateResponse, Error>({
 		queryKey: ['myVotedCandidate'],
-		queryFn: () => getMyVotedCandidate(1),
+		queryFn: () => getMyVotedCandidate(),
 		retry: 2,
 		refetchOnWindowFocus: false,
 		enabled: !!token, // 토큰이 있을 때만 쿼리 실행
