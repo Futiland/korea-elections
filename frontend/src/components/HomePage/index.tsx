@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import {
 	dehydrate,
@@ -6,8 +6,11 @@ import {
 	useQuery,
 	useMutation,
 } from '@tanstack/react-query';
-import { getCandidateList } from '@/lib/api/election';
-import type { CandidateResponse } from '@/lib/types/election';
+import { getCandidateList, getMyVotedCandidate } from '@/lib/api/election';
+import type {
+	CandidateResponse,
+	MyVotedCandidateResponse,
+} from '@/lib/types/election';
 import Image from 'next/image';
 import { Spinner } from '../ui/spinner';
 import { CandidateCard } from './CandidateCard';
@@ -17,6 +20,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
+import { ErrorFallback } from '../ErrorBoundary';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -42,8 +46,31 @@ export default function ElectionList() {
 		null
 	);
 
-	const { data, isFetching, isError } = useQuery<CandidateResponse, Error>({
-		queryKey: ['electionList'],
+	const {
+		data: myVotedCandidate,
+		isFetching: isMyVotedCandidateFetching,
+		isError: isMyVotedCandidateError,
+	} = useQuery<MyVotedCandidateResponse, Error>({
+		queryKey: ['myVotedCandidate'],
+		queryFn: () => getMyVotedCandidate(1),
+		retry: 2,
+		refetchOnWindowFocus: false,
+		enabled: !!token, // 토큰이 있을 때만 쿼리 실행
+	});
+
+	const myVotedCandidateId = myVotedCandidate?.data
+		? 'selectedCandidateId' in myVotedCandidate.data
+			? (myVotedCandidate.data as { selectedCandidateId: number })
+					.selectedCandidateId
+			: null
+		: null;
+
+	const {
+		data: candidateList,
+		isFetching: isCandidateListFetching,
+		isError: isCandidateListError,
+	} = useQuery<CandidateResponse, Error>({
+		queryKey: ['candidateList'],
 		queryFn: () => getCandidateList(),
 		retry: 2,
 		refetchOnWindowFocus: false,
@@ -99,7 +126,6 @@ export default function ElectionList() {
 
 	const handleVoteClick = (candidateId: number) => {
 		setSelectedCandidateId(candidateId);
-		console.log('candidateId', candidateId);
 	};
 
 	useEffect(() => {
@@ -108,13 +134,29 @@ export default function ElectionList() {
 		}
 	}, []);
 
-	if (isFetching)
+	useEffect(() => {
+		if (myVotedCandidateId) {
+			// 이미 투표한 경우 선택된 후보 ID 설정
+			setSelectedCandidateId(myVotedCandidateId);
+		} else {
+			// 투표하지 않은 경우 초기화
+			setSelectedCandidateId(null);
+		}
+	}, [myVotedCandidateId]);
+
+	if (isCandidateListFetching)
 		return (
 			<div className="text-center py-10 min-h-screen">
 				<Spinner />
 			</div>
 		);
-	if (isError) return <div>에러 발생!</div>;
+
+	if (isCandidateListError)
+		return (
+			<div className="text-center py-10 min-h-screen">
+				문제가 발생했습니다. 잠시 후 다시 시도해주세요.
+			</div>
+		);
 
 	return (
 		<>
@@ -158,9 +200,13 @@ export default function ElectionList() {
 
 				<div className="max-w-lg mx-auto px-5">
 					<ul className="flex flex-col space-y-3">
-						{data?.data?.map((item) => (
+						{candidateList?.data?.map((item) => (
 							<li key={item.id}>
-								<CandidateCard item={item} handleVoteClick={handleVoteClick} />
+								<CandidateCard
+									item={item}
+									handleVoteClick={handleVoteClick}
+									isSelected={selectedCandidateId === item.id}
+								/>
 							</li>
 						))}
 					</ul>
@@ -175,6 +221,7 @@ export default function ElectionList() {
 						{electionMutation.isPending && (
 							<Loader2 className="h-4 w-4 animate-spin" />
 						)}
+						{myVotedCandidateId ? '재' : ''}
 						투표 & 결과보기
 					</Button>
 				</div>
