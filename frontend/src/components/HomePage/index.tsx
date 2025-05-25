@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import {
 	dehydrate,
@@ -6,8 +6,11 @@ import {
 	useQuery,
 	useMutation,
 } from '@tanstack/react-query';
-import { getCandidateList } from '@/lib/api/election';
-import type { CandidateResponse } from '@/lib/types/election';
+import { getCandidateList, getMyVotedCandidate } from '@/lib/api/election';
+import type {
+	CandidateResponse,
+	MyVotedCandidateResponse,
+} from '@/lib/types/election';
 import Image from 'next/image';
 import { Spinner } from '../ui/spinner';
 import { CandidateCard } from './CandidateCard';
@@ -42,8 +45,31 @@ export default function ElectionList() {
 		null
 	);
 
-	const { data, isFetching, isError } = useQuery<CandidateResponse, Error>({
-		queryKey: ['electionList'],
+	const {
+		data: myVotedCandidate,
+		isFetching: isMyVotedCandidateFetching,
+		isError: isMyVotedCandidateError,
+	} = useQuery<MyVotedCandidateResponse, Error>({
+		queryKey: ['myVotedCandidate'],
+		queryFn: () => getMyVotedCandidate(),
+		retry: 2,
+		refetchOnWindowFocus: false,
+		enabled: !!token, // 토큰이 있을 때만 쿼리 실행
+	});
+
+	const myVotedCandidateId = myVotedCandidate?.data
+		? 'selectedCandidateId' in myVotedCandidate.data
+			? (myVotedCandidate.data as { selectedCandidateId: number })
+					.selectedCandidateId
+			: null
+		: null;
+
+	const {
+		data: candidateList,
+		isFetching: isCandidateListFetching,
+		isError: isCandidateListError,
+	} = useQuery<CandidateResponse, Error>({
+		queryKey: ['candidateList'],
 		queryFn: () => getCandidateList(),
 		retry: 2,
 		refetchOnWindowFocus: false,
@@ -99,7 +125,6 @@ export default function ElectionList() {
 
 	const handleVoteClick = (candidateId: number) => {
 		setSelectedCandidateId(candidateId);
-		console.log('candidateId', candidateId);
 	};
 
 	useEffect(() => {
@@ -108,38 +133,79 @@ export default function ElectionList() {
 		}
 	}, []);
 
-	if (isFetching)
+	useEffect(() => {
+		if (myVotedCandidateId) {
+			// 이미 투표한 경우 선택된 후보 ID 설정
+			setSelectedCandidateId(myVotedCandidateId);
+		} else {
+			// 투표하지 않은 경우 초기화
+			setSelectedCandidateId(null);
+		}
+	}, [myVotedCandidateId]);
+
+	if (isCandidateListFetching)
 		return (
 			<div className="text-center py-10 min-h-screen">
 				<Spinner />
 			</div>
 		);
-	if (isError) return <div>에러 발생!</div>;
+
+	if (isCandidateListError)
+		return (
+			<div className="text-center py-10 min-h-screen">
+				문제가 발생했습니다. 잠시 후 다시 시도해주세요.
+			</div>
+		);
 
 	return (
 		<>
-			<div className="min-h-screen">
-				<div className="flex flex-col items-center pt-5 pb-21">
+			<div className="min-h-screen mb-20">
+				<div className="flex flex-col items-center pt-5 pb-4">
 					<div className="text-slate-400 text-sm mb-5 text-center">
 						우리는 선거의 공정성과 <br />
 						시민의 의견을 최우선으로 생각합니다.
 					</div>
-					<div className="relative w-[300px] h-[150px]">
+					{/* 청화대 로고 */}
+					<div className="relative w-[200px] h-[100px] mt-3 sm:w-[300px] sm:h-[150px]">
 						<Image
-							src="/img/vote.svg"
-							alt="K제 21대 대통령 선거"
+							src="/img/chunghwadae-logo.png"
+							alt="chunghwadae logo"
 							fill
 							className="object-contain"
 							priority
 						/>
+						<div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-slate-100/70 to-slate-100" />
+					</div>
+					{/* 후보자 이미지 */}
+					<div className="relative w-[320px] h-[200px] sm:w-[472px] sm:h-[295px] border border-gray-200 rounded-lg shadow-md overflow-hidden">
+						<div className="absolute top-0 left-0 w-full h-full">
+							<Image
+								src="/img/main-img-bg.png"
+								alt="background"
+								fill
+								className="object-contain"
+							/>
+						</div>
+						<div className="absolute bottom-0 left-0 h-[150px] sm:h-[221px] w-full">
+							<Image
+								src="/img/candidate-group.png"
+								alt="candidate group"
+								fill
+								className="object-cover"
+							/>
+						</div>
 					</div>
 				</div>
 
 				<div className="max-w-lg mx-auto px-5">
 					<ul className="flex flex-col space-y-3">
-						{data?.data?.map((item) => (
+						{candidateList?.data?.map((item) => (
 							<li key={item.id}>
-								<CandidateCard item={item} handleVoteClick={handleVoteClick} />
+								<CandidateCard
+									item={item}
+									handleVoteClick={handleVoteClick}
+									isSelected={selectedCandidateId === item.id}
+								/>
 							</li>
 						))}
 					</ul>
@@ -154,6 +220,7 @@ export default function ElectionList() {
 						{electionMutation.isPending && (
 							<Loader2 className="h-4 w-4 animate-spin" />
 						)}
+						{myVotedCandidateId ? '재' : ''}
 						투표 & 결과보기
 					</Button>
 				</div>
