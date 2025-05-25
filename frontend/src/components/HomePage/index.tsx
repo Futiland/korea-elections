@@ -118,20 +118,41 @@ export default function ElectionList() {
 
 	return (
 		<>
-			<div className="min-h-screen">
-				<div className="flex flex-col items-center pt-5 pb-21">
+			<div className="min-h-screen mb-20">
+				<div className="flex flex-col items-center pt-5 pb-4">
 					<div className="text-slate-400 text-sm mb-5 text-center">
 						우리는 선거의 공정성과 <br />
 						시민의 의견을 최우선으로 생각합니다.
 					</div>
-					<div className="relative w-[300px] h-[150px]">
+					{/* 청화대 로고 */}
+					<div className="relative w-[200px] h-[100px] mt-3 sm:w-[300px] sm:h-[150px]">
 						<Image
-							src="/img/vote.svg"
-							alt="K제 21대 대통령 선거"
+							src="/img/chunghwadae-logo.png"
+							alt="chunghwadae logo"
 							fill
 							className="object-contain"
 							priority
 						/>
+						<div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-slate-100/70 to-slate-100" />
+					</div>
+					{/* 후보자 이미지 */}
+					<div className="relative w-[320px] h-[200px] sm:w-[472px] sm:h-[295px] border border-gray-200 rounded-lg shadow-md overflow-hidden">
+						<div className="absolute top-0 left-0 w-full h-full">
+							<Image
+								src="/img/main-img-bg.png"
+								alt="background"
+								fill
+								className="object-contain"
+							/>
+						</div>
+						<div className="absolute bottom-0 left-0 h-[150px] sm:h-[221px] w-full">
+							<Image
+								src="/img/candidate-group.png"
+								alt="candidate group"
+								fill
+								className="object-cover"
+							/>
+						</div>
 					</div>
 				</div>
 

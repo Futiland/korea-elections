@@ -20,7 +20,9 @@ export function CandidateCard({ item, handleVoteClick }: CandidateCardProps) {
 			<div className="flex items-center gap-4">
 				<div className="relative w-[40px] h-[40px]">
 					<Image
-						src={`/img/logo-c.svg`}
+						src={
+							number > 0 ? `/img/candidate-0${number}.png` : `/img/logo-c.svg`
+						}
 						alt={name}
 						fill
 						className="rounded-full object-contain"
