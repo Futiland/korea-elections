@@ -20,19 +20,18 @@ class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider
 ) : OncePerRequestFilter() {
 
-    private val excludedPaths = listOf(
-        "/",
-        "/account/v1/signup",
-        "/account/v1/signin",
-        "/election/v1/*/vote",  // 후보자 조회 허용
-        "/swagger/**",
-        "/swagger-ui/**",
-        "/api-docs/**"
+    private val excludedPaths: List<RequestMatcher> = listOf(
+        AntPathRequestMatcher("/", "GET"),
+        AntPathRequestMatcher("/account/v1/signup", "POST"),
+        AntPathRequestMatcher("/account/v1/signin", "POST"),
+        AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
+        AntPathRequestMatcher("/swagger/**"),
+        AntPathRequestMatcher("/swagger-ui/**"),
+        AntPathRequestMatcher("/api-docs/**")
     )
-    private val requestMatchers: List<RequestMatcher> = excludedPaths.map { AntPathRequestMatcher(it) }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        return requestMatchers.any { it.matches(request) }
+        return excludedPaths.any { it.matches(request) }
     }
 
     override fun doFilterInternal(
