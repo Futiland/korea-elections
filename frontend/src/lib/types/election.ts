@@ -31,3 +31,19 @@ export type ElectionResponse = {
 	message: string;
 	data: ElectionItem[];
 };
+
+export type MyVotedCandidateResponse = {
+	code: string;
+	message: string;
+	data:
+		| {
+				voteId: number;
+				electionId: number;
+				selectedCandidateId: number;
+				createdAt: Date;
+				updatedAt: Date;
+		  }
+		| null
+		| undefined
+		| {};
+};
