@@ -47,3 +47,20 @@ export type MyVotedCandidateResponse = {
 		| undefined
 		| {};
 };
+
+export type ElectionResultResponse = {
+	code: string;
+	message: string;
+	data: {
+		electionId: number;
+		results: {
+			id: number;
+			number: number;
+			name: string;
+			party: string;
+			description: string;
+			voteCount: number;
+		}[];
+		totalVoteCount: number;
+	};
+};

@@ -3,6 +3,7 @@ import {
 	CandidateResponse,
 	ElectionResponse,
 	MyVotedCandidateResponse,
+	ElectionResultResponse,
 } from '../types/election';
 
 // 후보자 리스트
@@ -18,3 +19,7 @@ export const election = (electionId: number, candidateId: number) =>
 // 내가 투표한 후보자 정보
 export const getMyVotedCandidate = (electionId: number = 1) =>
 	apiGet<MyVotedCandidateResponse>(`/rest/election/v1/${electionId}/vote/mine`);
+
+// 투표 결과
+export const getElectionResult = (electionId: number = 1) =>
+	apiGet<ElectionResultResponse>(`/rest/election/v1/${electionId}/vote/result`);
