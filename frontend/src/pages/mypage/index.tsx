@@ -10,11 +10,12 @@ import type { UserInfo } from '@/lib/types/account';
 import { formatDate } from '@/lib/date';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Spinner } from '@/components/ui/spinner';
+import { useAuthToken } from '@/hooks/useAuthToken';
 
 export default function MyPage() {
 	const router = useRouter();
 
-	const [token, setToken] = useState<string | null | undefined>(undefined);
+	const { isLoggedIn, isReady } = useAuthToken();
 
 	const {
 		data: user,
@@ -23,24 +24,20 @@ export default function MyPage() {
 	} = useQuery<UserInfo>({
 		queryKey: ['userInfo'],
 		queryFn: getUserInfo,
-		enabled: !!token, // 토큰이 있을 때만 쿼리 실행
+		enabled: isLoggedIn && isReady, // 토큰이 있을 때만 쿼리 실행
 		refetchOnWindowFocus: false,
 		retry: 2,
 	});
 
 	const logoutHandler = () => {
 		localStorage.removeItem('token');
-		setToken(undefined);
-		router.push('/login');
+		router.push({
+			pathname: '/login',
+			query: { redirect: router.asPath },
+		});
 	};
 
-	useEffect(() => {
-		if (typeof window !== 'undefined') {
-			setToken(localStorage.getItem('token'));
-		}
-	}, []);
-
-	if (isFetching || token === undefined) {
+	if (isFetching || !isReady) {
 		return (
 			<div className="text-center py-10 min-h-screen">
 				<Spinner />
@@ -48,7 +45,7 @@ export default function MyPage() {
 		);
 	}
 
-	if (!token || !user) {
+	if (!isLoggedIn || !user) {
 		return (
 			<div className=" bg-slate-10 ">
 				<div className="bg-white">

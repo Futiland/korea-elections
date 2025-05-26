@@ -3,6 +3,12 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 
+interface DialogContentProps
+	extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
+	withBackdrop?: boolean;
+	closeOnOverlayClick?: boolean;
+}
+
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
@@ -24,24 +30,50 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const DialogContent = React.forwardRef<
 	React.ElementRef<typeof DialogPrimitive.Content>,
-	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-	<DialogPortal>
-		<DialogOverlay />
-		<DialogPrimitive.Content
-			ref={ref}
-			className={cn(
-				'fixed z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 rounded-md sm:rounded-lg top-[50%] left-[50%]',
-				className
+	DialogContentProps
+>(
+	(
+		{
+			className,
+			children,
+			withBackdrop = true,
+			closeOnOverlayClick = true,
+			...props
+		},
+		ref
+	) => (
+		<DialogPortal>
+			{/* 조건에 따라 백드롭 출력 */}
+			{/* 백드롭 클릭 막기 */}
+			{withBackdrop && (
+				<DialogOverlay
+					onPointerDown={(e) => {
+						if (!closeOnOverlayClick) {
+							e.stopPropagation(); // 클릭 전파 차단 → Dialog 닫힘 방지
+						}
+					}}
+				/>
 			)}
-			{...props}
-		>
-			{children}
+			<DialogPrimitive.Content
+				ref={ref}
+				onInteractOutside={(e) => {
+					if (!closeOnOverlayClick) {
+						e.preventDefault(); // 외부 클릭으로 인한 닫힘 방지
+					}
+				}}
+				className={cn(
+					'fixed z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 rounded-md sm:rounded-lg top-[50%] left-[50%]',
+					className
+				)}
+				{...props}
+			>
+				{children}
 
-			{/* ❌ 기본 닫기 버튼 intentionally 제거됨 */}
-		</DialogPrimitive.Content>
-	</DialogPortal>
-));
+				{/* ❌ 기본 닫기 버튼 intentionally 제거됨 */}
+			</DialogPrimitive.Content>
+		</DialogPortal>
+	)
+);
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({
