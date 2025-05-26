@@ -1,4 +1,3 @@
-// import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
 	createContext,
 	useCallback,
@@ -7,7 +6,6 @@ import {
 	ReactNode,
 } from 'react';
 import { Dialog, DialogContent } from '@/components/CustomDialog';
-import { cn } from '@/lib/utils';
 
 interface AlertDialogContextType {
 	showDialog: (options: { message: string; actions: ReactNode }) => void;
