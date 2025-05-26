@@ -159,7 +159,7 @@ export default function ElectionList() {
 
 	return (
 		<>
-			<div className="min-h-screen mb-20">
+			<div className="mb-20">
 				<div className="flex flex-col items-center pt-5 pb-4">
 					<div className="text-slate-400 text-sm mb-5 text-center">
 						우리는 선거의 공정성과 <br />
