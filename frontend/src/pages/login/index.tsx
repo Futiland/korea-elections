@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/api/account';
 import type { LoginData } from '@/lib/types/account';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import IntroduceLayout from '@/components/IntroduceLayout';
@@ -44,6 +44,15 @@ export default function LoginPage() {
 		e.preventDefault();
 		router.push('/signup');
 	};
+
+	useEffect(() => {
+		// 페이지가 로드될 때 토큰이 있는지 확인
+		const token = localStorage.getItem('token');
+		if (token) {
+			// 토큰이 있다면 메인 페이지로 리다이렉트
+			router.push(redirectPath);
+		}
+	}, [router, redirectPath, router.query.redirect]);
 
 	return (
 		<>
