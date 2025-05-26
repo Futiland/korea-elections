@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
+import { useAuthToken } from '@/hooks/useAuthToken';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,6 +20,8 @@ export default function LoginPage() {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const router = useRouter();
+
+	const { isReady } = useAuthToken({ redirectIfLoggedIn: true });
 
 	// 쿼리에서 redirect 경로 가져오기 (ex: /login?redirect=/vote)
 	const redirectPath =
@@ -45,14 +49,13 @@ export default function LoginPage() {
 		router.push('/signup');
 	};
 
-	useEffect(() => {
-		// 페이지가 로드될 때 토큰이 있는지 확인
-		const token = localStorage.getItem('token');
-		if (token) {
-			// 토큰이 있다면 메인 페이지로 리다이렉트
-			router.push(redirectPath);
-		}
-	}, [router, redirectPath, router.query.redirect]);
+	if (!isReady) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<Spinner />
+			</div>
+		);
+	}
 
 	return (
 		<>
