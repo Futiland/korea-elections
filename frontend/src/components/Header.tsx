@@ -46,7 +46,7 @@ export default function Header() {
 			</div>
 
 			<Dialog open={isOpen} onOpenChange={setIsOpen}>
-				<DialogContent className="bg-slate-100 px-5 py-6">
+				<DialogContent className="w-[calc(100%-40px)] bg-slate-100 px-5 py-6">
 					<IntroduceLayout />
 					<DialogFooter>
 						<Button

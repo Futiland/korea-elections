@@ -13,12 +13,27 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 	const isLoginPage = router.pathname === '/login';
 	const isSignUpPage = router.pathname === '/signup';
 
+	const visibleHeader = !isLoginPage;
+	const visibleBottomMenuBar = !isLoginPage && !isSignUpPage;
+
 	return (
 		<>
-			{!isLoginPage && <Header />}
-			<main className="bg-slate-100">{children}</main>
+			{visibleHeader && <Header />}
+			<main
+				className="bg-slate-100"
+				style={{
+					minHeight: `${
+						visibleHeader ? 'calc(100vh - var(--header-height))' : 0
+					}`,
+					paddingBottom: `${
+						visibleBottomMenuBar ? 'var(--bottom-nav-height)' : 0
+					}`,
+				}}
+			>
+				{children}
+			</main>
 			{/* <Footer /> */}
-			{!(isLoginPage || isSignUpPage) && <BottomMenuBar />}
+			{visibleBottomMenuBar && <BottomMenuBar />}
 		</>
 	);
 }
