@@ -2,16 +2,20 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
 import type { SignupData } from '@/lib/types/account';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
+import { useAuthToken } from '@/hooks/useAuthToken';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function SignupPage() {
 	const router = useRouter();
+
+	const { isReady } = useAuthToken({ redirectIfLoggedIn: true });
 
 	const redirectPath =
 		typeof router.query.redirect === 'string' ? router.query.redirect : '/';
@@ -39,13 +43,21 @@ export default function SignupPage() {
 		});
 	};
 
+	if (!isReady) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<Spinner />
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<Head>
 				<title>회원가입 | KEP</title>
 			</Head>
 
-			<div className="min-h-screen">
+			<div>
 				<div className="bg-white py-6 px-4">
 					<div className="w-full max-w-lg mx-auto">
 						{/* 로고 + KEP ? 버튼은 Header 컴포넌트에서 이미 처리 */}

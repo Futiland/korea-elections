@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import {
 	dehydrate,
@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
+import { useAuthToken } from '@/hooks/useAuthToken';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -40,10 +41,11 @@ export default function ElectionList() {
 	const router = useRouter();
 	const { showDialog, hideDialog } = useAlertDialog();
 
-	const [token, setToken] = useState<string | null | undefined>(undefined);
 	const [selectedCandidateId, setSelectedCandidateId] = useState<number | null>(
 		null
 	);
+
+	const { isLoggedIn, isReady } = useAuthToken();
 
 	const {
 		data: myVotedCandidate,
@@ -54,7 +56,7 @@ export default function ElectionList() {
 		queryFn: () => getMyVotedCandidate(),
 		retry: 2,
 		refetchOnWindowFocus: false,
-		enabled: !!token, // 토큰이 있을 때만 쿼리 실행
+		enabled: isLoggedIn && isReady, // 토큰이 있을 때만 쿼리 실행
 	});
 
 	const myVotedCandidateId = myVotedCandidate?.data
@@ -95,7 +97,7 @@ export default function ElectionList() {
 	});
 
 	const handleVote = () => {
-		if (!token) {
+		if (!isLoggedIn) {
 			// 토큰이 없으면 로그인 페이지로 이동
 			showDialog({
 				message: '투표는 로그인 후 가능합니다.',
@@ -128,12 +130,6 @@ export default function ElectionList() {
 	};
 
 	useEffect(() => {
-		if (typeof window !== 'undefined') {
-			setToken(localStorage.getItem('token'));
-		}
-	}, []);
-
-	useEffect(() => {
 		if (myVotedCandidateId) {
 			// 이미 투표한 경우 선택된 후보 ID 설정
 			setSelectedCandidateId(myVotedCandidateId);
@@ -159,7 +155,7 @@ export default function ElectionList() {
 
 	return (
 		<>
-			<div className="min-h-screen mb-20">
+			<div className="mb-20">
 				<div className="flex flex-col items-center pt-5 pb-4">
 					<div className="text-slate-400 text-sm mb-5 text-center">
 						우리는 선거의 공정성과 <br />

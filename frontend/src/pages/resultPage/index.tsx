@@ -1,10 +1,20 @@
 import { GetServerSideProps } from 'next';
-
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
+import {
+	dehydrate,
+	QueryClient,
+	useQuery,
+	useMutation,
+} from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-type resultPageProps = {
-	questions: string[];
-};
+import { getElectionResult, getMyVotedCandidate } from '@/lib/api/election';
+import { useAuthToken } from '@/hooks/useAuthToken';
+import clsx from 'clsx';
+import { Button } from '@/components/ui/button';
+import { AlertDialog } from '@/components/AlertDialog';
+import Image from 'next/image';
 
 const ages = [
 	{
@@ -29,24 +39,102 @@ const ages = [
 	},
 ];
 
-export default function resultPage({ questions }: resultPageProps) {
-	return (
-		<div className="min-h-screen py-7 px-4 w-full max-w-lg mx-auto">
-			<div className="flex items-center justify-between mb-4">
-				<h1 className="text-xl font-bold">투표 결과</h1>
-				<p className="tex-sm text-slate-500">
-					최신 업데이트 : 2025.12.23 09:00
-				</p>
-			</div>
+// 토큰 처리 때문에 ssr로 처리하지 않음
+// export const getServerSideProps: GetServerSideProps = async () => {
+// 	const queryClient = new QueryClient();
 
-			{/* <Tabs defaultValue="account" className="">
-				<TabsList className="grid w-full grid-cols-2">
-					<TabsTrigger value="20">20</TabsTrigger>
-					<TabsTrigger value="30">30</TabsTrigger>
-				</TabsList>
-				<TabsContent value="20"></TabsContent>
-			</Tabs> */}
-			<Tabs defaultValue="40대" className="w-full">
+// 	await queryClient.prefetchQuery({
+// 		queryKey: ['electionResultData'],
+// 		queryFn: () => getElectionResult(),
+// 	});
+
+// 	return {
+// 		props: {
+// 			dehydratedState: dehydrate(queryClient),
+// 		},
+// 	};
+// };
+
+export default function resultPage() {
+	const router = useRouter();
+	const { isLoggedIn, isReady } = useAuthToken();
+
+	const {
+		data: electionResultData,
+		isFetching: isElectionResultFetching,
+		isError: isElectionError,
+	} = useQuery({
+		queryKey: ['electionResultData'],
+		queryFn: () => getElectionResult(),
+		refetchOnWindowFocus: false,
+		enabled: isLoggedIn && isReady,
+	});
+
+	const {
+		data: myVotedCandidate,
+		isFetching: isMyVotedCandidateFetching,
+		isError: isMyVotedCandidateError,
+	} = useQuery({
+		queryKey: ['myVotedCandidate'],
+		queryFn: () => getMyVotedCandidate(),
+		retry: 2,
+		refetchOnWindowFocus: false,
+		enabled: isLoggedIn && isReady, // 토큰이 있을 때만 쿼리 실행
+	});
+
+	const myVotedCandidateId = myVotedCandidate?.data
+		? 'selectedCandidateId' in myVotedCandidate.data
+			? (myVotedCandidate.data as { selectedCandidateId: number })
+					.selectedCandidateId
+			: null
+		: null;
+
+	if ((isReady && !isLoggedIn) || myVotedCandidateId === null) {
+		return (
+			<div className="flex items-center">
+				<div className="w-full h-auto sm:w-[472px]">
+					<Image
+						src="/img/result-page-bg.png"
+						alt="background"
+						fill
+						className="object-contain pt-5"
+						priority
+					/>
+				</div>
+				<AlertDialog
+					showBackdrop={false}
+					closeOnOverlayClick={false}
+					message="투표결과는 투표 후 확인이 가능합니다."
+					actions={
+						<Button
+							className="w-full bg-blue-900 text-white"
+							onClick={() => {
+								router.push('/');
+							}}
+						>
+							투표하고 결과보기
+						</Button>
+					}
+				/>
+			</div>
+		);
+	}
+
+	return (
+		<>
+			<Head>
+				<title>제 21대 대통령선거 결과 보기</title>
+			</Head>
+
+			<div className="min-h-screen py-7 px-4 w-full max-w-lg mx-auto">
+				<div className="flex items-center justify-between mb-4">
+					<h1 className="text-xl font-bold">투표 결과</h1>
+					<p className="tex-sm text-slate-500">
+						최신 업데이트 : 2025.12.23 09:00
+					</p>
+				</div>
+
+				{/* <Tabs defaultValue="40대" className="w-full">
 				<TabsList className="w-full grid grid-cols-5 p-1 rounded-lg border border-slate-300 h-10 bg-white">
 					{ages.map((item) => (
 						<TabsTrigger
@@ -58,18 +146,47 @@ export default function resultPage({ questions }: resultPageProps) {
 						</TabsTrigger>
 					))}
 				</TabsList>
-			</Tabs>
-		</div>
+				<TabsContent value="20"></TabsContent>
+			</Tabs> */}
+
+				<div className="bg-white rounded-xl p-6 shadow-sm space-y-4">
+					<h2 className="text-sm font-semibold">투표 결과 요약</h2>
+
+					<div className="relative bg-white rounded-xl px-4 ">
+						{/* 배경 세로선 */}
+						<div className="absolute inset-0 flex justify-between px-4">
+							{[...Array(4)].map((_, i) => (
+								<div key={i} className="w-px bg-slate-200 h-full" />
+							))}
+						</div>
+
+						{/* 데이터 막대 */}
+						<div className="space-y-3 relative z-10">
+							{electionResultData?.data.results.map((item, idx) => {
+								const percent =
+									(item.voteCount / electionResultData.data.totalVoteCount) *
+									100;
+								return (
+									<div key={idx} className="flex items-center">
+										<div
+											className={clsx(
+												'flex items-center text-white text-sm font-medium h-8 rounded-md px-3 bg-blue-600',
+												'transition-all duration-300'
+											)}
+											style={{ width: `${percent}%` }}
+										>
+											{item.name}
+										</div>
+										<div className="text-sm font-semibold text-black min-w-[32px] ml-2">
+											{item.voteCount}
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</div>
+			</div>
+		</>
 	);
 }
-
-export const getServerSideProps: GetServerSideProps = async () => {
-	// 서버에서 데이터 불러오기 (예: DB나 API)
-	const questions = ['후보 A vs 후보 B', '정책 1 vs 정책 2']; // 예시
-
-	return {
-		props: {
-			questions,
-		},
-	};
-};

@@ -6,11 +6,13 @@ import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/api/account';
 import type { LoginData } from '@/lib/types/account';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
+import { useAuthToken } from '@/hooks/useAuthToken';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,6 +20,8 @@ export default function LoginPage() {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const router = useRouter();
+
+	const { isReady } = useAuthToken({ redirectIfLoggedIn: true });
 
 	// 쿼리에서 redirect 경로 가져오기 (ex: /login?redirect=/vote)
 	const redirectPath =
@@ -40,16 +44,29 @@ export default function LoginPage() {
 		loginMutation.mutate({ phoneNumber, password });
 	};
 
+	const handleSignup = (e: React.FormEvent) => {
+		e.preventDefault();
+		router.push('/signup');
+	};
+
+	if (!isReady) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<Spinner />
+			</div>
+		);
+	}
+
 	return (
 		<>
 			<Head>
 				<title>로그인 | KEP</title>
 			</Head>
 
-			<div className="min-h-screen flex items-center justify-center p-5 bg-white">
+			<div className="flex items-center justify-center p-5 bg-white">
 				<div className="w-full max-w-lg mx-auto">
 					{/* 로고 */}
-					<h1 className="flex flex-col items-center my-25">
+					<h1 className="flex flex-col items-center mt-20 mb-25">
 						<Image
 							src="/img/main-logo.svg"
 							alt="KEP 로고"
@@ -94,15 +111,14 @@ export default function LoginPage() {
 
 						{/* 회원가입 버튼 */}
 						<Button
-							type="submit"
-							onClick={() => router.push('/signup')}
+							onClick={handleSignup}
 							className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
 							disabled={loginMutation.isPending}
 						>
 							회원가입
 						</Button>
 					</form>
-					<div className="flex flex-col items-center mt-26">
+					<div className="flex flex-col items-center mt-25">
 						<Button
 							variant="outline"
 							className="py-2 px-4 mt-4 h-10"
