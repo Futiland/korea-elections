@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
@@ -38,6 +38,15 @@ export default function SignupPage() {
 			ci: 'ci1235',
 		});
 	};
+
+	useEffect(() => {
+		// 페이지가 로드될 때 토큰이 있는지 확인
+		const token = localStorage.getItem('token');
+		if (token) {
+			// 토큰이 있다면 메인 페이지로 리다이렉트
+			router.push(redirectPath);
+		}
+	}, [router, redirectPath, router.query.redirect]);
 
 	return (
 		<>
