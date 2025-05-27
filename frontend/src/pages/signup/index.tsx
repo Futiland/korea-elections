@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
-import type { SignupData } from '@/lib/types/account';
+import type { SignupRequestData } from '@/lib/types/account';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
 import * as PortOne from '@portone/browser-sdk/v2';
+import PasswordField from '@/components/PasswordField';
+import { SignupInputData } from '@/lib/types/account';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -21,8 +23,14 @@ export default function SignupPage() {
 	const redirectPath =
 		typeof router.query.redirect === 'string' ? router.query.redirect : '/';
 
+	const [useInfo, setUseInfo] = useState<SignupInputData>({
+		phoneNumber: '',
+		password: '',
+		confirmPassword: '',
+	});
+
 	const signupMutation = useMutation({
-		mutationFn: (data: SignupData) => signup(data),
+		mutationFn: (data: SignupRequestData) => signup(data),
 		onSuccess: () => {
 			toast('회원가입이 완료되었습니다.');
 			router.push(redirectPath);
@@ -92,7 +100,16 @@ export default function SignupPage() {
 									<Input
 										placeholder="휴대폰 번호를 입력해 주세요."
 										className="h-10"
+										required
+										value={useInfo.phoneNumber}
+										onChange={(e) =>
+											setUseInfo({
+												...useInfo,
+												phoneNumber: e.target.value,
+											})
+										}
 									/>
+
 									<Button
 										className=" bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
 										disabled={signupMutation.isPending}
@@ -101,14 +118,33 @@ export default function SignupPage() {
 										본인 인증
 									</Button>
 								</div>
+								<p className="text-xs text-muted-foreground pt-1 pl-1">
+									숫자만 입력해주세요. 예) 01012345678
+								</p>
 							</div>
+
+							<PasswordField
+								label="비밀번호"
+								placeholder="비밀번호를 입력해주세요."
+								value={useInfo.password}
+								onChange={(e) =>
+									setUseInfo({ ...useInfo, password: e.target.value })
+								}
+							/>
 							<div>
-								<label className="text-sm">비밀번호</label>
-								<Input
-									type="password"
-									placeholder="비밀번호를 입력해주세요."
-									className="h-10"
+								<PasswordField
+									label="비밀번호 확인"
+									placeholder="비밀번호를 한번 더 입력해주세요."
+									value={useInfo.confirmPassword}
+									onChange={(e) =>
+										setUseInfo({ ...useInfo, confirmPassword: e.target.value })
+									}
 								/>
+								{useInfo.password !== useInfo.confirmPassword && (
+									<p className="text-xs text-red-600 pt-1 pl-1">
+										비밀번호가 일치하지 않습니다.
+									</p>
+								)}
 							</div>
 							<Button
 								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"

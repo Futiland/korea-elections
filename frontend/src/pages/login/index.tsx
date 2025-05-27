@@ -13,6 +13,7 @@ import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
+import PasswordField from '@/components/PasswordField';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -87,12 +88,10 @@ export default function LoginPage() {
 							/>
 						</div>
 						<div>
-							<label className="text-sm">비밀번호</label>
-							<Input
-								type="password"
-								placeholder="비밀번호를 입력해 주세요."
+							<PasswordField
+								label="비밀번호"
+								placeholder="비밀번호를 입력해주세요."
 								value={password}
-								className="h-10"
 								onChange={(e) => setPassword(e.target.value)}
 							/>
 						</div>
