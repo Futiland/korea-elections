@@ -22,7 +22,13 @@ export type UserInfo = {
 	};
 };
 
-export type SignupData = {
+export type SignupInputData = {
+	phoneNumber: string;
+	password: string;
+	confirmPassword: string;
+};
+
+export type SignupRequestData = {
 	name: string;
 	phoneNumber: string;
 	password: string;
