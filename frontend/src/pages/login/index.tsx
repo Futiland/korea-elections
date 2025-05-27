@@ -6,7 +6,7 @@ import Head from 'next/head';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/lib/api/account';
 import type { LoginData } from '@/lib/types/account';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import IntroduceLayout from '@/components/IntroduceLayout';
@@ -14,10 +14,12 @@ import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
 import PasswordField from '@/components/PasswordField';
+import { REG_PHONE } from '@/lib/regex';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
 	const [password, setPassword] = useState('');
+	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
 	const router = useRouter();
@@ -39,6 +41,17 @@ export default function LoginPage() {
 			toast('로그인 실패: ' + (error?.message || '알 수 없는 오류'));
 		},
 	});
+
+	const onChangePhonnumber = (e: ChangeEvent<HTMLInputElement>) => {
+		let value = e.target.value;
+
+		value = value.replace(/[^0-9]/g, '');
+		REG_PHONE.test(value)
+			? setisErrorPhoneNumber(false)
+			: setisErrorPhoneNumber(true);
+
+		setPhoneNumber(value);
+	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -84,8 +97,17 @@ export default function LoginPage() {
 								placeholder="휴대폰 번호를 입력해 주세요."
 								value={phoneNumber}
 								className="h-10"
-								onChange={(e) => setPhoneNumber(e.target.value)}
+								onChange={(e) => onChangePhonnumber(e)}
 							/>
+							{isErrorPhoneNumber ? (
+								<p className="text-xs text-red-600 pt-1 pl-1">
+									정확한 휴대폰 번호를 입력해주세요. 예) 01012345678
+								</p>
+							) : (
+								<p className="text-xs text-muted-foreground pt-1 pl-1">
+									숫자만 입력해주세요. 예) 01012345678
+								</p>
+							)}
 						</div>
 						<div>
 							<PasswordField

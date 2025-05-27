@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
 import { signup } from '@/lib/api/account';
@@ -14,6 +14,7 @@ import { Spinner } from '@/components/ui/spinner';
 import * as PortOne from '@portone/browser-sdk/v2';
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
+import { REG_NUMBER, REG_PHONE } from '@/lib/regex';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -28,6 +29,8 @@ export default function SignupPage() {
 		password: '',
 		confirmPassword: '',
 	});
+
+	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
 
 	const signupMutation = useMutation({
 		mutationFn: (data: SignupRequestData) => signup(data),
@@ -58,6 +61,22 @@ export default function SignupPage() {
 				console.error('실패:', err);
 			},
 		} as PortOne.IdentityVerificationRequest);
+	};
+
+	const onChangeInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
+		let value = e.target.value;
+
+		if (key === 'phoneNumber') {
+			value = value.replace(/[^0-9]/g, '');
+			REG_PHONE.test(value)
+				? setisErrorPhoneNumber(false)
+				: setisErrorPhoneNumber(true);
+		}
+
+		setUseInfo({
+			...useInfo,
+			[key]: value,
+		});
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -102,12 +121,7 @@ export default function SignupPage() {
 										className="h-10"
 										required
 										value={useInfo.phoneNumber}
-										onChange={(e) =>
-											setUseInfo({
-												...useInfo,
-												phoneNumber: e.target.value,
-											})
-										}
+										onChange={(e) => onChangeInput(e, 'phoneNumber')}
 									/>
 
 									<Button
@@ -118,27 +132,29 @@ export default function SignupPage() {
 										본인 인증
 									</Button>
 								</div>
-								<p className="text-xs text-muted-foreground pt-1 pl-1">
-									숫자만 입력해주세요. 예) 01012345678
-								</p>
+								{isErrorPhoneNumber ? (
+									<p className="text-xs text-red-600 pt-1 pl-1">
+										정확한 휴대폰 번호를 입력해주세요. 예) 01012345678
+									</p>
+								) : (
+									<p className="text-xs text-muted-foreground pt-1 pl-1">
+										숫자만 입력해주세요. 예) 01012345678
+									</p>
+								)}
 							</div>
 
 							<PasswordField
 								label="비밀번호"
 								placeholder="비밀번호를 입력해주세요."
 								value={useInfo.password}
-								onChange={(e) =>
-									setUseInfo({ ...useInfo, password: e.target.value })
-								}
+								onChange={(e) => onChangeInput(e, 'password')}
 							/>
 							<div>
 								<PasswordField
 									label="비밀번호 확인"
 									placeholder="비밀번호를 한번 더 입력해주세요."
 									value={useInfo.confirmPassword}
-									onChange={(e) =>
-										setUseInfo({ ...useInfo, confirmPassword: e.target.value })
-									}
+									onChange={(e) => onChangeInput(e, 'confirmPassword')}
 								/>
 								{useInfo.password !== useInfo.confirmPassword && (
 									<p className="text-xs text-red-600 pt-1 pl-1">
