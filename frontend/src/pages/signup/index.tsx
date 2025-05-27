@@ -11,6 +11,7 @@ import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
+import * as PortOne from '@portone/browser-sdk/v2';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -30,6 +31,26 @@ export default function SignupPage() {
 			toast('회원가입 실패: ' + (error?.message || '알 수 없는 오류'));
 		},
 	});
+
+	const requestCertification = (e: React.FormEvent) => {
+		e.preventDefault();
+
+		PortOne.requestIdentityVerification({
+			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
+			identityVerificationId: `identity-verification-${crypto.randomUUID()}`, // 본인인증 ID
+			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
+			// ordr_idxx: `certification-${Date.now()}`,
+			// extra: {
+			// 	ordr_idxx: `certification-${Date.now()}`, // ✅ 정확한 위치!
+			// },
+			onSuccess: (res: PortOne.IdentityVerificationResponse) => {
+				console.log('성공:', res);
+			},
+			onFail: (err: PortOne.IdentityVerificationError) => {
+				console.error('실패:', err);
+			},
+		} as PortOne.IdentityVerificationRequest);
+	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -67,11 +88,27 @@ export default function SignupPage() {
 						<form className="space-y-4 mb-8" onSubmit={handleSubmit}>
 							<div>
 								<label className="text-sm">휴대폰 번호</label>
-								<Input placeholder="휴대폰 번호를 입력해 주세요." />
+								<div className="flex items-center justify-between space-x-2 ">
+									<Input
+										placeholder="휴대폰 번호를 입력해 주세요."
+										className="h-10"
+									/>
+									<Button
+										className=" bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
+										disabled={signupMutation.isPending}
+										onClick={requestCertification}
+									>
+										본인 인증
+									</Button>
+								</div>
 							</div>
 							<div>
 								<label className="text-sm">비밀번호</label>
-								<Input type="password" placeholder="비밀번호를 입력해주세요." />
+								<Input
+									type="password"
+									placeholder="비밀번호를 입력해주세요."
+									className="h-10"
+								/>
 							</div>
 							<Button
 								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
