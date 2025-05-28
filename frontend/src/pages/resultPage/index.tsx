@@ -15,6 +15,8 @@ import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import { AlertDialog } from '@/components/AlertDialog';
 import Image from 'next/image';
+import { Spinner } from '@/components/ui/spinner';
+import { formatDate } from '@/lib/date';
 
 const ages = [
 	{
@@ -89,6 +91,14 @@ export default function resultPage() {
 			: null
 		: null;
 
+	if (!isReady || isElectionResultFetching || isMyVotedCandidateFetching) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<Spinner />
+			</div>
+		);
+	}
+
 	if ((isReady && !isLoggedIn) || myVotedCandidateId === null) {
 		return (
 			<div className="flex items-center min-h-screen">
@@ -126,11 +136,16 @@ export default function resultPage() {
 				<title>제 21대 대통령선거 결과 보기</title>
 			</Head>
 
-			<div className="min-h-screen py-7 px-4 w-full max-w-lg mx-auto">
-				<div className="flex items-center justify-between mb-4">
+			<div className="min-h-screen py-7 px-4 w-full max-w-lg mx-auto space-y-4">
+				<div className="flex items-center justify-between">
 					<h1 className="text-xl font-bold">투표 결과</h1>
 					<p className="tex-sm text-slate-500">
-						최신 업데이트 : 2025.12.23 09:00
+						{electionResultData?.data.updatedAt
+							? `	최신 업데이트 : ${formatDate(
+									electionResultData?.data.updatedAt,
+									'yyyy.MM.dd HH:mm'
+							  )}`
+							: ''}
 					</p>
 				</div>
 
@@ -149,37 +164,45 @@ export default function resultPage() {
 				<TabsContent value="20"></TabsContent>
 			</Tabs> */}
 
-				<div className="bg-white rounded-xl p-6 shadow-sm space-y-4">
-					<h2 className="text-sm font-semibold">투표 결과 요약</h2>
+				<div className="bg-white rounded-xl p-6 shadow-sm space-y-2">
+					<h2 className="text-sm font-semibold text-center">총 투표수</h2>
+					<p className="text-3xl font-bold text-center">
+						{electionResultData?.data.totalVoteCount.toLocaleString()}
+					</p>
+				</div>
+
+				<div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
+					<h2 className="text-sm font-semibold text-center">투표 결과 요약</h2>
 
 					<div className="relative bg-white rounded-xl px-4 ">
 						{/* 배경 세로선 */}
-						<div className="absolute inset-0 flex justify-between px-4">
+						{/* <div className="absolute inset-0 flex justify-between px-4">
 							{[...Array(4)].map((_, i) => (
 								<div key={i} className="w-px bg-slate-200 h-full" />
 							))}
-						</div>
+						</div> */}
 
 						{/* 데이터 막대 */}
-						<div className="space-y-3 relative z-10">
+						<div className="space-y-[10px] relative">
 							{electionResultData?.data.results.map((item, idx) => {
 								const percent =
 									(item.voteCount / electionResultData.data.totalVoteCount) *
 									100;
 								return (
-									<div key={idx} className="flex items-center">
-										<div
-											className={clsx(
-												'flex items-center text-white text-sm font-medium h-8 rounded-md px-3 bg-blue-600',
-												'transition-all duration-300'
-											)}
-											style={{ width: `${percent}%` }}
-										>
-											{item.name}
+									<div key={idx} className="flex items-center justify-between">
+										<div className="flex items-center w-[calc(100%-50px)]">
+											<div
+												className={clsx(
+													'rounded-md bg-blue-600 min-w-[2px]',
+													'transition-all duration-300 h-7'
+												)}
+												style={{ width: `${percent}%` }}
+											/>
+											<div className="text-sm font-semibold text-black min-w-[20px] ml-2">
+												{item.voteCount}
+											</div>
 										</div>
-										<div className="text-sm font-semibold text-black min-w-[32px] ml-2">
-											{item.voteCount}
-										</div>
+										<p className="text-sm text-slate-400">{item.name}</p>
 									</div>
 								);
 							})}
