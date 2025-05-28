@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class VoteQueryService(
-    private val candidateRepository: CandidateRepository, private val voteRepository: VoteRepository
+    private val candidateRepository: CandidateRepository,
+    private val voteRepository: VoteRepository
 ) : VoteQueryUseCase {
 
     override fun getResult(electionId: Long): VoteResultResponse {
@@ -21,14 +22,19 @@ class VoteQueryService(
             CandidateResultDto(
                 id = candidate.id,
                 name = candidate.name,
-                party = candidate.party,
+                party = candidate.party.name,
+                partyColor = candidate.party.color,
+                partyStatus = candidate.party.status,
                 number = candidate.number,
                 description = candidate.description,
                 voteCount = voteCount
             )
         }
+        val latestVoteTime= voteRepository.findLatestTimeByElectionId(electionId)
         return VoteResultResponse(
-            electionId = electionId, results = candidateResults
+            electionId = electionId,
+            results = candidateResults,
+            updatedAt = latestVoteTime,
         )
     }
 
