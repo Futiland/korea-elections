@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.2")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("com.auth0:java-jwt:4.1.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
