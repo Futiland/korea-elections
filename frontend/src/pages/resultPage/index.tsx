@@ -91,7 +91,7 @@ export default function resultPage() {
 
 	if ((isReady && !isLoggedIn) || myVotedCandidateId === null) {
 		return (
-			<div className="flex items-center">
+			<div className="flex items-center min-h-screen">
 				<div className="w-full h-auto sm:w-[472px]">
 					<Image
 						src="/img/result-page-bg.png"

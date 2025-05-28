@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import Header from './Header';
-import Footer from './Footer';
 import BottomMenuBar from './BottomMenubar';
 import { useRouter } from 'next/router';
 
@@ -20,7 +19,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 		<>
 			{visibleHeader && <Header />}
 			<main
-				className="bg-slate-100"
+				className="bg-slate-50"
 				style={{
 					minHeight: `${
 						visibleHeader ? 'calc(100vh - var(--header-height))' : 0
@@ -32,7 +31,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 			>
 				{children}
 			</main>
-			{/* <Footer /> */}
+
 			{visibleBottomMenuBar && <BottomMenuBar />}
 		</>
 	);
