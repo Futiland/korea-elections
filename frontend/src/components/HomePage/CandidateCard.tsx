@@ -26,9 +26,7 @@ export function CandidateCard({
 			<div className="flex items-center gap-4">
 				<div className="relative w-[40px] h-[40px]">
 					<Image
-						src={
-							number > 0 ? `/img/candidate-0${number}.png` : `/img/logo-c.svg`
-						}
+						src={`/img/candidate-0${number}.png`}
 						alt={name}
 						fill
 						sizes="40px"
