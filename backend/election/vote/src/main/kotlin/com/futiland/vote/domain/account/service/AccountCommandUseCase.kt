@@ -11,7 +11,6 @@ interface AccountCommandUseCase {
     ): SignInSuccessResponse
 
     fun singUp(
-        name: String,
         phoneNumber: String,
         password: String,
         identityVerifiedInfoResponse: IdentityVerifiedInfoResponse
