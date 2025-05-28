@@ -14,7 +14,7 @@ import { Spinner } from '@/components/ui/spinner';
 import * as PortOne from '@portone/browser-sdk/v2';
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
-import { REG_NUMBER, REG_PHONE } from '@/lib/regex';
+import { REG_PHONE } from '@/lib/regex';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -48,18 +48,11 @@ export default function SignupPage() {
 
 		PortOne.requestIdentityVerification({
 			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
-			identityVerificationId: `identity-verification-${crypto.randomUUID()}`, // 본인인증 ID
+			identityVerificationId: `test_${Date.now()}_${Math.random()
+				.toString(36)
+				.substring(2, 8)}`, // 본인인증 ID
 			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
-			// ordr_idxx: `certification-${Date.now()}`,
-			// extra: {
-			// 	ordr_idxx: `certification-${Date.now()}`, // ✅ 정확한 위치!
-			// },
-			onSuccess: (res: PortOne.IdentityVerificationResponse) => {
-				console.log('성공:', res);
-			},
-			onFail: (err: PortOne.IdentityVerificationError) => {
-				console.error('실패:', err);
-			},
+			redirectUrl: `${window.location.origin}/signup`, // 필수
 		} as PortOne.IdentityVerificationRequest);
 	};
 
