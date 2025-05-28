@@ -202,13 +202,14 @@ export default function ElectionList() {
 									item={item}
 									handleVoteClick={handleVoteClick}
 									isSelected={selectedCandidateId === item.id}
+									selectedCandidateId={selectedCandidateId}
 								/>
 							</li>
 						))}
 					</ul>
 				</div>
 
-				<div className="px-5 fixed bottom-21 left-0 right-0">
+				<div className="px-5 fixed bottom-21 left-0 right-0 max-w-xl mx-auto z-5">
 					<Button
 						className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 						disabled={electionMutation.isPending}

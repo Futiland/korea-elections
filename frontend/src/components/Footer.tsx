@@ -2,7 +2,7 @@ import Image from 'next/image';
 export default function Footer() {
 	return (
 		<footer className="w-full bg-slate-100 text-slate-400 text-sm px-6 pb-20">
-			<div className="w-full flex items-center justify-center py-6">
+			<div className="max-w-xl mx-auto flex items-center justify-center py-6">
 				<div className="relative w-[76px] h-[24px] ">
 					<Image
 						src="/img/logo-g.svg"
@@ -13,7 +13,7 @@ export default function Footer() {
 				</div>
 			</div>
 			<div>
-				<div className="space-y-1 leading-relaxed flex flex-col items-start font-semibold">
+				<div className="max-w-xl mx-auto space-y-1 leading-relaxed flex flex-col items-start font-semibold">
 					<p>상호명 : 푸티랜드(Futiland)</p>
 					<p>대표자 : 이준희</p>
 					<p>주소 : 서울특별시 강동구 천중로 264, 102동 21층 2106호</p>
