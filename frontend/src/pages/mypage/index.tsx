@@ -48,7 +48,7 @@ export default function MyPage() {
 	if (!isLoggedIn || !user) {
 		return (
 			<div className=" bg-slate-10 ">
-				<div className="bg-white">
+				<div className="bg-slate-50">
 					<div className="w-full max-w-lg mx-auto px-5">
 						<h1 className="text-xl font-bold py-5">로그인 하세요</h1>
 						<div className="flex flex-col items-center space-y-3.5">
@@ -64,7 +64,7 @@ export default function MyPage() {
 							<Button
 								type="submit"
 								onClick={() => router.push('/signup')}
-								className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10 mb-4"
+								className="w-full bg-blue-200 text-blue-900 hover:bg-blue-200 h-10 mb-4"
 							>
 								회원가입
 							</Button>
@@ -72,7 +72,7 @@ export default function MyPage() {
 					</div>
 				</div>
 
-				<div className="w-full max-w-lg mx-auto px-7.5 py-6">
+				<div className="w-full max-w-lg mx-auto px-7.5 py-6 bg-slate-100">
 					<IntroduceLayout />
 				</div>
 			</div>

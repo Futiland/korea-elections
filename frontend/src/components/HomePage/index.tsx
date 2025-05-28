@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 import { useAuthToken } from '@/hooks/useAuthToken';
+import Footer from '@/components/Footer';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
@@ -170,7 +171,7 @@ export default function ElectionList() {
 							className="object-contain"
 							priority
 						/>
-						<div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-slate-100/70 to-slate-100" />
+						<div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-slate-50/70 to-slate-50" />
 					</div>
 					{/* 후보자 이미지 */}
 					<div className="relative w-[320px] h-[200px] sm:w-[472px] sm:h-[295px] border border-gray-200 rounded-lg shadow-md overflow-hidden">
@@ -201,13 +202,14 @@ export default function ElectionList() {
 									item={item}
 									handleVoteClick={handleVoteClick}
 									isSelected={selectedCandidateId === item.id}
+									selectedCandidateId={selectedCandidateId}
 								/>
 							</li>
 						))}
 					</ul>
 				</div>
 
-				<div className="px-5 fixed bottom-21 left-0 right-0">
+				<div className="px-5 fixed bottom-21 left-0 right-0 max-w-xl mx-auto z-5">
 					<Button
 						className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
 						disabled={electionMutation.isPending}
@@ -221,6 +223,7 @@ export default function ElectionList() {
 					</Button>
 				</div>
 			</div>
+			<Footer />
 		</>
 	);
 }

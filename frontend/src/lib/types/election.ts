@@ -62,5 +62,6 @@ export type ElectionResultResponse = {
 			voteCount: number;
 		}[];
 		totalVoteCount: number;
+		updatedAt: Date | null;
 	};
 };

@@ -7,18 +7,20 @@ type CandidateCardProps = {
 	item: CandidateDate;
 	handleVoteClick: (candidateId: number) => void;
 	isSelected?: boolean;
+	selectedCandidateId: number | null;
 };
 
 export function CandidateCard({
 	item,
 	handleVoteClick,
 	isSelected,
+	selectedCandidateId,
 }: CandidateCardProps) {
 	const { name, party, number, id } = item;
 
 	return (
 		<div
-			className={`flex items-center justify-between shadow-md rounded-xl p-4 bg-white hover:bg-slate-50
+			className={`relative flex items-center justify-between shadow-md rounded-xl p-4 bg-white hover:bg-slate-50
 			${isSelected ? 'ring-2 ring-blue-800' : 'ring-1 ring-gray-200'}
 			transition-colors duration-200 ease-in-out`}
 			onClick={() => handleVoteClick(item.id)}
@@ -26,9 +28,7 @@ export function CandidateCard({
 			<div className="flex items-center gap-4">
 				<div className="relative w-[40px] h-[40px]">
 					<Image
-						src={
-							number > 0 ? `/img/candidate-0${number}.png` : `/img/logo-c.svg`
-						}
+						src={`/img/candidate-0${number}.png`}
 						alt={name}
 						fill
 						sizes="40px"
@@ -47,6 +47,9 @@ export function CandidateCard({
 					isSelected ? 'text-blue-800' : 'text-muted-foreground'
 				}`}
 			/>
+			{selectedCandidateId && !isSelected && (
+				<div className="bg-slate-50 opacity-70 absolute left-0 top-0 w-full h-full rounded-xl" />
+			)}
 		</div>
 	);
 }
