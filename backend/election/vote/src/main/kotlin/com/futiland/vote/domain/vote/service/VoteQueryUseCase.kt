@@ -5,5 +5,5 @@ import com.futiland.vote.application.vote.dto.response.VoteResultResponse
 
 interface VoteQueryUseCase {
     fun getResult(electionId: Long): VoteResultResponse
-    fun getMyVote(electionId: Long, accountId: Long): MyVoteResponse
+    fun findMyVote(electionId: Long, accountId: Long): MyVoteResponse?
 }

@@ -1,7 +1,5 @@
 package com.futiland.vote.domain.vote.service
 
-import com.futiland.vote.application.common.httpresponse.CodeEnum
-import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.application.vote.dto.response.MyVoteResponse
 import com.futiland.vote.application.vote.dto.response.VoteResultResponse
 import com.futiland.vote.domain.vote.dto.candidate.CandidateResultDto
@@ -30,7 +28,7 @@ class VoteQueryService(
                 voteCount = voteCount
             )
         }
-        val latestVoteTime= voteRepository.findLatestTimeByElectionId(electionId)
+        val latestVoteTime = voteRepository.findLatestTimeByElectionId(electionId)
         return VoteResultResponse(
             electionId = electionId,
             results = candidateResults,
@@ -38,12 +36,9 @@ class VoteQueryService(
         )
     }
 
-    override fun getMyVote(electionId: Long, accountId: Long): MyVoteResponse {
-        val vote = voteRepository.findByElectionIdAndAccountId(electionId = electionId, accountId = accountId)
-            ?: throw ApplicationException(
-                code = CodeEnum.FRS_001,
-                message = "해당 선거에 대한 투표 정보가 없습니다. 투표를 해주세요.",
-            )
+    override fun findMyVote(electionId: Long, accountId: Long): MyVoteResponse? {
+        val vote =
+            voteRepository.findByElectionIdAndAccountId(electionId = electionId, accountId = accountId) ?: return null
         return MyVoteResponse(
             voteId = vote.id,
             electionId = electionId,

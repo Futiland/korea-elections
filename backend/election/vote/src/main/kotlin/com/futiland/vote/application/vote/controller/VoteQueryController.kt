@@ -39,8 +39,8 @@ class VoteQueryController(
     fun getMyResult(
         @PathVariable electionId: Long,
         @AuthenticationPrincipal userDetails: CustomUserDetails
-    ): HttpApiResponse<MyVoteResponse> {
-        val response = voteQueryUseCase.getMyVote(electionId = electionId, accountId = userDetails.user.accountId)
+    ): HttpApiResponse<MyVoteResponse?> {
+        val response = voteQueryUseCase.findMyVote(electionId = electionId, accountId = userDetails.user.accountId)
         return HttpApiResponse.of(response)
     }
 }
