@@ -61,7 +61,7 @@ class AccountCommandFacadeService(
     }
 
     private fun isAlreadySignedUp(verificationResponse: VerificationResponse): Boolean {
-        return accountQueryUseCase.findByCi(verificationResponse.verifiedCustomer.ci) != null
+        return accountQueryUseCase.isAlreadySignedUp(ci = verificationResponse.verifiedCustomer.ci)
     }
 
     private fun isNotAdaptedAge(verificationResponse: VerificationResponse): Boolean {

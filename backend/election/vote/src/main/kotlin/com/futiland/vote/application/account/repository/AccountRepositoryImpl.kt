@@ -18,6 +18,10 @@ class AccountRepositoryImpl(
             .orElseThrow { IllegalArgumentException("Account not found with id: $id") }
     }
 
+    override fun findByCi(ci: String): Account? {
+        return repository.findByCi(ci)
+    }
+
     override fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account {
         return repository.findByPhoneNumberAndPassword(phoneNumber, password)
             ?: throw IllegalArgumentException("Account not found with phone number: $phoneNumber")
@@ -26,4 +30,5 @@ class AccountRepositoryImpl(
 }
 interface JpaAccountRepository : JpaRepository<Account, Long> {
     fun findByPhoneNumberAndPassword(phoneNumber: String, password: String): Account?
+    fun findByCi(ci: String): Account?
 }
