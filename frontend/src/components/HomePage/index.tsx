@@ -194,6 +194,10 @@ export default function ElectionList() {
 					</div>
 				</div>
 
+				<div className="text-slate-400 text-sm mb-5 text-center">
+					"선거 종료 시까지 언제든지 재투표가 가능합니다."
+				</div>
+
 				<div className="max-w-lg mx-auto px-5">
 					<ul className="flex flex-col space-y-3">
 						{candidateList?.data?.map((item) => (
