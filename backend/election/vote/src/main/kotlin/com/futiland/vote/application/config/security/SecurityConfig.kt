@@ -22,10 +22,24 @@ class SecurityConfig {
         val configuration = CorsConfiguration()
         configuration.allowedOriginPatterns = listOf(
             "http://localhost:3000",
-            "*.korea-election.com"
+            "*.korea-election.com",
+            "*.vercel.app"
         )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        configuration.allowedHeaders = listOf("*")
+//        configuration.allowedHeaders = listOf("Content-Type", "Authorization", "X-Requested-With")
+        configuration.allowedHeaders = listOf(
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"
+        )
+
+//        configuration.allowedHeaders = listOf("*")
+
+
         configuration.allowCredentials = true
 
         val source = UrlBasedCorsConfigurationSource()
