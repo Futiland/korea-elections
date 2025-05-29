@@ -60,6 +60,8 @@ export type ElectionResultResponse = {
 			party: string;
 			description: string;
 			voteCount: number;
+			partyColor: string;
+			partyStatus: 'ACTIVE' | 'INACTIVE';
 		}[];
 		totalVoteCount: number;
 		updatedAt: Date | null;
