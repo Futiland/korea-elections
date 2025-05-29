@@ -55,6 +55,14 @@ export default function LoginPage() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!phoneNumber) {
+			toast('휴대폰 번호를 입력해 주세요.');
+			return;
+		}
+		if (!password) {
+			toast('비밀번호를 입력해 주세요.');
+			return;
+		}
 		loginMutation.mutate({ phoneNumber, password });
 	};
 

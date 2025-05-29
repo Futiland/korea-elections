@@ -74,7 +74,7 @@ export default function ElectionList() {
 	} = useQuery<CandidateResponse, Error>({
 		queryKey: ['candidateList'],
 		queryFn: () => getCandidateList(),
-		retry: 2,
+		retry: 1,
 		refetchOnWindowFocus: false,
 	});
 
