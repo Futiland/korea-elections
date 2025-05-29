@@ -58,13 +58,28 @@ export default function SignupPage() {
 			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
 			redirectUrl: `${window.location.origin}/signup`, // 필수
 			redirect: true,
-			windowType: {
-				pc: 'REDIRECTION',
-			},
-			onSuccess: (res: PortOne.IdentityVerificationResponse) => {
-				console.log('onSuccess', res);
-			},
-		} as PortOne.IdentityVerificationRequest);
+		} as PortOne.IdentityVerificationRequest)
+			.then((res) => {
+				// ✅ 인증 성공시 결과 반환됨
+
+				if (!res) {
+					toast.error('인증 결과를 받아오지 못했습니다.');
+					return;
+				}
+
+				// 수동 리다이렉트
+				const query = new URLSearchParams({
+					identityVerificationId: res.identityVerificationId,
+					identityVerificationTxId: res.identityVerificationTxId,
+					transactionType: res.transactionType,
+				}).toString();
+
+				window.location.href = `/signup?${query}`;
+			})
+			.catch((err: PortOne.IdentityVerificationError) => {
+				console.error('인증 실패', err);
+				// 실패시 처리
+			});
 	};
 
 	const onChangeInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
