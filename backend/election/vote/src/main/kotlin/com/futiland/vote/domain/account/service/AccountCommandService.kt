@@ -24,7 +24,7 @@ class AccountCommandService(
     ): SignupSuccessResponse {
         val account = Account.create(
             name = identityVerifiedInfoResponse.name,
-            phoneNumber = phoneNumber,
+            phoneNumber = identityVerifiedInfoResponse.phoneNumber,
             password = password,
             gender = identityVerifiedInfoResponse.gender,
             birthDate = identityVerifiedInfoResponse.birthDate,

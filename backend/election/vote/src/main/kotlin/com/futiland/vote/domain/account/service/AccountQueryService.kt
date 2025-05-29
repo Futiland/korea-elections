@@ -1,6 +1,7 @@
 package com.futiland.vote.domain.account.service
 
 import com.futiland.vote.application.account.dto.response.ProfileResponse
+import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository
 import org.springframework.stereotype.Service
 
@@ -16,5 +17,9 @@ class AccountQueryService(
             name = account.name,
             createdAt = account.createdAt.toString()
         )
+    }
+
+    override fun findByCi(ci: String): Account? {
+        TODO("Not yet implemented")
     }
 }
