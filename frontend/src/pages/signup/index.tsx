@@ -15,6 +15,7 @@ import * as PortOne from '@portone/browser-sdk/v2';
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
+import Footer from '@/components/Footer';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -52,7 +53,7 @@ export default function SignupPage() {
 
 		PortOne.requestIdentityVerification({
 			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
-			identityVerificationId: `test_${Date.now()}_${Math.random()
+			identityVerificationId: `verificationId_${Date.now()}_${Math.random()
 				.toString(36)
 				.substring(2, 8)}`, // 본인인증 ID
 			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
@@ -179,7 +180,10 @@ export default function SignupPage() {
 									<Button
 										className=" bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
 										disabled={
-											signupMutation.isPending || identityVerificationId !== ''
+											signupMutation.isPending ||
+											identityVerificationId !== '' ||
+											isErrorPhoneNumber ||
+											useInfo.phoneNumber === ''
 										}
 										onClick={requestCertification}
 									>
@@ -234,10 +238,12 @@ export default function SignupPage() {
 				</div>
 
 				{/* 정보 안내 영역 */}
-				<div className="max-w-lg mx-auto py-8 px-7 bg-slate-100">
+				<div className="max-w-lg mx-auto py-8 px-7 bg-slate-50">
 					<IntroduceLayout />
 				</div>
 			</div>
+
+			<Footer />
 		</>
 	);
 }
