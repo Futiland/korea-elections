@@ -1,5 +1,7 @@
 package com.futiland.vote.application.account.repository
 
+import com.futiland.vote.application.common.httpresponse.CodeEnum
+import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository
 import org.springframework.data.jpa.repository.JpaRepository
@@ -24,7 +26,10 @@ class AccountRepositoryImpl(
 
     override fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account {
         return repository.findByPhoneNumberAndPassword(phoneNumber, password)
-            ?: throw IllegalArgumentException("Account not found with phone number: $phoneNumber")
+            ?: throw ApplicationException(
+                code = CodeEnum.FRS_001,
+                message = "가입되지 않은 사용자이거나 비밀번호가 틀립니다."
+            )
     }
 
 }
