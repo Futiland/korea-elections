@@ -44,3 +44,12 @@ export type SignupResponse = {
 		token: string;
 	};
 };
+
+export type SignupStopperResponse = {
+	code: string;
+	message: string;
+	data: {
+		status: 'ACTIVE' | 'INACTIVE';
+		message: string;
+	};
+};

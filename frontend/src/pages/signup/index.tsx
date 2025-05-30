@@ -4,9 +4,12 @@ import { toast } from 'sonner';
 import Head from 'next/head';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation } from '@tanstack/react-query';
-import { signup } from '@/lib/api/account';
-import type { SignupRequestData } from '@/lib/types/account';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { signup, signupStopper } from '@/lib/api/account';
+import type {
+	SignupRequestData,
+	SignupStopperResponse,
+} from '@/lib/types/account';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
@@ -34,6 +37,17 @@ export default function SignupPage() {
 	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
 	const [identityVerificationId, setIdentityVerificationId] = useState('');
 
+	const {
+		data: stopper,
+		isFetching,
+		isError,
+	} = useQuery({
+		queryKey: ['getStopper'],
+		queryFn: signupStopper,
+		refetchOnWindowFocus: false,
+		retry: 2,
+	});
+
 	const signupMutation = useMutation({
 		mutationFn: (data: SignupRequestData) => signup(data),
 		onSuccess: (res) => {
@@ -49,6 +63,13 @@ export default function SignupPage() {
 
 	const requestCertification = (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// 회원가입 및 본인인증 일시 정지
+		if (stopper?.data.status === 'ACTIVE') {
+			toast(stopper?.data.message);
+			return;
+		}
+
 		localStorage.setItem('userInfo_phone', useInfo.phoneNumber);
 
 		PortOne.requestIdentityVerification({
@@ -59,12 +80,22 @@ export default function SignupPage() {
 			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
 			redirectUrl: `${window.location.origin}/signup`, // 필수
 			redirect: true,
+			onError: (err: PortOne.PortOneError) => {
+				console.log(err);
+			},
 		} as PortOne.IdentityVerificationRequest)
 			.then((res) => {
-				// ✅ 인증 성공시 결과 반환됨
+				// ✅ 인증 성공시 결과 반환됨 Pc
 
 				if (!res) {
 					toast.error('인증 결과를 받아오지 못했습니다.');
+					return;
+				}
+
+				// 본인인증 실패 message
+				if (res.message) {
+					toast.error(`${res.message}`);
+					localStorage.removeItem('userInfo_phone');
 					return;
 				}
 
@@ -174,6 +205,7 @@ export default function SignupPage() {
 										className="h-10"
 										required
 										value={useInfo.phoneNumber}
+										disabled={stopper?.data.status === 'ACTIVE'}
 										onChange={(e) => onChangeInput(e, 'phoneNumber')}
 									/>
 
@@ -182,8 +214,8 @@ export default function SignupPage() {
 										disabled={
 											signupMutation.isPending ||
 											identityVerificationId !== '' ||
-											isErrorPhoneNumber ||
-											useInfo.phoneNumber === ''
+											isErrorPhoneNumber
+											// || useInfo.phoneNumber === ''
 										}
 										onClick={requestCertification}
 									>
@@ -226,7 +258,9 @@ export default function SignupPage() {
 							<Button
 								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
 								type="submit"
-								disabled={signupMutation.isPending}
+								disabled={
+									signupMutation.isPending || stopper?.data.status === 'ACTIVE'
+								}
 							>
 								{signupMutation.isPending && (
 									<Loader2 className="h-4 w-4 animate-spin" />
