@@ -68,9 +68,9 @@ class AccountCommandFacadeService(
         val now = java.time.LocalDate.now()
         val age = java.time.Period.between(verificationResponse.verifiedCustomer.birthDate, now).years
         if (age < 18) {
-            return false
+            return true
         }
-        return true
+        return false
     }
 
     private fun isNotKoreanCitizen(verificationResponse: VerificationResponse): Boolean {
