@@ -5,6 +5,7 @@ import {
 	UserInfo,
 	SignupRequestData,
 	SignupResponse,
+	SignupStopperResponse,
 } from '../types/account';
 
 export const login = (data: LoginData) =>
@@ -15,3 +16,6 @@ export const getUserInfo = () =>
 
 export const signup = (data: SignupRequestData) =>
 	apiPost<SignupResponse>('/rest/account/v1/signup', data);
+
+export const signupStopper = () =>
+	apiGet<SignupStopperResponse>('/rest/account/v1/stopper');
