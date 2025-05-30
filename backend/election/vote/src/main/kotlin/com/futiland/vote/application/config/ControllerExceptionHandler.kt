@@ -33,6 +33,17 @@ class ControllerExceptionHandler {
                 )
         }
 
+        if(e.code == CodeEnum.FRS_001) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                    HttpApiResponse.fromExceptionMessage(
+                        code = e.code,
+                        message = e.message ?: e.code.description,
+                        data = e.data ?: emptyMap()
+                    )
+                )
+        }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(
                 HttpApiResponse.fromExceptionMessage(

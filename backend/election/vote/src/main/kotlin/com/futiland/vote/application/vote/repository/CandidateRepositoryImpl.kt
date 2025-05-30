@@ -27,6 +27,6 @@ class CandidateRepositoryImpl(
 interface JpaCandidateRepository : JpaRepository<Candidate, Long> {
     fun findByIdIn(ids: List<Long>): List<Candidate>
 
-    @Query("select c from Candidate c where c.electionId = :electionId and c.status in (:status)")
+    @Query("select c from Candidate c join fetch c.party where c.electionId = :electionId and c.status in (:status)")
     fun findByElectionId(electionId: Long, status: List<CandidateStatus>): List<Candidate>
 }

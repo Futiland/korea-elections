@@ -9,6 +9,7 @@ import com.futiland.vote.domain.vote.entity.Candidate
 import com.futiland.vote.domain.vote.entity.Election
 import com.futiland.vote.domain.vote.repository.CandidateRepository
 import com.futiland.vote.domain.vote.repository.ElectionRepository
+import com.futiland.vote.domain.vote.repository.PartyRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime
 class ElectionCommandService(
     private val electionRepository: ElectionRepository,
     private val candidateRepository: CandidateRepository,
+    private val partyRepository: PartyRepository,
 ) : ElectionCommandUseCase {
     override fun createActive(
         title: String,
@@ -47,14 +49,16 @@ class ElectionCommandService(
     }
 
     override fun addCandidate(electionId: Long, candidateDto: List<CandidateDto>): CandidateCreateResponse {
-        val candidates = candidateDto.map {
-            Candidate.create(
-                electionId = electionId,
-                number = it.number,
-                name = it.name,
-                party = it.party,
-                description = it.description,
-            )
+        val candidates = candidateDto.mapNotNull { dto ->
+            partyRepository.findById(dto.partyId)?.let { party ->
+                Candidate.create(
+                    electionId = electionId,
+                    number = dto.number,
+                    name = dto.name,
+                    party = party,
+                    description = dto.description,
+                )
+            }
         }
         val savedCandidates = candidateRepository.saveAll(candidates)
         return CandidateCreateResponse(
@@ -64,7 +68,7 @@ class ElectionCommandService(
     }
 
     override fun deleteCandidate(electionId: Long, candidateIds: List<Long>): CandidateDeleteResponse {
-        val candidates = candidateRepository.findByIds(candidateIds).onEach  {
+        val candidates = candidateRepository.findByIds(candidateIds).onEach {
             it.delete()
         }
         candidateRepository.saveAll(candidates)
