@@ -4,9 +4,12 @@ import { toast } from 'sonner';
 import Head from 'next/head';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useMutation } from '@tanstack/react-query';
-import { signup } from '@/lib/api/account';
-import type { SignupRequestData } from '@/lib/types/account';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { signup, signupStopper } from '@/lib/api/account';
+import type {
+	SignupRequestData,
+	SignupStopperResponse,
+} from '@/lib/types/account';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
@@ -15,6 +18,7 @@ import * as PortOne from '@portone/browser-sdk/v2';
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
+import Footer from '@/components/Footer';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -31,10 +35,24 @@ export default function SignupPage() {
 	});
 
 	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
+	const [identityVerificationId, setIdentityVerificationId] = useState('');
+
+	const {
+		data: stopper,
+		isFetching,
+		isError,
+	} = useQuery({
+		queryKey: ['getStopper'],
+		queryFn: signupStopper,
+		refetchOnWindowFocus: false,
+		retry: 2,
+	});
 
 	const signupMutation = useMutation({
 		mutationFn: (data: SignupRequestData) => signup(data),
-		onSuccess: () => {
+		onSuccess: (res) => {
+			localStorage.setItem('token', res.data.token);
+			localStorage.removeItem('userInfo_phone');
 			toast('회원가입이 완료되었습니다.');
 			router.push(redirectPath);
 		},
@@ -46,14 +64,54 @@ export default function SignupPage() {
 	const requestCertification = (e: React.FormEvent) => {
 		e.preventDefault();
 
+		// 회원가입 및 본인인증 일시 정지
+		if (stopper?.data.status === 'ACTIVE') {
+			toast(stopper?.data.message);
+			return;
+		}
+
+		localStorage.setItem('userInfo_phone', useInfo.phoneNumber);
+
 		PortOne.requestIdentityVerification({
 			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
-			identityVerificationId: `test_${Date.now()}_${Math.random()
+			identityVerificationId: `verificationId_${Date.now()}_${Math.random()
 				.toString(36)
 				.substring(2, 8)}`, // 본인인증 ID
 			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
 			redirectUrl: `${window.location.origin}/signup`, // 필수
-		} as PortOne.IdentityVerificationRequest);
+			redirect: true,
+			onError: (err: PortOne.PortOneError) => {
+				console.log(err);
+			},
+		} as PortOne.IdentityVerificationRequest)
+			.then((res) => {
+				// ✅ 인증 성공시 결과 반환됨 Pc
+
+				if (!res) {
+					toast.error('인증 결과를 받아오지 못했습니다.');
+					return;
+				}
+
+				// 본인인증 실패 message
+				if (res.message) {
+					toast.error(`${res.message}`);
+					localStorage.removeItem('userInfo_phone');
+					return;
+				}
+
+				// 수동 리다이렉트
+				const query = new URLSearchParams({
+					identityVerificationId: res.identityVerificationId,
+					identityVerificationTxId: res.identityVerificationTxId,
+					transactionType: res.transactionType,
+				}).toString();
+
+				window.location.href = `/signup?${query}`;
+			})
+			.catch((err: PortOne.IdentityVerificationError) => {
+				console.error('인증 실패', err);
+				// 실패시 처리
+			});
 	};
 
 	const onChangeInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
@@ -74,15 +132,48 @@ export default function SignupPage() {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!useInfo.phoneNumber) {
+			toast('휴대폰 번호를 입력해 주세요.');
+			return;
+		}
+		if (!identityVerificationId) {
+			toast.error('본인 인증을 완료해 주세요');
+			return;
+		}
+		if (!useInfo.password || !useInfo.confirmPassword) {
+			toast('비밀번호를 입력해 주세요.');
+			return;
+		}
+		if (isErrorPhoneNumber) {
+			toast('비밀번호를 확인해 주세요.');
+			return;
+		}
+
 		signupMutation.mutate({
-			name: '채현',
-			phoneNumber: '01031817072',
-			password: '1122',
-			gender: 'FEMALE',
-			birthDate: new Date('1990-01-01'),
-			ci: 'ci1235',
+			phoneNumber: useInfo.phoneNumber,
+			password: useInfo.password,
+			verificationId: identityVerificationId,
+			verificationType: 'MOBILE',
 		});
 	};
+
+	useEffect(() => {
+		if (router.isReady) {
+			const query = new URLSearchParams(window.location.search);
+			const id = query.get('identityVerificationId');
+
+			const phoneNumber = localStorage.getItem('userInfo_phone');
+			if (id) {
+				setIdentityVerificationId(id);
+			}
+			if (phoneNumber) {
+				setUseInfo({
+					...useInfo,
+					phoneNumber,
+				});
+			}
+		}
+	}, [router.isReady]);
 
 	if (!isReady) {
 		return (
@@ -114,15 +205,21 @@ export default function SignupPage() {
 										className="h-10"
 										required
 										value={useInfo.phoneNumber}
+										disabled={stopper?.data.status === 'ACTIVE'}
 										onChange={(e) => onChangeInput(e, 'phoneNumber')}
 									/>
 
 									<Button
 										className=" bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
-										disabled={signupMutation.isPending}
+										disabled={
+											signupMutation.isPending ||
+											identityVerificationId !== '' ||
+											isErrorPhoneNumber
+											// || useInfo.phoneNumber === ''
+										}
 										onClick={requestCertification}
 									>
-										본인 인증
+										{identityVerificationId ? '인증 완료' : '본인 인증'}
 									</Button>
 								</div>
 								{isErrorPhoneNumber ? (
@@ -135,30 +232,35 @@ export default function SignupPage() {
 									</p>
 								)}
 							</div>
-
-							<PasswordField
-								label="비밀번호"
-								placeholder="비밀번호를 입력해주세요."
-								value={useInfo.password}
-								onChange={(e) => onChangeInput(e, 'password')}
-							/>
-							<div>
-								<PasswordField
-									label="비밀번호 확인"
-									placeholder="비밀번호를 한번 더 입력해주세요."
-									value={useInfo.confirmPassword}
-									onChange={(e) => onChangeInput(e, 'confirmPassword')}
-								/>
-								{useInfo.password !== useInfo.confirmPassword && (
-									<p className="text-xs text-red-600 pt-1 pl-1">
-										비밀번호가 일치하지 않습니다.
-									</p>
-								)}
-							</div>
+							{identityVerificationId && (
+								<>
+									<PasswordField
+										label="비밀번호"
+										placeholder="비밀번호를 입력해주세요."
+										value={useInfo.password}
+										onChange={(e) => onChangeInput(e, 'password')}
+									/>
+									<div>
+										<PasswordField
+											label="비밀번호 확인"
+											placeholder="비밀번호를 한번 더 입력해주세요."
+											value={useInfo.confirmPassword}
+											onChange={(e) => onChangeInput(e, 'confirmPassword')}
+										/>
+										{useInfo.password !== useInfo.confirmPassword && (
+											<p className="text-xs text-red-600 pt-1 pl-1">
+												비밀번호가 일치하지 않습니다.
+											</p>
+										)}
+									</div>
+								</>
+							)}
 							<Button
 								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
 								type="submit"
-								disabled={signupMutation.isPending}
+								disabled={
+									signupMutation.isPending || stopper?.data.status === 'ACTIVE'
+								}
 							>
 								{signupMutation.isPending && (
 									<Loader2 className="h-4 w-4 animate-spin" />
@@ -170,10 +272,12 @@ export default function SignupPage() {
 				</div>
 
 				{/* 정보 안내 영역 */}
-				<div className="max-w-lg mx-auto py-8 px-7 bg-slate-100">
+				<div className="max-w-lg mx-auto py-8 px-7 bg-slate-50">
 					<IntroduceLayout />
 				</div>
 			</div>
+
+			<Footer />
 		</>
 	);
 }

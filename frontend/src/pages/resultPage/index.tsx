@@ -175,13 +175,6 @@ export default function resultPage() {
 					<h2 className="text-sm font-semibold text-center">투표 결과 요약</h2>
 
 					<div className="relative bg-white rounded-xl px-4 ">
-						{/* 배경 세로선 */}
-						{/* <div className="absolute inset-0 flex justify-between px-4">
-							{[...Array(4)].map((_, i) => (
-								<div key={i} className="w-px bg-slate-200 h-full" />
-							))}
-						</div> */}
-
 						{/* 데이터 막대 */}
 						<div className="space-y-[10px] relative">
 							{electionResultData?.data.results.map((item, idx) => {
@@ -192,11 +185,11 @@ export default function resultPage() {
 									<div key={idx} className="flex items-center justify-between">
 										<div className="flex items-center w-[calc(100%-50px)]">
 											<div
-												className={clsx(
-													'rounded-md bg-blue-600 min-w-[2px]',
-													'transition-all duration-300 h-7'
-												)}
-												style={{ width: `${percent}%` }}
+												className={`rounded-md min-w-[2px] transition-all duration-300 h-7`}
+												style={{
+													width: `${percent}%`,
+													backgroundColor: item.partyColor,
+												}}
 											/>
 											<div className="text-sm font-semibold text-black min-w-[20px] ml-2">
 												{item.voteCount}

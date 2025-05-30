@@ -74,7 +74,7 @@ export default function ElectionList() {
 	} = useQuery<CandidateResponse, Error>({
 		queryKey: ['candidateList'],
 		queryFn: () => getCandidateList(),
-		retry: 2,
+		retry: 1,
 		refetchOnWindowFocus: false,
 	});
 
@@ -192,6 +192,10 @@ export default function ElectionList() {
 							/>
 						</div>
 					</div>
+				</div>
+
+				<div className="text-slate-400 text-sm mb-5 text-center">
+					"선거 종료 시까지 언제든지 재투표가 가능합니다."
 				</div>
 
 				<div className="max-w-lg mx-auto px-5">

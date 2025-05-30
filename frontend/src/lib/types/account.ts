@@ -29,12 +29,10 @@ export type SignupInputData = {
 };
 
 export type SignupRequestData = {
-	name: string;
 	phoneNumber: string;
 	password: string;
-	gender: string;
-	birthDate: Date;
-	ci: string;
+	verificationId: string;
+	verificationType: 'MOBILE';
 };
 
 export type SignupResponse = {
@@ -43,5 +41,15 @@ export type SignupResponse = {
 	data: {
 		id: number;
 		createdAt: Date;
+		token: string;
+	};
+};
+
+export type SignupStopperResponse = {
+	code: string;
+	message: string;
+	data: {
+		status: 'ACTIVE' | 'INACTIVE';
+		message: string;
 	};
 };

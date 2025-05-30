@@ -16,9 +16,10 @@ export default function Footer() {
 				<div className="max-w-xl mx-auto space-y-1 leading-relaxed flex flex-col items-start font-semibold">
 					<p>상호명 : 푸티랜드(Futiland)</p>
 					<p>대표자 : 이준희</p>
-					<p>주소 : 서울특별시 강동구 천중로 264, 102동 21층 2106호</p>
+					<p>주소 : 서울특별시 강동구 천중로 264</p>
 					<p>사업자등록번호 : 105-60-00842</p>
-					<p>전화번호 : 0507-1322-0033</p>
+					<p>이메일 : joonhee.alert@gmail.com</p>
+					<p>전화번호 : 070-8027-8679</p>
 				</div>
 			</div>
 			<div className="py-4 text-center">
