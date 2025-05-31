@@ -18,6 +18,7 @@ export type CandidateDate = {
 	id: number;
 	deletedAt: Date | null;
 	party: string;
+	partyColor: string;
 };
 
 export type CandidateResponse = {
@@ -53,17 +54,35 @@ export type ElectionResultResponse = {
 	message: string;
 	data: {
 		electionId: number;
+		results: CandidateResult[];
+		totalVoteCount: number;
+		updatedAt: Date | null;
+	};
+};
+
+export type ElectionResultAgesResponse = {
+	code: string;
+	message: string;
+	data: {
+		electionId: number;
 		results: {
-			id: number;
-			number: number;
-			name: string;
-			party: string;
-			description: string;
-			voteCount: number;
-			partyColor: string;
-			partyStatus: 'ACTIVE' | 'INACTIVE';
+			ageGroup: string;
+			age: number;
+			candidateResults: CandidateResult[];
+			totalCount: number;
 		}[];
 		totalVoteCount: number;
 		updatedAt: Date | null;
 	};
+};
+
+export type CandidateResult = {
+	id: number;
+	number: number;
+	name: string;
+	party: string;
+	partyColor: string;
+	partyStatus: 'ACTIVE' | 'INACTIVE';
+	description: string;
+	voteCount: number;
 };

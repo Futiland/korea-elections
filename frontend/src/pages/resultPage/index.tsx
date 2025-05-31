@@ -1,6 +1,5 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
 import {
 	dehydrate,
 	QueryClient,
@@ -9,14 +8,18 @@ import {
 } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getElectionResult, getMyVotedCandidate } from '@/lib/api/election';
+import {
+	getElectionResult,
+	getMyVotedCandidate,
+	getElectionResultAges,
+} from '@/lib/api/election';
 import { useAuthToken } from '@/hooks/useAuthToken';
-import clsx from 'clsx';
 import { Button } from '@/components/ui/button';
 import { AlertDialog } from '@/components/AlertDialog';
 import Image from 'next/image';
 import { Spinner } from '@/components/ui/spinner';
 import { formatDate } from '@/lib/date';
+import AgesChart from './AgesChart';
 
 const ages = [
 	{
@@ -68,6 +71,17 @@ export default function resultPage() {
 	} = useQuery({
 		queryKey: ['electionResultData'],
 		queryFn: () => getElectionResult(),
+		refetchOnWindowFocus: false,
+		enabled: isLoggedIn && isReady,
+	});
+
+	const {
+		data: electionResultAgesData,
+		isFetching: isElectionResultAgesFetching,
+		isError: isElectionAgesError,
+	} = useQuery({
+		queryKey: ['electionResultAgesData'],
+		queryFn: () => getElectionResultAges(),
 		refetchOnWindowFocus: false,
 		enabled: isLoggedIn && isReady,
 	});
@@ -174,7 +188,7 @@ export default function resultPage() {
 				<div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
 					<h2 className="text-sm font-semibold text-center">투표 결과 요약</h2>
 
-					<div className="relative bg-white rounded-xl px-4 ">
+					<div className="relative px-4 ">
 						{/* 데이터 막대 */}
 						<div className="space-y-[10px] relative">
 							{electionResultData?.data.results.map((item, idx) => {
@@ -187,11 +201,15 @@ export default function resultPage() {
 											<div
 												className={`rounded-md min-w-[2px] transition-all duration-300 h-7`}
 												style={{
-													width: `${percent}%`,
 													backgroundColor: item.partyColor,
+													transform: 'scaleX(0)',
+													transformOrigin: 'left',
+													animation: `growX 1s ease-out forwards`,
+													animationDelay: `${idx * 0.1}s`,
+													width: `${percent}%`,
 												}}
 											/>
-											<div className="text-sm font-semibold text-black min-w-[20px] ml-2">
+											<div className="text-sm font-semibold text-black min-w-[20px] ml-2 animate-slide-in">
 												{item.voteCount}
 											</div>
 										</div>
@@ -201,6 +219,26 @@ export default function resultPage() {
 							})}
 						</div>
 					</div>
+				</div>
+
+				{/* 연령별 데이터 */}
+				<div className="space-y-4">
+					{electionResultAgesData?.data.results.map((item) => {
+						return (
+							<div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
+								<div className="flex items-center justify-center">
+									<h2 className="text-sm font-semibold">{item.age}대</h2>
+									<p className="text-sm text-gray-500">
+										&nbsp;(투표 인원: {item.totalCount})
+									</p>
+								</div>
+								<AgesChart
+									data={item.candidateResults}
+									totalVoteCount={item.totalCount}
+								/>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		</>
