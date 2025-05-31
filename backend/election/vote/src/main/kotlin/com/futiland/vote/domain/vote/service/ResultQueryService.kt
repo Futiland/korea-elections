@@ -29,10 +29,7 @@ class ResultQueryService(
         val results = ageGroupVotesMap.map { (ageGroup, candidateVotes) ->
             AgeGroupResultResponse.AgeGroupResult(
                 ageGroup = ageGroup,
-                candidateResults = candidateVotes.mapNotNull { (candidateId, voteCount) ->
-                    // 후보 못찾는경우 대비해서 변수만 null 처리하고 다시 후보탐색
-                    val info = candidateInfoMap[candidateId]
-                        ?: return@mapNotNull null
+                candidateResults = candidateInfoMap.values.map { info ->
                     CandidateResultDto(
                         id = info.id,
                         number = info.number,
@@ -41,7 +38,7 @@ class ResultQueryService(
                         partyColor = info.partyColor,
                         partyStatus = info.partyStatus,
                         description = info.description,
-                        voteCount = voteCount.toLong()
+                        voteCount = candidateVotes[info.id]?.toLong() ?: 0L
                     )
                 }
             )
@@ -63,10 +60,7 @@ class ResultQueryService(
         val results = ageGroupVotesMap.map { (genderGroup, candidateVotes) ->
             GenderGroupResultResponse.GenderGroupResult(
                 genderGroup = genderGroup,
-                candidateResults = candidateVotes.mapNotNull { (candidateId, voteCount) ->
-                    // 후보 못찾는경우 대비해서 변수만 null 처리하고 다시 후보탐색
-                    val info = candidateInfoMap[candidateId]
-                        ?: return@mapNotNull null
+                candidateResults = candidateInfoMap.values.map  { info->
                     CandidateResultDto(
                         id = info.id,
                         number = info.number,
@@ -75,7 +69,7 @@ class ResultQueryService(
                         partyColor = info.partyColor,
                         partyStatus = info.partyStatus,
                         description = info.description,
-                        voteCount = voteCount.toLong()
+                        voteCount = candidateVotes[info.id]?.toLong() ?: 0L
                     )
                 }
             )

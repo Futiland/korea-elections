@@ -1,10 +1,14 @@
 package com.futiland.vote.application.config.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.futiland.vote.application.common.httpresponse.CodeEnum
+import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.domain.account.dto.AccountJwtPayload
 import com.futiland.vote.domain.common.JwtTokenProvider
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
@@ -17,7 +21,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
+    private val objectMapper: ObjectMapper
 ) : OncePerRequestFilter() {
 
     private val excludedPaths: List<RequestMatcher> = listOf(
@@ -63,6 +68,16 @@ class JwtAuthenticationFilter(
                         UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
                     SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
                 }
+            } else{
+                // 여기서 바로 예외 응답
+                response.contentType = "application/json"
+                response.status = HttpStatus.UNAUTHORIZED.value()
+                val errorResponse = HttpApiResponse.fromExceptionMessage(
+                    code = CodeEnum.FRS_002,
+                    message = "유효하지 않은 토큰입니다. 재로그인 해주세요."
+                )
+                objectMapper.writeValue(response.outputStream, errorResponse)
+                return
             }
         }
         filterChain.doFilter(request, response)
