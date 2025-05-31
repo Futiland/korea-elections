@@ -22,7 +22,7 @@ export default function BottomMenuBar() {
 							key={href}
 							href={href}
 							className={clsx(
-								'flex flex-col items-center justify-center gap-0.5 transition-colors',
+								'flex flex-col items-center justify-center gap-0.5 transition-colors w-15',
 								isActive ? 'text-blue-800 font-semibold' : 'text-slate-500'
 							)}
 						>
