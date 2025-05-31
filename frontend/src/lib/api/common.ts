@@ -22,16 +22,11 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 
 	const url = `${BASE_URL}${path}${queryString}`;
 
-	// ✅ 토큰 불러오기 (클라이언트에서만 동작)
+	// ✅ 토큰 불러오기
 	let token: string | null = null;
 	if (typeof window !== 'undefined') {
 		token = localStorage.getItem('token'); // 키 이름은 사용 중인 값으로 조정 가능
 	}
-
-	// ✅ localStorage 없으면 .env에서 대체
-	// if (!token && process.env.NEXT_PUBLIC_DEV_TOKEN) {
-	// 	token = process.env.NEXT_PUBLIC_DEV_TOKEN;
-	// }
 
 	const customHeaders: Record<string, string> = {
 		...(token
@@ -50,6 +45,15 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 		headers: customHeaders,
 		body: body ? JSON.stringify(body) : undefined,
 	});
+
+	// 토큰 만료처리
+	if (res.status === 401) {
+		if (typeof window !== 'undefined') {
+			localStorage.removeItem('token');
+			window.location.href = '/login';
+		}
+		throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+	}
 
 	if (!res.ok) {
 		const errData = await res.json().catch(() => ({}));
