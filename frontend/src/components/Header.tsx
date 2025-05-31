@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -9,8 +7,6 @@ import IntroduceLayout from '@/components/IntroduceLayout';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 
 export default function Header() {
-	const router = useRouter();
-
 	const [isOpen, setIsOpen] = useState(false);
 
 	const visbleIntroduceDialog = () => {
