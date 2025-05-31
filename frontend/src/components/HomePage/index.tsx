@@ -159,8 +159,7 @@ export default function ElectionList() {
 			<div className="mb-20">
 				<div className="flex flex-col items-center pt-5 pb-4">
 					<div className="text-slate-400 text-sm mb-5 text-center">
-						우리는 선거의 공정성과 <br />
-						시민의 의견을 최우선으로 생각합니다.
+						“21대 대통령 선거에 누구를 뽑으셨나요?”
 					</div>
 					{/* 청화대 로고 */}
 					<div className="relative w-[200px] h-[100px] mt-3 sm:w-[300px] sm:h-[150px]">
