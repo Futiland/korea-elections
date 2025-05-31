@@ -153,7 +153,7 @@ export default function LoginPage() {
 							className="py-2 px-4 mt-4 h-10"
 							onClick={() => setIsOpen(true)}
 						>
-							KEP는 어떤 서비스 인가요 ?
+							KEP는 어떤 서비스 인가요?
 						</Button>
 					</div>
 					<Dialog open={isOpen} onOpenChange={setIsOpen}>
