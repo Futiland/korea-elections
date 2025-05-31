@@ -10,7 +10,7 @@ export default function AgesChart({ data, totalVoteCount }: AgesChartProps) {
 		<div className="relative bg-white rounded-xl px-4 ">
 			{/* 데이터 막대 */}
 			<div className="space-y-[10px] relative">
-				{data.map((item, idx) => {
+				{data?.map((item, idx) => {
 					const percent = (item.voteCount / totalVoteCount) * 100;
 					return (
 						<div key={idx} className="flex items-center justify-between">
