@@ -4,6 +4,7 @@ import {
 	ElectionResponse,
 	MyVotedCandidateResponse,
 	ElectionResultResponse,
+	ElectionResultAgesResponse,
 } from '../types/election';
 
 // 후보자 리스트
@@ -23,3 +24,9 @@ export const getMyVotedCandidate = (electionId: number = 1) =>
 // 투표 결과
 export const getElectionResult = (electionId: number = 1) =>
 	apiGet<ElectionResultResponse>(`/rest/election/v1/${electionId}/vote/result`);
+
+// 투표 결과_연령별
+export const getElectionResultAges = (electionId: number = 1) =>
+	apiGet<ElectionResultAgesResponse>(
+		`/rest/election/v1/${electionId}/vote/result?resultType=AGE`
+	);
