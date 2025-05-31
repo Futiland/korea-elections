@@ -24,11 +24,12 @@ export default function App({ Component, pageProps }: AppProps) {
 				<meta property="og:site_name" content="KEP" />
 				<meta
 					property="og:title"
-					content="KEP | 안전한 선거 문화 확산을 위해"
+					content="“21대 대통령 선거에 누구를 뽑으셨나요?”"
 				/>
 				<meta
 					property="og:description"
-					content="KEP는 안전한 선거 문화 확산을 위해 만들어진 시민 중심 프로젝트입니다."
+					content="KEP는 본인 인증을 통해 실제 선거와 유사한 투표 데이터를 확인할 수
+						있는 시민 참여형 서비스입니다."
 				/>
 				<meta property="og:image" content="img/meta-image.png" />
 				<meta property="og:image:width" content="1200" />
