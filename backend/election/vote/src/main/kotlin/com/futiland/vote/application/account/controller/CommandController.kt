@@ -24,8 +24,7 @@ class CommandController(
         @RequestBody request: SignUpRequest
     ): HttpApiResponse<SignupSuccessResponse> {
         val response = accountCommandFacadeUseCase.signUp(request)
-        TODO()
-//        return HttpApiResponse.of(response)
+        return HttpApiResponse.of(response)
     }
 
     @PostMapping("/signin")

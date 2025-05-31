@@ -2,9 +2,9 @@ package com.futiland.vote.application.vote.controller
 
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.application.config.security.CustomUserDetails
+import com.futiland.vote.application.vote.dto.response.CandidateQueryResponse
 import com.futiland.vote.application.vote.dto.response.MyVoteResponse
 import com.futiland.vote.application.vote.dto.response.VoteResultResponse
-import com.futiland.vote.domain.vote.entity.Candidate
 import com.futiland.vote.domain.vote.service.CandidateQueryUseCase
 import com.futiland.vote.domain.vote.service.VoteQueryUseCase
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,7 +22,7 @@ class VoteQueryController(
     @GetMapping("/{electionId}/vote")
     fun getCandidates(
         @PathVariable electionId: Long,
-    ): HttpApiResponse<List<Candidate>> {
+    ): HttpApiResponse<List<CandidateQueryResponse>> {
         val response = candidateQueryUseCase.findAllCandidateByElectionId(id = electionId)
         return HttpApiResponse.of(response)
     }
@@ -39,8 +39,8 @@ class VoteQueryController(
     fun getMyResult(
         @PathVariable electionId: Long,
         @AuthenticationPrincipal userDetails: CustomUserDetails
-    ): HttpApiResponse<MyVoteResponse> {
-        val response = voteQueryUseCase.getMyVote(electionId = electionId, accountId = userDetails.user.accountId)
+    ): HttpApiResponse<MyVoteResponse?> {
+        val response = voteQueryUseCase.findMyVote(electionId = electionId, accountId = userDetails.user.accountId)
         return HttpApiResponse.of(response)
     }
 }

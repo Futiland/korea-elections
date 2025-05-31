@@ -22,6 +22,7 @@ class JwtAuthenticationFilter(
 
     private val excludedPaths: List<RequestMatcher> = listOf(
         AntPathRequestMatcher("/", "GET"),
+        AntPathRequestMatcher("/election/v1/account/stopper", "GET"),
         AntPathRequestMatcher("/account/v1/signup", "POST"),
         AntPathRequestMatcher("/account/v1/signin", "POST"),
         AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
@@ -51,9 +52,11 @@ class JwtAuthenticationFilter(
                 val tokenResult: AccountJwtPayload = jwtTokenProvider.parseAuthorizationToken(token)
 
                 val userDetails: UserDetails =
-                    CustomUserDetails(CustomUserDto(
-                        accountId= tokenResult.accountId,
-                    ))
+                    CustomUserDetails(
+                        CustomUserDto(
+                            accountId = tokenResult.accountId,
+                        )
+                    )
 
                 if (userDetails != null) {
                     val usernamePasswordAuthenticationToken =

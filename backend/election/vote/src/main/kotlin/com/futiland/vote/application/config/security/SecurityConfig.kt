@@ -22,6 +22,7 @@ class SecurityConfig {
         val configuration = CorsConfiguration()
         configuration.allowedOriginPatterns = listOf(
             "http://localhost:3000",
+            "https://korea-election.com",
             "*.korea-election.com",
             "*.vercel.app"
         )
