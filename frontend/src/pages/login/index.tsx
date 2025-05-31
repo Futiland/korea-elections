@@ -157,7 +157,7 @@ export default function LoginPage() {
 						</Button>
 					</div>
 					<Dialog open={isOpen} onOpenChange={setIsOpen}>
-						<DialogContent className="bg-slate-100 px-5 py-6">
+						<DialogContent className="bg-slate-100 px-5 py-6 w-[calc(100%-40px)] max-h-[calc(100vh-60px)] overflow-y-scroll">
 							<IntroduceLayout />
 							<DialogFooter>
 								<Button
