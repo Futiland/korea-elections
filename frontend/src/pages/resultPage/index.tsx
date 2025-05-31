@@ -221,9 +221,9 @@ export default function resultPage() {
 					</div>
 				</div>
 
-				{/* 연령별 데이터 */}
+				{/* 연령별 데이터 list */}
 				<div className="space-y-4">
-					{electionResultAgesData?.data.results.map((item) => {
+					{electionResultAgesData?.data?.results?.map((item) => {
 						return (
 							<div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
 								<div className="flex items-center justify-center">
