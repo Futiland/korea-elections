@@ -19,6 +19,7 @@ import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
 import Footer from '@/components/Footer';
+import TermsDialog from './TermsDialog';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -28,14 +29,16 @@ export default function SignupPage() {
 	const redirectPath =
 		typeof router.query.redirect === 'string' ? router.query.redirect : '/';
 
-	const [useInfo, setUseInfo] = useState<SignupInputData>({
+	const [userInfo, setUserInfo] = useState<SignupInputData>({
 		phoneNumber: '',
 		password: '',
 		confirmPassword: '',
+		terms: false,
 	});
 
 	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
 	const [identityVerificationId, setIdentityVerificationId] = useState('');
+	const [isVisibleTermsDialog, setIsVisibleTermsDialog] = useState(false);
 
 	const {
 		data: stopper,
@@ -70,7 +73,7 @@ export default function SignupPage() {
 			return;
 		}
 
-		localStorage.setItem('userInfo_phone', useInfo.phoneNumber);
+		localStorage.setItem('userInfo_phone', userInfo.phoneNumber);
 
 		PortOne.requestIdentityVerification({
 			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
@@ -124,15 +127,15 @@ export default function SignupPage() {
 				: setisErrorPhoneNumber(true);
 		}
 
-		setUseInfo({
-			...useInfo,
+		setUserInfo({
+			...userInfo,
 			[key]: value,
 		});
 	};
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!useInfo.phoneNumber) {
+		if (!userInfo.phoneNumber) {
 			toast('휴대폰 번호를 입력해 주세요.');
 			return;
 		}
@@ -140,7 +143,7 @@ export default function SignupPage() {
 			toast.error('본인 인증을 완료해 주세요');
 			return;
 		}
-		if (!useInfo.password || !useInfo.confirmPassword) {
+		if (!userInfo.password || !userInfo.confirmPassword) {
 			toast('비밀번호를 입력해 주세요.');
 			return;
 		}
@@ -148,10 +151,13 @@ export default function SignupPage() {
 			toast('비밀번호를 확인해 주세요.');
 			return;
 		}
-
+		if (!userInfo.terms) {
+			toast('개인정보 수집·이용에 대한 동의를 확인해 주세요.');
+			return;
+		}
 		signupMutation.mutate({
-			phoneNumber: useInfo.phoneNumber,
-			password: useInfo.password,
+			phoneNumber: userInfo.phoneNumber,
+			password: userInfo.password,
 			verificationId: identityVerificationId,
 			verificationType: 'MOBILE',
 		});
@@ -167,8 +173,8 @@ export default function SignupPage() {
 				setIdentityVerificationId(id);
 			}
 			if (phoneNumber) {
-				setUseInfo({
-					...useInfo,
+				setUserInfo({
+					...userInfo,
 					phoneNumber,
 				});
 			}
@@ -204,7 +210,7 @@ export default function SignupPage() {
 										placeholder="휴대폰 번호를 입력해 주세요."
 										className="h-10"
 										required
-										value={useInfo.phoneNumber}
+										value={userInfo.phoneNumber}
 										disabled={stopper?.data.status === 'ACTIVE'}
 										onChange={(e) => onChangeInput(e, 'phoneNumber')}
 									/>
@@ -215,7 +221,7 @@ export default function SignupPage() {
 											signupMutation.isPending ||
 											identityVerificationId !== '' ||
 											isErrorPhoneNumber
-											// || useInfo.phoneNumber === ''
+											// || userInfo.phoneNumber === ''
 										}
 										onClick={requestCertification}
 									>
@@ -237,21 +243,46 @@ export default function SignupPage() {
 									<PasswordField
 										label="비밀번호"
 										placeholder="비밀번호를 입력해주세요."
-										value={useInfo.password}
+										value={userInfo.password}
 										onChange={(e) => onChangeInput(e, 'password')}
 									/>
 									<div>
 										<PasswordField
 											label="비밀번호 확인"
 											placeholder="비밀번호를 한번 더 입력해주세요."
-											value={useInfo.confirmPassword}
+											value={userInfo.confirmPassword}
 											onChange={(e) => onChangeInput(e, 'confirmPassword')}
 										/>
-										{useInfo.password !== useInfo.confirmPassword && (
+										{userInfo.password !== userInfo.confirmPassword && (
 											<p className="text-xs text-red-600 pt-1 pl-1">
 												비밀번호가 일치하지 않습니다.
 											</p>
 										)}
+									</div>
+
+									<div className="flex items-center gap-2">
+										<label className="flex items-center gap-2">
+											<input
+												type="checkbox"
+												checked={userInfo.terms}
+												onChange={() =>
+													setUserInfo((prev) => ({
+														...prev,
+														terms: !prev.terms,
+													}))
+												}
+												className="w-4 h-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
+											/>
+											<span className="text-sm text-gray-700">
+												[필수] 개인정보 수집·이용에 대한 동의
+											</span>
+										</label>
+										<span
+											className="text-sm text-gray-500 underline cursor-pointer"
+											onClick={() => setIsVisibleTermsDialog(true)}
+										>
+											자세히 보기
+										</span>
 									</div>
 								</>
 							)}
@@ -276,6 +307,11 @@ export default function SignupPage() {
 					<IntroduceLayout />
 				</div>
 			</div>
+
+			<TermsDialog
+				isOpen={isVisibleTermsDialog}
+				setIsOpen={setIsVisibleTermsDialog}
+			/>
 
 			<Footer />
 		</>

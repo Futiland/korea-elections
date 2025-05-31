@@ -26,6 +26,7 @@ export type SignupInputData = {
 	phoneNumber: string;
 	password: string;
 	confirmPassword: string;
+	terms: boolean;
 };
 
 export type SignupRequestData = {
