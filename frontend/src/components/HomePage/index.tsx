@@ -215,14 +215,20 @@ export default function ElectionList() {
 				<div className="px-5 fixed bottom-21 left-0 right-0 max-w-xl mx-auto z-5">
 					<Button
 						className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
-						disabled={electionMutation.isPending}
+						disabled={
+							electionMutation.isPending ||
+							process.env.NEXT_PUBLIC_ENV === 'production'
+						}
 						onClick={() => handleVote()}
 					>
 						{electionMutation.isPending && (
 							<Loader2 className="h-4 w-4 animate-spin" />
 						)}
-						{myVotedCandidateId ? '재' : ''}
-						투표 & 결과보기
+						{process.env.NEXT_PUBLIC_ENV === 'production'
+							? '선거 종료'
+							: myVotedCandidateId
+							? '재 투표 & 결과보기'
+							: '투표 & 결과보기'}
 					</Button>
 				</div>
 			</div>
