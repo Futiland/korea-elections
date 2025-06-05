@@ -129,7 +129,7 @@ export default function resultPage() {
 						priority
 					/>
 				</div>
-				{process.env.NEXT_PUBLIC_ENV === 'production' && (
+				{process.env.NEXT_PUBLIC_ENV !== 'production' && (
 					<AlertDialog
 						showBackdrop={false}
 						closeOnOverlayClick={false}
