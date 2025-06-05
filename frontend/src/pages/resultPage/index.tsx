@@ -113,7 +113,11 @@ export default function resultPage() {
 		);
 	}
 
-	if ((isReady && !isLoggedIn) || myVotedCandidateId === null) {
+	if (
+		(isReady && !isLoggedIn) ||
+		myVotedCandidateId === null ||
+		process.env.NEXT_PUBLIC_ENV === 'production'
+	) {
 		return (
 			<div className="flex items-center min-h-screen">
 				<div className="w-full h-auto sm:w-[472px]">
@@ -125,21 +129,23 @@ export default function resultPage() {
 						priority
 					/>
 				</div>
-				<AlertDialog
-					showBackdrop={false}
-					closeOnOverlayClick={false}
-					message="투표결과는 투표 후 확인이 가능합니다."
-					actions={
-						<Button
-							className="w-full bg-blue-900 text-white"
-							onClick={() => {
-								router.push('/');
-							}}
-						>
-							투표하고 결과보기
-						</Button>
-					}
-				/>
+				{process.env.NEXT_PUBLIC_ENV === 'production' && (
+					<AlertDialog
+						showBackdrop={false}
+						closeOnOverlayClick={false}
+						message="투표결과는 투표 후 확인이 가능합니다."
+						actions={
+							<Button
+								className="w-full bg-blue-900 text-white"
+								onClick={() => {
+									router.push('/');
+								}}
+							>
+								투표하고 결과보기
+							</Button>
+						}
+					/>
+				)}
 			</div>
 		);
 	}
