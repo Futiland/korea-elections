@@ -11,6 +11,8 @@ data class AgeGroupResultResponse(
         private set
     data class AgeGroupResult(
         val ageGroup: AgeGroup,
-        val candidateResults : List<CandidateResultDto>
+        val age: Int = ageGroup.age,
+        val candidateResults : List<CandidateResultDto>,
+        val totalCount: Long,
     )
 }

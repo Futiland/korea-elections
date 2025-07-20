@@ -40,9 +40,9 @@ class ResultQueryService(
                         description = info.description,
                         voteCount = candidateVotes[info.id]?.toLong() ?: 0L
                     )
-                }
-            )
-        }
+                },
+                totalCount = candidateVotes.values.sum().toLong())
+        }.sortedBy { it.ageGroup.age }
         val latestVoteTime = voteRepository.findLatestTimeByElectionId(electionId)
         return AgeGroupResultResponse(
             electionId = electionId,
