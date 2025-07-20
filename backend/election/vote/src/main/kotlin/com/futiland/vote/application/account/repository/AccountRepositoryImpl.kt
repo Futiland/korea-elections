@@ -20,6 +20,10 @@ class AccountRepositoryImpl(
             .orElseThrow { IllegalArgumentException("Account not found with id: $id") }
     }
 
+    override fun getByIds(ids: List<Long>): Map<Long, Account> {
+        return repository.findAllById(ids).associateBy { it.id }
+    }
+
     override fun findByCi(ci: String): Account? {
         return repository.findByCi(ci)
     }

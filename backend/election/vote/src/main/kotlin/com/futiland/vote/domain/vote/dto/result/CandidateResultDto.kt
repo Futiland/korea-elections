@@ -1,4 +1,4 @@
-package com.futiland.vote.domain.vote.dto.candidate
+package com.futiland.vote.domain.vote.dto.result
 
 import com.futiland.vote.domain.vote.entity.PartyStatus
 
