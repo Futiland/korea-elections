@@ -1,6 +1,7 @@
 package com.futiland.vote.domain.account.service
 
 import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
+import com.futiland.vote.application.account.dto.response.ChangePasswordResponse
 import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
 import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
 import com.futiland.vote.domain.account.dto.AccountJwtPayload
@@ -36,7 +37,18 @@ class AccountCommandService(
         return SignupSuccessResponse(
             id = savedAccount.id,
             createdAt = savedAccount.createdAt,
-            token =token
+            token = token
+        )
+    }
+
+    override fun changePassword(id: Long, password: String): ChangePasswordResponse {
+        val account = accountRepository.getById(id).changePassword(newPassword = password)
+        val token = jwtTokenProvider.generateToken(
+            payload = getAccountJwtPayload(account),
+            ttl = accessTokenTtl
+        )
+        return ChangePasswordResponse(
+            token = token
         )
     }
 

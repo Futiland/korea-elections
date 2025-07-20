@@ -1,8 +1,10 @@
 package com.futiland.vote.application.account.controller
 
+import com.futiland.vote.application.account.dto.request.ChangePasswordRequest
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.application.account.dto.request.SignInRequest
 import com.futiland.vote.application.account.dto.request.SignUpRequest
+import com.futiland.vote.application.account.dto.response.ChangePasswordResponse
 import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
 import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
 import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
@@ -38,5 +40,18 @@ class CommandController(
         return HttpApiResponse.of(response)
     }
 
+    /**
+     * TODO : 현재 그냥 비밀번호를 변경하지만 추후 암호화된 requestBody를 받아서 변경을 해야할 것으로 보임.(현재는 빠른 작업을 위해서 그냥 처리)
+     */
+    @PostMapping("/change-password")
+    fun changePassword(
+        @RequestBody request: ChangePasswordRequest
+    ): HttpApiResponse<ChangePasswordResponse> {
+        val response = accountCommandUseCase.changePassword(
+            id = request.id,
+            password = request.password,
+        )
+        return HttpApiResponse.of(response)
+    }
 
 }
