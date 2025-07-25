@@ -54,3 +54,16 @@ export type SignupStopperResponse = {
 		message: string;
 	};
 };
+
+export type ChangePasswordData = {
+	password: string;
+	verificationId: string;
+};
+
+export type ChangePasswordResponse = {
+	code: string;
+	message: string;
+	data: {
+		token: string;
+	};
+};
