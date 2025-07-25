@@ -7,12 +7,12 @@ import {
 import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-type TermsDialog = {
+type TermsDialogProps = {
 	isOpen: boolean;
 	setIsOpen: (isVisible: boolean) => void;
 };
 
-export default function TermsDialog({ isOpen, setIsOpen }: TermsDialog) {
+export default function TermsDialog({ isOpen, setIsOpen }: TermsDialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogContent className="w-[calc(100%-40px)] bg-slate-100 px-5 py-6">

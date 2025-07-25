@@ -147,8 +147,12 @@ export default function SignupPage() {
 			toast('비밀번호를 입력해 주세요.');
 			return;
 		}
+		if (userInfo.password !== userInfo.confirmPassword) {
+			toast('비밀번호가 일치하지 않습니다.');
+			return;
+		}
 		if (isErrorPhoneNumber) {
-			toast('비밀번호를 확인해 주세요.');
+			toast('휴대폰 번호를 확인해 주세요.');
 			return;
 		}
 		if (!userInfo.terms) {

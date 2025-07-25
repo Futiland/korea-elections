@@ -15,6 +15,7 @@ import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
 import PasswordField from '@/components/PasswordField';
 import { REG_PHONE } from '@/lib/regex';
+import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -69,6 +70,12 @@ export default function LoginPage() {
 	const handleSignup = (e: React.FormEvent) => {
 		e.preventDefault();
 		router.push('/signup');
+	};
+
+	const changePassword = (e: React.FormEvent) => {
+		e.preventDefault();
+		useVerificationPortOne({ redirectUrl: '/change-password' });
+		// router.push('/change-password');
 	};
 
 	if (!isReady) {
@@ -147,7 +154,18 @@ export default function LoginPage() {
 							회원가입
 						</Button>
 					</form>
-					<div className="flex flex-col items-center mt-25">
+
+					<div className="flex flex-col items-center my-6">
+						<Button
+							variant="ghost"
+							className="px-4 h-7"
+							onClick={changePassword}
+						>
+							비밀번호 찾기
+						</Button>
+					</div>
+
+					<div className="flex flex-col items-center mt-8">
 						<Button
 							variant="outline"
 							className="py-2 px-4 mt-4 h-10"
@@ -156,6 +174,7 @@ export default function LoginPage() {
 							KEP는 어떤 서비스 인가요?
 						</Button>
 					</div>
+
 					<Dialog open={isOpen} onOpenChange={setIsOpen}>
 						<DialogContent className="bg-slate-100 px-5 py-6 w-[calc(100%-40px)] max-h-[calc(100vh-60px)] overflow-y-scroll">
 							<IntroduceLayout />
