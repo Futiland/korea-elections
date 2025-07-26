@@ -53,4 +53,9 @@ class Account(
     fun getAge(): Int {
         return LocalDate.now().year - birthDate.year - if (LocalDate.now().dayOfYear < birthDate.dayOfYear) 1 else 0
     }
+
+    fun changePassword(newPassword: String): Account {
+        this.password = newPassword
+        return this
+    }
 }

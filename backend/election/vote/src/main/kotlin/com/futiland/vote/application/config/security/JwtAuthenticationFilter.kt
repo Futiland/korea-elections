@@ -28,6 +28,7 @@ class JwtAuthenticationFilter(
     private val excludedPaths: List<RequestMatcher> = listOf(
         AntPathRequestMatcher("/", "GET"),
         AntPathRequestMatcher("/account/v1/stopper", "GET"),
+        AntPathRequestMatcher("/account/v1/change-password", "POST"),
         AntPathRequestMatcher("/account/v1/signup", "POST"),
         AntPathRequestMatcher("/account/v1/signin", "POST"),
         AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외

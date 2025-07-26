@@ -1,10 +1,14 @@
 package com.futiland.vote.domain.account.service
 
 import com.futiland.vote.application.account.dto.response.IdentityVerifiedInfoResponse
+import com.futiland.vote.application.account.dto.response.ChangePasswordResponse
 import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
 import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
+import com.futiland.vote.application.common.httpresponse.CodeEnum
+import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.domain.account.dto.AccountJwtPayload
 import com.futiland.vote.domain.account.entity.Account
+import com.futiland.vote.domain.account.port.out.IdentityVerificationPort
 import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.common.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service
 @Service
 class AccountCommandService(
     private val accountRepository: AccountRepository,
+    private val verificationPort: IdentityVerificationPort,
     private val jwtTokenProvider: JwtTokenProvider,
     @Value("\${access_token.ttl}")
     private val accessTokenTtl: Int
@@ -36,7 +41,23 @@ class AccountCommandService(
         return SignupSuccessResponse(
             id = savedAccount.id,
             createdAt = savedAccount.createdAt,
-            token =token
+            token = token
+        )
+    }
+
+    override fun changePassword(verificationId: String, password: String): ChangePasswordResponse {
+        val verificationResponse = verificationPort.verify(verificationId)
+        val account =
+            accountRepository.findByCi(ci = verificationResponse.verifiedCustomer.ci) ?: throw ApplicationException(
+                code = CodeEnum.FRS_001,
+                message = "해당 가입된 사용자가 없습니다. 가입을 먼저 진행해주세요."
+            )
+        val token = jwtTokenProvider.generateToken(
+            payload = getAccountJwtPayload(account),
+            ttl = accessTokenTtl
+        )
+        return ChangePasswordResponse(
+            token = token
         )
     }
 

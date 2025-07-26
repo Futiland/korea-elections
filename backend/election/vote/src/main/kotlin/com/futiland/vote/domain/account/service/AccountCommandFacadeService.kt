@@ -17,14 +17,8 @@ class AccountCommandFacadeService(
     private val identityVerificationPort: IdentityVerificationPort,
 ) : AccountCommandFacadeUseCase {
     override fun signUp(request: SignUpRequest): SignupSuccessResponse {
-        val verificationResponse = try {
+        val verificationResponse =
             identityVerificationPort.verify(identityVerificationId = request.verificationId)
-        } catch (e: Exception) {
-            throw ApplicationException(
-                code = CodeEnum.FRS_004,
-                "본인인증에 실패했습니다. 잘못된 경로로 가입을 시도하셨습니다."
-            )
-        }
 
         checkSignUpRequirements(verificationResponse)
 

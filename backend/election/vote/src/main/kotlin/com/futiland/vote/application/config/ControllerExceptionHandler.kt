@@ -62,7 +62,7 @@ class ControllerExceptionHandler {
             .body(
                 HttpApiResponse.fromExceptionMessage(
                     code = CodeEnum.FRS_003,
-                    message = e.message
+                    message = e.message ?: ""
                 )
             )
     }
