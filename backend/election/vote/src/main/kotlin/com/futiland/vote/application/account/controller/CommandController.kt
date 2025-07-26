@@ -51,7 +51,7 @@ class CommandController(
         @RequestBody request: ChangePasswordRequest
     ): HttpApiResponse<ChangePasswordResponse> {
         val response = accountCommandUseCase.changePassword(
-            id = request.id,
+            verificationId = request.verificationId,
             password = request.password,
         )
         return HttpApiResponse.of(response)

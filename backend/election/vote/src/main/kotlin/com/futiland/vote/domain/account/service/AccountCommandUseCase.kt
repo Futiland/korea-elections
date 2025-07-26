@@ -18,7 +18,7 @@ interface AccountCommandUseCase {
     ): SignupSuccessResponse
 
     fun changePassword(
-        id: Long,
+        verificationId: String,
         password: String,
     ): ChangePasswordResponse
 }
