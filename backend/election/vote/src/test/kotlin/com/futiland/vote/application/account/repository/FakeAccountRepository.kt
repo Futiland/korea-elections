@@ -41,7 +41,8 @@ class FakeAccountRepository: AccountRepository {
         return account
     }
 
-    override fun getByPhoneNumberAndName(phoneNumber: String, name: String): Account {
+
+    override fun findAllPaged(page: Int, size: Int): List<Account> {
         TODO("Not yet implemented")
     }
 

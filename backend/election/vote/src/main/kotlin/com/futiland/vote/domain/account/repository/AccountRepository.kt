@@ -8,4 +8,4 @@ interface AccountRepository {
     fun getByIds(ids: List<Long>): Map<Long, Account>
     fun findByCi(ci: String): Account?
     fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account
-}
+    fun findAllPaged(page: Int, size: Int): List<Account>}
