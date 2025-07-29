@@ -56,14 +56,4 @@ class CommandController(
         )
         return HttpApiResponse.of(response)
     }
-
-    @PostMapping("/identity-verify")
-    fun identityVerify(
-        @RequestBody request: VerificationRequest
-    ): HttpApiResponse<VerifiedResponse> {
-        val response = identifyUseCase.verify(
-            identityVerificationId = request.verificationId // Assuming phoneNumber is used as identityVerificationId
-        )
-        return HttpApiResponse.of(response)
-    }
 }
