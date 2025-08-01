@@ -24,7 +24,6 @@ export default function ChangePasswordPage() {
 	const changePasswordMutation = useMutation({
 		mutationFn: (data: ChangePasswordData) => changePassword(data),
 		onSuccess: (res) => {
-			// router.push('/login');
 			showDialog({
 				message: '비밀번호 변경이 완료되었습니다.',
 				discription: '변경된 비밀번호로 로그인 해주세요.',
