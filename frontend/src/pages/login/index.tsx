@@ -74,6 +74,7 @@ export default function LoginPage() {
 
 	const changePassword = (e: React.FormEvent) => {
 		e.preventDefault();
+		// port one 본인 인증 절차 진행
 		useVerificationPortOne({ redirectUrl: '/change-password' });
 	};
 
