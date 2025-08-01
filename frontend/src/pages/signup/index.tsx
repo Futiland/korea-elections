@@ -14,12 +14,13 @@ import IntroduceLayout from '@/components/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
-import * as PortOne from '@portone/browser-sdk/v2';
+
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
 import Footer from '@/components/Footer';
 import TermsDialog from './TermsDialog';
+import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
 
 export default function SignupPage() {
 	const router = useRouter();
@@ -75,46 +76,49 @@ export default function SignupPage() {
 
 		localStorage.setItem('userInfo_phone', userInfo.phoneNumber);
 
-		PortOne.requestIdentityVerification({
-			storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
-			identityVerificationId: `verificationId_${Date.now()}_${Math.random()
-				.toString(36)
-				.substring(2, 8)}`, // 본인인증 ID
-			channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
-			redirectUrl: `${window.location.origin}/signup`, // 필수
-			redirect: true,
-			onError: (err: PortOne.PortOneError) => {
-				console.log(err);
-			},
-		} as PortOne.IdentityVerificationRequest)
-			.then((res) => {
-				// ✅ 인증 성공시 결과 반환됨 Pc
+		// port one 본인 인증 절차 진행
+		useVerificationPortOne({ redirectUrl: '/signup' });
 
-				if (!res) {
-					toast.error('인증 결과를 받아오지 못했습니다.');
-					return;
-				}
+		// PortOne.requestIdentityVerification({
+		// 	storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!, // 필수
+		// 	identityVerificationId: `verificationId_${Date.now()}_${Math.random()
+		// 		.toString(36)
+		// 		.substring(2, 8)}`, // 본인인증 ID
+		// 	channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!, // 필수
+		// 	redirectUrl: `${window.location.origin}/signup`, // 필수
+		// 	redirect: true,
+		// 	onError: (err: PortOne.PortOneError) => {
+		// 		console.log(err);
+		// 	},
+		// } as PortOne.IdentityVerificationRequest)
+		// 	.then((res) => {
+		// 		// ✅ 인증 성공시 결과 반환됨 Pc
 
-				// 본인인증 실패 message
-				if (res.message) {
-					toast.error(`${res.message}`);
-					localStorage.removeItem('userInfo_phone');
-					return;
-				}
+		// 		if (!res) {
+		// 			toast.error('인증 결과를 받아오지 못했습니다.');
+		// 			return;
+		// 		}
 
-				// 수동 리다이렉트
-				const query = new URLSearchParams({
-					identityVerificationId: res.identityVerificationId,
-					identityVerificationTxId: res.identityVerificationTxId,
-					transactionType: res.transactionType,
-				}).toString();
+		// 		// 본인인증 실패 message
+		// 		if (res.message) {
+		// 			toast.error(`${res.message}`);
+		// 			localStorage.removeItem('userInfo_phone');
+		// 			return;
+		// 		}
 
-				window.location.href = `/signup?${query}`;
-			})
-			.catch((err: PortOne.IdentityVerificationError) => {
-				console.error('인증 실패', err);
-				// 실패시 처리
-			});
+		// 		// 수동 리다이렉트
+		// 		const query = new URLSearchParams({
+		// 			identityVerificationId: res.identityVerificationId,
+		// 			identityVerificationTxId: res.identityVerificationTxId,
+		// 			transactionType: res.transactionType,
+		// 		}).toString();
+
+		// 		window.location.href = `/signup?${query}`;
+		// 	})
+		// 	.catch((err: PortOne.IdentityVerificationError) => {
+		// 		console.error('인증 실패', err);
+		// 		// 실패시 처리
+		// 	});
 	};
 
 	const onChangeInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
@@ -147,8 +151,12 @@ export default function SignupPage() {
 			toast('비밀번호를 입력해 주세요.');
 			return;
 		}
+		if (userInfo.password !== userInfo.confirmPassword) {
+			toast('비밀번호가 일치하지 않습니다.');
+			return;
+		}
 		if (isErrorPhoneNumber) {
-			toast('비밀번호를 확인해 주세요.');
+			toast('휴대폰 번호를 확인해 주세요.');
 			return;
 		}
 		if (!userInfo.terms) {

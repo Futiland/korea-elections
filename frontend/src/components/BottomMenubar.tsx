@@ -13,8 +13,8 @@ export default function BottomMenuBar() {
 	const router = useRouter();
 
 	return (
-		<nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white dark:bg-gray-950 p-3">
-			<div className="flex justify-around items-center text-xs">
+		<nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white dark:bg-gray-950 p-3 max-w-lg mx-auto">
+			<div className="flex justify-between items-center text-xs ">
 				{menus.map(({ href, label, icon: Icon }) => {
 					const isActive = router.pathname === href;
 					return (

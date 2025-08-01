@@ -6,6 +6,8 @@ import {
 	SignupRequestData,
 	SignupResponse,
 	SignupStopperResponse,
+	ChangePasswordData,
+	ChangePasswordResponse,
 } from '../types/account';
 
 export const login = (data: LoginData) =>
@@ -19,3 +21,6 @@ export const signup = (data: SignupRequestData) =>
 
 export const signupStopper = () =>
 	apiGet<SignupStopperResponse>('/rest/account/v1/stopper');
+
+export const changePassword = (data: ChangePasswordData) =>
+	apiPost<ChangePasswordResponse>('/rest/account/v1/change-password', data);
