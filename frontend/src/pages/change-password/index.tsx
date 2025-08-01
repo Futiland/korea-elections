@@ -81,8 +81,6 @@ export default function ChangePasswordPage() {
 		changePasswordMutation.mutate(params);
 	};
 
-	console.log('changeData', changeData);
-
 	useEffect(() => {
 		if (router.isReady) {
 			const { identityVerificationId } = router.query;

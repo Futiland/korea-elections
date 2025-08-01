@@ -75,7 +75,6 @@ export default function LoginPage() {
 	const changePassword = (e: React.FormEvent) => {
 		e.preventDefault();
 		useVerificationPortOne({ redirectUrl: '/change-password' });
-		// router.push('/change-password');
 	};
 
 	if (!isReady) {
