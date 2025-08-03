@@ -155,7 +155,7 @@ export default function LoginPage() {
 						</Button>
 					</form>
 
-					<div className="flex flex-col items-center my-6">
+					{/* <div className="flex flex-col items-center my-6">
 						<Button
 							variant="ghost"
 							className="px-4 h-7"
@@ -163,7 +163,7 @@ export default function LoginPage() {
 						>
 							비밀번호 찾기
 						</Button>
-					</div>
+					</div> */}
 
 					<div className="flex flex-col items-center mt-8">
 						<Button
