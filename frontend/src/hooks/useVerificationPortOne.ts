@@ -46,6 +46,7 @@ export function useVerificationPortOne({
 		})
 		.catch((err: PortOne.IdentityVerificationError) => {
 			console.error('인증 실패', err);
+			toast.error('인증 실패: ' + (err?.message || '알 수 없는 오류'));
 			// 실패시 처리
 		});
 }
