@@ -4,6 +4,7 @@ import com.futiland.vote.application.common.httpresponse.CodeEnum
 import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.repository.AccountRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
@@ -36,8 +37,14 @@ class AccountRepositoryImpl(
             )
     }
 
+    override fun findAllPaged(page: Int, size: Int): List<Account> {
+        val pageable = PageRequest.of(page, size)
+        return repository.findAll(pageable).content
+    }
 }
+
 interface JpaAccountRepository : JpaRepository<Account, Long> {
     fun findByPhoneNumberAndPassword(phoneNumber: String, password: String): Account?
     fun findByCi(ci: String): Account?
+    fun findByPhoneNumberAndName(phoneNumber: String, name: String): Account?
 }

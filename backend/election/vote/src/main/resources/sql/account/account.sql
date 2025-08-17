@@ -9,5 +9,9 @@ CREATE TABLE account
     birth_date   DATE                not null comment '생년월일',
     status       ENUM('ACTIVE', 'INACTIVE') not null comment '상태',
     created_at   DATETIME            not null comment '생성일',
-    deleted_at   DATETIME null comment '삭제일'
+    deleted_at   DATETIME null comment '삭제일',
+    updated_at   DATETIME null comment '수정일'
 );
+
+ALTER TABLE account
+    ADD COLUMN updated_at DATETIME NULL COMMENT '수정일';

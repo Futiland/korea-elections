@@ -41,5 +41,34 @@ class AesUtilTest {
         assertThat(cihpher).isEqualTo(plainText)
     }
 
+    @Test
+    fun `전화번호가 노출된경우 평문인지 확인`(){
+        // Arrange
+        val phoneNumber = "01012345678"
+        // Action
+        val isPlainText = textEncryptor.isPlainText(phoneNumber)
+        // Assert
+        assertThat(isPlainText).isTrue()
+    }
+
+    @Test
+    fun `이름이 노출된 경우 평문인지 확인`(){
+        // Arrange
+        val name= "홍길동"
+        // Action
+        val isPlainText = textEncryptor.isPlainText(name)
+        // Assert
+        assertThat(isPlainText).isTrue()
+    }
+
+    @Test
+    fun `암호화된 문자열이 평문인지 확인`() {
+        // Arrange
+        val encryptedText = textEncryptor.encrypt("암호화된 문자열입니다.")
+        // Action
+        val isPlainText = textEncryptor.isPlainText(encryptedText)
+        // Assert
+        assertThat(isPlainText).isFalse()
+    }
 
 }
