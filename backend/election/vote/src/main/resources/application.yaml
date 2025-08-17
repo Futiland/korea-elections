@@ -4,21 +4,28 @@ server:
 access_token:
   ttl: 86400000 # 1 day(테스트용
 jwt:
-  secret-key: test
+  secret-key: ${JWT_SECRET_KEY}
 
+password:
+  secret-key: ${PASSWORD_SECRET_KEY}
+
+portone:
+  store-id: ${PORTONE_STORE_ID}
+  auth-token: ${PORTONE_AUTH_TOKEN}
 
 spring:
   jackson:
     time-zone: Asia/Seoul
   datasource:
-    url: jdbc:mysql://elections.c9yky48gy7at.ap-northeast-2.rds.amazonaws.com:13306/dev_elections
-#    url: jdbc:mysql://localhost:13306/elections
+    url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
