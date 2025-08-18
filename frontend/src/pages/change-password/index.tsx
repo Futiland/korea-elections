@@ -46,7 +46,7 @@ export default function ChangePasswordPage() {
 	});
 
 	const onChangeInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
-		let value = e.target.value;
+		const value = e.target.value;
 
 		setChangeData({
 			...changeData,

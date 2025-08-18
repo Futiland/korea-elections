@@ -1,8 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { getUserInfo } from '@/lib/api/account';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
