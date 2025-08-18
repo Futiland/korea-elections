@@ -3,7 +3,7 @@ export default function IntroduceLayout() {
 		<div className="w-full">
 			<div className="text-center mb-5">
 				<h2 className="text-lg font-semibold mb-5">
-					“간단한 인증으로, 중요한 의견에 힘을 실어주세요 test”
+					“간단한 인증으로, 중요한 의견에 힘을 실어주세요"
 				</h2>
 				<div className="space-y-1">
 					<p className="text-sm text-gray-500 font-semibold">
