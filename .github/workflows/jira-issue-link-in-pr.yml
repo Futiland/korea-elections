@@ -4,7 +4,11 @@ on:
     types: [opened]
 jobs:
   link_jira_issue: # 작업 이름
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Find Jira Issue
         uses: cybervoid/gajira-get-issue@v1.1
