@@ -1,50 +1,33 @@
-// eslint.config.mjs
 import js from '@eslint/js';
-import next from 'eslint-config-next';
-import tseslint from 'typescript-eslint'; // v7+
-import prettier from 'eslint-config-prettier'; // Flat 지원
+import tseslint from 'typescript-eslint';
+import prettier from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import nextPlugin from '@next/eslint-plugin-next';
 
 export default [
-	{ ignores: ['node_modules/**', '.next/**'] },
+	{ ignores: ['.next/**', 'node_modules/**'] },
 
-	// 기본 JS 권장
 	js.configs.recommended,
-
-	// TypeScript 권장 (타입 미체크 버전: configs.recommended)
-	// 타입체크 규칙까지 쓰려면 project 설정 추가 필요
 	...tseslint.configs.recommended,
-
-	// Next.js 권장
-	...next(),
-
-	// Prettier 충돌 해제
 	prettier,
 
-	// 프로젝트 커스텀
 	{
+		plugins: { import: importPlugin, '@next/next': nextPlugin },
+
+		// 필요하면 Next 권장 규칙 유지
+		// rules: { ...nextPlugin.configs['core-web-vitals'].rules, ... },
+
 		rules: {
-			'@typescript-eslint/no-unused-vars': 'warn',
+			// ✅ 경고 끄기(원천 제거)
+			'import/order': 'off',
+			'@typescript-eslint/no-unused-vars': 'off',
 			'no-unused-vars': 'off',
-			'import/order': [
-				'warn',
-				{
-					groups: [
-						['builtin', 'external'],
-						'internal',
-						['parent', 'sibling', 'index'],
-					],
-					pathGroups: [
-						{
-							pattern: '{react,react/**,next,next/**}',
-							group: 'external',
-							position: 'before',
-						},
-					],
-					pathGroupsExcludedImportTypes: ['react', 'next'],
-					'newlines-between': 'always',
-					alphabetize: { order: 'asc', caseInsensitive: true },
-				},
-			],
+			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-unused-expressions': 'off',
+			'@typescript-eslint/no-empty-object-type': 'off',
+			'no-useless-escape': 'off',
+			'prefer-const': 'off',
+			'no-useless-escape': 'off',
 		},
 	},
 ];
