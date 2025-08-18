@@ -1,34 +1,30 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
+// eslint.config.mjs
+import js from '@eslint/js';
+import next from 'eslint-config-next';
+import tseslint from 'typescript-eslint'; // v7+
+import prettier from 'eslint-config-prettier'; // Flat 지원
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default [
+	{ ignores: ['node_modules/**', '.next/**'] },
 
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-});
+	// 기본 JS 권장
+	js.configs.recommended,
 
-const eslintConfig = [
-	...compat.extends('next/core-web-vitals', 'next/typescript'),
+	// TypeScript 권장 (타입 미체크 버전: configs.recommended)
+	// 타입체크 규칙까지 쓰려면 project 설정 추가 필요
+	...tseslint.configs.recommended,
+
+	// Next.js 권장
+	...next(),
+
+	// Prettier 충돌 해제
+	prettier,
+
+	// 프로젝트 커스텀
 	{
-		extends: [
-			'plugin:@typescript-eslint/recommended',
-			'prettier',
-			'prettier/prettier',
-			'plugin:prettier/recommended',
-			'next/core-web-vitals',
-		],
 		rules: {
 			'@typescript-eslint/no-unused-vars': 'warn',
-			'no-unused-vars': 'warn',
-			'@typescript-eslint/no-empty-interface': 'warn',
-			'@typescript-eslint/no-unused-expressions': 'warn',
-			'@typescript-eslint/no-explicit-any': 'warn',
-			'@typescript-eslint/no-empty-object-type': 'warn',
-			'@typescript-eslint/no-unused-vars': 'warn',
-			'no-unused-vars': 'warn',
-			'@typescript-eslint/no-non-null-assertion': 'warn',
+			'no-unused-vars': 'off',
 			'import/order': [
 				'warn',
 				{
@@ -46,14 +42,9 @@ const eslintConfig = [
 					],
 					pathGroupsExcludedImportTypes: ['react', 'next'],
 					'newlines-between': 'always',
-					alphabetize: {
-						order: 'asc',
-						caseInsensitive: true,
-					},
+					alphabetize: { order: 'asc', caseInsensitive: true },
 				},
 			],
 		},
 	},
 ];
-
-export default eslintConfig;
