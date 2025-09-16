@@ -50,7 +50,7 @@ class AccountCommandFacadeService(
 
         if (isAlreadySignedUp(verificationResponse)) throw ApplicationException(
             code = CodeEnum.FRS_003,
-            "이미 가입된 유저입니다. 비밀번호를 찾고자한다면 joonhee.alert@gmail.com으로 연락주세요."
+            "이미 가입된 유저입니다. 비밀번호를 찾고자한다면 joonheealert@gmail.com으로 연락주세요."
         )
     }
 
