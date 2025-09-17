@@ -74,6 +74,12 @@ class AccountCommandService(
         )
     }
 
+    override fun deleteAccount(accountId: Long) {
+        val account = accountRepository.getById(accountId)
+        account.delete()
+        accountRepository.save(account)
+    }
+
     private fun getAccountJwtPayload(account: Account): Map<String, Any> {
         return AccountJwtPayload(
             accountId = account.id,

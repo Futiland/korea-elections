@@ -8,10 +8,13 @@ import com.futiland.vote.application.account.dto.request.VerificationRequest
 import com.futiland.vote.application.account.dto.response.ChangePasswordResponse
 import com.futiland.vote.application.account.dto.response.SignInSuccessResponse
 import com.futiland.vote.application.account.dto.response.SignupSuccessResponse
+import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.domain.account.dto.response.VerifiedResponse
 import com.futiland.vote.domain.account.service.AccountCommandFacadeUseCase
 import com.futiland.vote.domain.account.service.AccountCommandUseCase
 import com.futiland.vote.domain.account.service.MobileIdentifyUseCase
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -22,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 class CommandController(
     private val accountCommandUseCase: AccountCommandUseCase,
     private val accountCommandFacadeUseCase: AccountCommandFacadeUseCase,
-    private val identifyUseCase: MobileIdentifyUseCase,
+//    private val identifyUseCase: MobileIdentifyUseCase,
 ) {
     @PostMapping("/signup")
     fun signUp(
@@ -56,4 +59,13 @@ class CommandController(
         )
         return HttpApiResponse.of(response)
     }
+
+    @DeleteMapping("/me")
+    fun deleteAccount(
+        @AuthenticationPrincipal userDetails: CustomUserDetails
+    ): HttpApiResponse<Unit> {
+        accountCommandUseCase.deleteAccount(userDetails.user.accountId)
+        return HttpApiResponse.of(Unit)
+    }
+
 }

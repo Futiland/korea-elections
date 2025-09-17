@@ -21,4 +21,6 @@ interface AccountCommandUseCase {
         verificationId: String,
         password: String,
     ): ChangePasswordResponse
+
+    fun deleteAccount(accountId: Long)
 }

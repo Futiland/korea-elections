@@ -83,4 +83,11 @@ class Account(
         this.updatedAt = LocalDateTime.now()
         return this
     }
+
+    fun delete(): Account {
+        this.deletedAt = LocalDateTime.now()
+        this.status = AccountStatus.INACTIVE
+        this.updatedAt = LocalDateTime.now()
+        return this
+    }
 }

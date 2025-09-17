@@ -1,0 +1,99 @@
+name: CI - Vote Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment for image tagging'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+        default: 'dev'
+      branch:
+        description: 'Branch to build from'
+        required: true
+        type: string
+        default: 'develop'
+  workflow_call: {}
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: vote-app
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ${{ github.event.inputs.environment == 'prod' && 'vote_prod_aws' || 'vote_dev_homeserver' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          fetch-depth: 1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_ID }}
+          password: ${{ secrets.DOCKER_PW }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend/election/vote
+          file: ./backend/election/vote/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output image digest
+        run: echo ${{ steps.build.outputs.digest }}
+
+      - name: Clean up old Docker images (keep latest 2)
+        run: |
+          echo "Cleaning up old Docker images on Docker Hub..."
+
+          # Get all tags for the repository
+          REPO_NAME="${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}"
+
+          # Get all tags and sort by creation date (requires Docker Hub API)
+          TAGS_JSON=$(curl -s "https://registry.hub.docker.com/v2/repositories/${REPO_NAME}/tags?page_size=100" || echo '{"results":[]}')
+
+          # Extract tag names, exclude 'latest' and current branch tags, get old tags
+          OLD_TAGS=$(echo "$TAGS_JSON" | jq -r '.results[] | select(.name != "latest" and (.name | test("^(develop|main)$") | not)) | .name' | tail -n +3)
+
+          if [ -n "$OLD_TAGS" ]; then
+            echo "Found old tags to delete:"
+            echo "$OLD_TAGS"
+
+            # Delete old tags using Docker Hub API
+            for tag in $OLD_TAGS; do
+              echo "Deleting tag: $tag"
+              curl -X DELETE \
+                -H "Authorization: JWT ${{ secrets.DOCKER_HUB_TOKEN }}" \
+                "https://hub.docker.com/v2/repositories/${REPO_NAME}/tags/$tag/" || true
+            done
+
+            echo "Old images cleanup completed"
+          else
+            echo "No old images to clean up"
+          fi
