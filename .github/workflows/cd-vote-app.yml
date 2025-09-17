@@ -11,8 +11,8 @@ on:
           - dev
           - prod
         default: 'dev'
-      image_tag:
-        description: 'Docker image tag to deploy (e.g., develop, main, develop-abc1234)'
+      branch:
+        description: 'Branch to deploy (e.g., develop, main, feature/xxx)'
         required: true
         type: string
         default: 'develop'
@@ -22,30 +22,26 @@ env:
   IMAGE_NAME: vote-app
 
 jobs:
-  deploy:
-    name: Deploy to ${{ inputs.environment }}
-    runs-on: ${{ inputs.environment == 'prod' && 'ubuntu-latest' || 'nppd_on-prem' }}
-    environment: ${{ inputs.environment }}
+  deploy-dev:
+    if: inputs.environment == 'dev'
+    name: Deploy to Development
+    runs-on: vote_dev_homeserver
+    environment: dev
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
       - name: Set up environment variables
         run: |
-          if [[ "${{ inputs.environment }}" == "prod" ]]; then
-            echo "DOCKER_USERNAME=${{ secrets.PROD_DOCKER_ID }}" >> $GITHUB_ENV
-            echo "DOCKER_PASSWORD=${{ secrets.PROD_DOCKER_PW }}" >> $GITHUB_ENV
-            echo "SOURCE_DOCKER_USERNAME=${{ secrets.DEV_DOCKER_ID }}" >> $GITHUB_ENV
-            echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
-            echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
-          else
-            echo "DOCKER_USERNAME=${{ secrets.DEV_DOCKER_ID }}" >> $GITHUB_ENV
-            echo "DOCKER_PASSWORD=${{ secrets.DEV_DOCKER_PW }}" >> $GITHUB_ENV
-            echo "SOURCE_DOCKER_USERNAME=${{ secrets.DEV_DOCKER_ID }}" >> $GITHUB_ENV
-            echo "CONTAINER_NAME=vote-app-dev" >> $GITHUB_ENV
-            echo "DEPLOY_PORT=8081" >> $GITHUB_ENV
-          fi
-
-          echo "SOURCE_IMAGE=${{ env.REGISTRY }}/${{ env.SOURCE_DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
-          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest-${{ inputs.environment }}" >> $GITHUB_ENV
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_ID }}" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=vote-app-dev" >> $GITHUB_ENV
+          echo "DEPLOY_PORT=18080" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ inputs.branch }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:${{ inputs.branch }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -53,35 +49,37 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
 
-      - name: Pull and retag image for deployment
+      - name: Build Docker image
         run: |
-          echo "Pulling source image: ${{ env.SOURCE_IMAGE }}"
-          docker pull ${{ env.SOURCE_IMAGE }}
+          echo "Building Docker image from branch: ${{ inputs.branch }}"
+          docker build -t ${{ env.TARGET_IMAGE }} .
 
-          echo "Tagging image for deployment: ${{ env.TARGET_IMAGE }}"
-          docker tag ${{ env.SOURCE_IMAGE }} ${{ env.TARGET_IMAGE }}
+          echo "Pushing image to registry..."
+          docker push ${{ env.TARGET_IMAGE }}
 
-          if [[ "${{ inputs.environment }}" == "prod" ]]; then
-            echo "Pushing to production registry..."
-            docker push ${{ env.TARGET_IMAGE }}
-          fi
-
-      - name: Stop and remove existing container
+      - name: Deploy to development environment
         run: |
-          echo "Stopping existing container if running..."
+          echo "Deploying to development environment..."
+
+          # Stop and remove existing container
           docker stop ${{ env.CONTAINER_NAME }} || true
           docker rm ${{ env.CONTAINER_NAME }} || true
-          echo "Container cleanup completed"
 
-      - name: Start new container
-        run: |
+          # Start new container
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
             --restart unless-stopped \
             -p ${{ env.DEPLOY_PORT }}:8080 \
+            -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
+            -e PASSWORD_SECRET_KEY="${{ secrets.PASSWORD_SECRET_KEY }}" \
+            -e PORTONE_STORE_ID="${{ secrets.PORTONE_STORE_ID }}" \
+            -e PORTONE_AUTH_TOKEN="${{ secrets.PORTONE_AUTH_TOKEN }}" \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             ${{ env.TARGET_IMAGE }}
 
-          echo "Container started successfully"
+          echo "Development container started successfully"
           docker ps --filter "name=${{ env.CONTAINER_NAME }}"
 
       - name: Verify deployment
@@ -89,28 +87,28 @@ jobs:
           echo "Waiting for application to start..."
           sleep 15
 
-          # Check if container is running
+          # Check if container is running locally
           if docker ps --filter "name=${{ env.CONTAINER_NAME }}" --filter "status=running" | grep -q ${{ env.CONTAINER_NAME }}; then
-            echo "✅ Container is running successfully"
+            echo "✅ Development container is running successfully"
 
             # Health check with retry
             for i in {1..5}; do
               if curl -f -s http://localhost:${{ env.DEPLOY_PORT }}/actuator/health > /dev/null 2>&1; then
-                echo "✅ Application health check passed"
+                echo "✅ Development health check passed"
                 break
               else
-                echo "⏳ Health check attempt $i/5 failed, retrying in 5s..."
+                echo "⏳ Development health check attempt $i/5 failed, retrying in 5s..."
                 sleep 5
               fi
 
               if [ $i -eq 5 ]; then
-                echo "⚠️ Health check endpoint not responding (this might be normal if endpoint doesn't exist)"
+                echo "⚠️ Development health check endpoint not responding"
                 echo "📋 Container logs:"
                 docker logs --tail 20 ${{ env.CONTAINER_NAME }}
               fi
             done
           else
-            echo "❌ Container failed to start"
+            echo "❌ Development container failed to start"
             echo "📋 Container logs:"
             docker logs ${{ env.CONTAINER_NAME }}
             exit 1
@@ -143,9 +141,138 @@ jobs:
         run: |
           echo "🚀 Deployment Summary"
           echo "===================="
-          echo "Environment: ${{ inputs.environment }}"
-          echo "Source Image: ${{ env.SOURCE_IMAGE }}"
-          echo "Deployed Image: ${{ env.TARGET_IMAGE }}"
+          echo "Environment: dev"
+          echo "Branch: ${{ inputs.branch }}"
+          echo "Built Image: ${{ env.TARGET_IMAGE }}"
+          echo "Container: ${{ env.CONTAINER_NAME }}"
+          echo "Port: ${{ env.DEPLOY_PORT }}"
+          echo ""
+          echo "Container Status:"
+          docker ps --filter "name=${{ env.CONTAINER_NAME }}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          echo ""
+          echo "🌐 Access URL: http://localhost:${{ env.DEPLOY_PORT }}"
+
+  deploy-prod:
+    if: inputs.environment == 'prod'
+    name: Deploy to Production
+    runs-on: nppd_on-prem
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Set up environment variables
+        run: |
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_ID }}" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
+          echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ inputs.branch }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:${{ inputs.branch }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image from branch: ${{ inputs.branch }}"
+          docker build -t ${{ env.TARGET_IMAGE }} .
+
+          echo "Pushing image to registry..."
+          docker push ${{ env.TARGET_IMAGE }}
+
+      - name: Deploy to production environment
+        run: |
+          echo "Deploying to production environment..."
+
+          # Stop and remove existing container
+          docker stop ${{ env.CONTAINER_NAME }} || true
+          docker rm ${{ env.CONTAINER_NAME }} || true
+
+          # Start new container
+          docker run -d \
+            --name ${{ env.CONTAINER_NAME }} \
+            --restart unless-stopped \
+            -p ${{ env.DEPLOY_PORT }}:8080 \
+            -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
+            -e PASSWORD_SECRET_KEY="${{ secrets.PASSWORD_SECRET_KEY }}" \
+            -e PORTONE_STORE_ID="${{ secrets.PORTONE_STORE_ID }}" \
+            -e PORTONE_AUTH_TOKEN="${{ secrets.PORTONE_AUTH_TOKEN }}" \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            ${{ env.TARGET_IMAGE }}
+
+          echo "Production container started successfully"
+          docker ps --filter "name=${{ env.CONTAINER_NAME }}"
+
+      - name: Verify deployment
+        run: |
+          echo "Waiting for application to start..."
+          sleep 15
+
+          # Check if container is running
+          if docker ps --filter "name=${{ env.CONTAINER_NAME }}" --filter "status=running" | grep -q ${{ env.CONTAINER_NAME }}; then
+            echo "✅ Production container is running successfully"
+
+            # Health check with retry
+            for i in {1..5}; do
+              if curl -f -s http://localhost:${{ env.DEPLOY_PORT }}/actuator/health > /dev/null 2>&1; then
+                echo "✅ Production health check passed"
+                break
+              else
+                echo "⏳ Production health check attempt $i/5 failed, retrying in 5s..."
+                sleep 5
+              fi
+
+              if [ $i -eq 5 ]; then
+                echo "⚠️ Production health check endpoint not responding"
+                echo "📋 Container logs:"
+                docker logs --tail 20 ${{ env.CONTAINER_NAME }}
+              fi
+            done
+          else
+            echo "❌ Production container failed to start"
+            docker logs ${{ env.CONTAINER_NAME }}
+            exit 1
+          fi
+
+      - name: Clean up old Docker images
+        run: |
+          echo "Cleaning up old Docker images..."
+
+          # Get current image ID
+          CURRENT_IMAGE_ID=$(docker images ${{ env.TARGET_IMAGE }} --format "{{.ID}}" | head -n 1)
+          echo "Current image ID: $CURRENT_IMAGE_ID"
+
+          # Get all images for this repository (excluding the current one)
+          OLD_IMAGES=$(docker images ${{ env.REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }} --format "{{.ID}} {{.Tag}}" | grep -v "$CURRENT_IMAGE_ID" | head -n -1 | awk '{print $1}')
+
+          if [ -n "$OLD_IMAGES" ]; then
+            echo "Removing old images (keeping 1 backup):"
+            echo "$OLD_IMAGES"
+            echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+          else
+            echo "No old images to clean up"
+          fi
+
+          # Clean up dangling images
+          echo "Cleaning up dangling images..."
+          docker image prune -f || true
+
+      - name: Show deployment summary
+        run: |
+          echo "🚀 Deployment Summary"
+          echo "===================="
+          echo "Environment: prod"
+          echo "Branch: ${{ inputs.branch }}"
+          echo "Built Image: ${{ env.TARGET_IMAGE }}"
           echo "Container: ${{ env.CONTAINER_NAME }}"
           echo "Port: ${{ env.DEPLOY_PORT }}"
           echo ""
