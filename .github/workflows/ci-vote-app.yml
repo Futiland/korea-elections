@@ -20,7 +20,8 @@ env:
 jobs:
   build:
     name: Build Docker Image
-    runs-on: ${{ github.event.inputs.environment == 'prod' && 'vote_prod_aws' || 'vote_dev_homeserver' }}
+    if: ${{ github.event.inputs.environment != 'prod' }}
+    runs-on: [ self-hosted, Linux, X64, vote_dev_homeserver ]
 
     steps:
       - name: Checkout code
