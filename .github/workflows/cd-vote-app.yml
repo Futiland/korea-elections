@@ -33,8 +33,8 @@ jobs:
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
           echo "CONTAINER_NAME=vote-app-dev" >> $GITHUB_ENV
           echo "DEPLOY_PORT=18080" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=dev-${{ github.sha }}" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -42,13 +42,10 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
+      - name: Pull Docker image
         run: |
-          echo "Building Docker image from branch: ${{ github.ref_name }}"
-          docker build -t ${{ env.TARGET_IMAGE }} .
-
-          echo "Pushing image to registry..."
-          docker push ${{ env.TARGET_IMAGE }}
+          echo "Pulling Docker image: ${{ env.TARGET_IMAGE }}"
+          docker pull ${{ env.TARGET_IMAGE }}
 
       - name: Deploy to development environment
         run: |
@@ -161,8 +158,8 @@ jobs:
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
           echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
           echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=prod-${{ github.sha }}" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -170,13 +167,10 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
+      - name: Pull Docker image
         run: |
-          echo "Building Docker image from branch: ${{ github.ref_name }}"
-          docker build -t ${{ env.TARGET_IMAGE }} .
-
-          echo "Pushing image to registry..."
-          docker push ${{ env.TARGET_IMAGE }}
+          echo "Pulling Docker image: ${{ env.TARGET_IMAGE }}"
+          docker pull ${{ env.TARGET_IMAGE }}
 
       - name: Deploy to production environment
         run: |
