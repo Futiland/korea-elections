@@ -20,7 +20,7 @@ jobs:
   deploy-dev:
     if: inputs.environment == 'dev'
     name: Deploy to Development
-    runs-on: vote_dev_homeserver
+    runs-on: homeserver
     environment: dev
 
     steps:
