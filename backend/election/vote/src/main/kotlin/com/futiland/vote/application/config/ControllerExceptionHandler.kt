@@ -21,6 +21,7 @@ class ControllerExceptionHandler {
     @ExceptionHandler(ApplicationException::class)
     fun handleApplicationException(e: ApplicationException): ResponseEntity<HttpApiResponse<*>> {
         logger.error { "Application Exception occurred. code=${e.code.name}, message=${e.message}" }
+        logger.error { e.stackTraceToString() }
 
         if(e.code == CodeEnum.FRS_002) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -70,6 +71,7 @@ class ControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<HttpApiResponse<*>> {
         logger.error { "MethodArgumentNotValidException Exception occurred. message=${e.message}" }
+        logger.error { e.stackTraceToString() }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(
                 HttpApiResponse.fromExceptionMessage(
