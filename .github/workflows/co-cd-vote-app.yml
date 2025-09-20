@@ -1,0 +1,14 @@
+name: 통합 CI/CD [Vote] Build, Push
+
+on:
+  workflow_dispatch: {}   # 수동 실행
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci-vote-app.yml
+    secrets: inherit
+
+  cd:
+    needs: ci
+    uses: ./.github/workflows/cd-vote-app.yml
+    secrets: inherit
