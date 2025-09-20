@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Target environment for image tagging'
+        description: 'Target Server Environment'
         required: true
         type: choice
         options:
@@ -20,7 +20,8 @@ env:
 jobs:
   build:
     name: Build Docker Image
-    runs-on: ${{ github.event.inputs.environment == 'prod' && 'vote_prod_aws' || 'vote_dev_homeserver' }}
+    if: ${{ github.event.inputs.environment != 'prod' }}
+    runs-on: homeserver
 
     steps:
       - name: Checkout code
@@ -43,9 +44,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ github.event.inputs.environment || 'dev' }}-${{ github.sha }}
+            type=raw,value=${{ github.event.inputs.environment || 'dev' }}-latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -56,11 +56,21 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Output image digest
         run: echo ${{ steps.build.outputs.digest }}
+
+      - name: Clean up local Docker images
+        run: |
+          echo "Cleaning up local Docker images..."
+
+          # Remove dangling images
+          docker image prune -f
+
+          # Remove unused images, containers, networks, and volumes
+          docker system prune -f --volumes
+
+          echo "Local cleanup completed"
 
       - name: Clean up old Docker images (keep latest 2)
         run: |
