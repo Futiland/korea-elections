@@ -44,11 +44,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
             type=raw,value=${{ github.event.inputs.environment || 'dev' }}-${{ github.sha }}
             type=raw,value=${{ github.event.inputs.environment || 'dev' }}-latest
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -62,6 +59,18 @@ jobs:
 
       - name: Output image digest
         run: echo ${{ steps.build.outputs.digest }}
+
+      - name: Clean up local Docker images
+        run: |
+          echo "Cleaning up local Docker images..."
+
+          # Remove dangling images
+          docker image prune -f
+
+          # Remove unused images, containers, networks, and volumes
+          docker system prune -f --volumes
+
+          echo "Local cleanup completed"
 
       - name: Clean up old Docker images (keep latest 2)
         run: |
