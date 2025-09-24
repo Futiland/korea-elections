@@ -67,6 +67,14 @@ const DialogContent = React.forwardRef<
 				)}
 				{...props}
 			>
+				{/* Radix a11y: Provide a default (visually hidden) Title and Description
+				to avoid accessibility warnings when consumers don't render them. */}
+				<DialogPrimitive.Title className="sr-only">
+					Dialog
+				</DialogPrimitive.Title>
+				<DialogPrimitive.Description className="sr-only">
+					Dialog content
+				</DialogPrimitive.Description>
 				{children}
 
 				{/* ❌ 기본 닫기 버튼 intentionally 제거됨 */}
