@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
+import { User, Info, UserRound } from 'lucide-react';
 
 export default function Header() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -29,15 +30,13 @@ export default function Header() {
 				</Link>
 
 				{/* 우측 */}
-				<div className="flex items-center gap-2">
-					<Button
-						variant="outline"
-						size="sm"
-						className="py-1 px-4"
-						onClick={visbleIntroduceDialog}
-					>
-						KEP 프로젝트 소개
-					</Button>
+				<div className="flex items-center gap-4">
+					{/* KEP 프로젝트 소개 */}
+					<Info className="w-6 h-6" onClick={visbleIntroduceDialog} />
+
+					<Link href="/mypage">
+						<UserRound className="w-6 h-6" />
+					</Link>
 				</div>
 			</div>
 

@@ -22,10 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
 				<title>제 21대 대통령 선거 투표</title>
 				<meta property="og:type" content="website" />
 				<meta property="og:site_name" content="KEP" />
-				<meta
-					property="og:title"
-					content="“21대 대통령 선거에 누구를 뽑으셨나요?”"
-				/>
+				<meta property="og:title" content="모두의 투표" />
 				<meta
 					property="og:description"
 					content="KEP는 본인 인증을 통해 실제 선거와 유사한 투표 데이터를 확인할 수
