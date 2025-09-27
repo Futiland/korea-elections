@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
-import { User, Info, UserRound } from 'lucide-react';
+import { Info, UserRound } from 'lucide-react';
 
 export default function Header() {
 	const [isOpen, setIsOpen] = useState(false);
