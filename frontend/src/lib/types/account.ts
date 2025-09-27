@@ -67,3 +67,9 @@ export type ChangePasswordResponse = {
 		token: string;
 	};
 };
+
+export type DeleteAccountResponse = {
+	code: string;
+	message: string;
+	data: unknown;
+};

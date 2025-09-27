@@ -1,17 +1,20 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
-import { getUserInfo } from '@/lib/api/account';
-import { useQuery } from '@tanstack/react-query';
+import { getUserInfo, deleteAccount } from '@/lib/api/account';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import type { UserInfo } from '@/lib/types/account';
 import { formatDate } from '@/lib/date';
 import IntroduceLayout from '@/components/IntroduceLayout';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthToken } from '@/hooks/useAuthToken';
+import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
+import { toast } from 'sonner';
 
 export default function MyPage() {
 	const router = useRouter();
+	const { showDialog, hideDialog } = useAlertDialog();
 
 	const { isLoggedIn, isReady } = useAuthToken();
 
@@ -32,6 +35,46 @@ export default function MyPage() {
 		router.push({
 			pathname: '/login',
 			query: { redirect: router.asPath },
+		});
+	};
+
+	const deleteMutation = useMutation({
+		mutationFn: deleteAccount,
+		onSuccess: () => {
+			toast.success('회원 탈퇴가 완료되었습니다.');
+			localStorage.removeItem('token');
+			router.replace('/');
+		},
+		onError: (error: any) => {
+			toast.error(error?.message || '회원 탈퇴 중 오류가 발생했습니다.');
+		},
+	});
+
+	const handleDelete = () => {
+		showDialog({
+			message: '정말로 탈퇴하시겠어요?',
+			discription:
+				'탈퇴 시 투표 이력 등 모든 데이터가 삭제되며 복구가 불가능합니다.',
+			actions: (
+				<div className="flex gap-2 w-full">
+					<Button
+						className="w-1/2 bg-slate-200 text-slate-900 hover:bg-slate-200"
+						onClick={() => hideDialog()}
+					>
+						취소
+					</Button>
+					<Button
+						className="w-1/2 bg-red-600 hover:bg-red-500 text-white"
+						onClick={() => {
+							deleteMutation.mutate();
+							hideDialog();
+						}}
+						disabled={deleteMutation.isPending}
+					>
+						{deleteMutation.isPending ? '처리 중...' : '회원 탈퇴'}
+					</Button>
+				</div>
+			),
 		});
 	};
 
@@ -124,6 +167,16 @@ export default function MyPage() {
 						/>
 					</div>
 
+					<div className="flex justify-end">
+						<Button
+							variant="ghost"
+							className="text-slate-600 h-10"
+							onClick={logoutHandler}
+						>
+							로그아웃
+						</Button>
+					</div>
+
 					{/* 비밀번호 변경 */}
 					{/* <div className="flex gap-2">
 						<div className="flex-1">
@@ -143,10 +196,10 @@ export default function MyPage() {
 				<div className="w-full absolute bottom-34 left-0 flex items-center justify-center space-x-4">
 					<Button
 						variant="ghost"
-						className="text-slate-600 h-10"
-						onClick={logoutHandler}
+						className=" text-slate-400 h-10"
+						onClick={handleDelete}
 					>
-						로그아웃
+						회원 탈퇴
 					</Button>
 				</div>
 			</div>

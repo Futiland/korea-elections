@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from './common';
+import { apiGet, apiPost, apiDelete } from './common';
 import {
 	LoginData,
 	LoginResponse,
@@ -8,6 +8,7 @@ import {
 	SignupStopperResponse,
 	ChangePasswordData,
 	ChangePasswordResponse,
+	DeleteAccountResponse,
 } from '../types/account';
 
 export const login = (data: LoginData) =>
@@ -24,3 +25,7 @@ export const signupStopper = () =>
 
 export const changePassword = (data: ChangePasswordData) =>
 	apiPost<ChangePasswordResponse>('/rest/account/v1/change-password', data);
+
+// 회원 탈퇴
+export const deleteAccount = () =>
+	apiDelete<DeleteAccountResponse>('/rest/account/v1/me');

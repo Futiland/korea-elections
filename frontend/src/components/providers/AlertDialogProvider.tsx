@@ -50,12 +50,14 @@ export const AlertDialogProvider = ({ children }: { children: ReactNode }) => {
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent
 					className={
-						'w-[calc(100%-40px)] max-w-sm bg-white rounded-md shadow-xl p-6 transition-all duration-300 data-[state=open]:opacity-100 data-[state=open]:scale-100 data-[state=closed]:opacity-0 data-[state=closed]:scale-95 overlay:bg-black/40 overlay:backdrop-blur-sm overlay:transition-all overlay:duration-300 overlay:data-[state=open]:opacity-100 overlay:data-[state=closed]:opacity-0'
+						'w-[calc(100%-40px)] max-w-sm bg-white rounded-md shadow-xl p-6 transition-all duration-300 data-[state=open]:opacity-100 data-[state=open]:scale-100 data-[state=closed]:opacity-0 data-[state=closed]:scale-95'
 					}
 				>
 					<div className="space-y-2 text-center">
 						<p className="text-lg font-semibold">{message}</p>
-						<p className="text-sm text-muted-foreground">{discription}</p>
+						<p className="text-sm text-muted-foreground text-left">
+							{discription}
+						</p>
 						<div className="flex flex-col gap-2 mt-6">{actions}</div>
 					</div>
 				</DialogContent>
