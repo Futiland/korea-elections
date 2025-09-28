@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import StatusBadge from './StatusBadge';
+import SingleChoiceOption from './SingleChoiceOption';
+import MultipleChoiceOption from './MultipleChoiceOption';
+import ScoreOption from './ScoreOption';
 import { Share2 } from 'lucide-react';
 
 interface VoteData {
 	id: number;
 	title: string;
 	description: string;
-	status: 'progress' | 'completed' | 'ended';
+	status: 'progress' | 'stopped' | 'ended';
 	endDate: string;
 	voteCount: number;
 }
@@ -26,6 +30,13 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 		endDate: '2024-07-01',
 		voteCount: 150,
 	};
+
+	// 상태 관리
+	const [selectedSingleChoice, setSelectedSingleChoice] = useState<string>('');
+	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
+		string[]
+	>([]);
+	const [selectedScore, setSelectedScore] = useState<number>(1);
 	return (
 		<Card className="w-full hover:bg-slate-50 transition-colors">
 			<div className="px-6 py-4">
@@ -57,68 +68,42 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 				</div>
 
 				{/* 선택 옵션 */}
-				<div className="mb-6 space-y-4">
-					{/* 라디오 옵션 */}
-					<div>
-						<div className="flex flex-col gap-2">
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input type="radio" name="radioOption" className="w-4 h-4" />
-								<span>선택지 A</span>
-							</label>
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input type="radio" name="radioOption" className="w-4 h-4" />
-								<span>선택지 B</span>
-							</label>
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input type="radio" name="radioOption" className="w-4 h-4" />
-								<span>선택지 C</span>
-							</label>
-						</div>
-					</div>
+				<div className="mb-6 space-y-4 flex flex-col items-start">
+					{/* 단일 선택 옵션 */}
 
-					{/* 체크박스 옵션 */}
-					<div>
-						<div className="flex flex-col gap-2">
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input
-									type="checkbox"
-									name="checkboxOption"
-									className="w-4 h-4"
-								/>
-								<span>선택지 1</span>
-							</label>
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input
-									type="checkbox"
-									name="checkboxOption"
-									className="w-4 h-4"
-								/>
-								<span>선택지 2</span>
-							</label>
-							<label className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded">
-								<input
-									type="checkbox"
-									name="checkboxOption"
-									className="w-4 h-4"
-								/>
-								<span>선택지 3</span>
-							</label>
-						</div>
-					</div>
+					<SingleChoiceOption
+						options={[
+							'단일 선택 A',
+							'단일 선택 B',
+							'단일 선택 단일 선택단일 선택단일 선택 C',
+							'단일 선택 D',
+							'단일 선택 E',
+							'단일 선택 F',
+							'단일 선택 G',
+						]}
+						value={selectedSingleChoice}
+						onValueChange={setSelectedSingleChoice}
+					/>
+
+					{/* 다중 선택 옵션 */}
+					<MultipleChoiceOption
+						options={[
+							'다중 선택 1',
+							'다중 선택 2',
+							'다중 선택 3',
+							'다중 선택 4',
+							'다중 선택 다중 선택다중 선택다중 선택 5',
+						]}
+						selectedValues={selectedMultipleChoices}
+						onChange={setSelectedMultipleChoices}
+					/>
 
 					{/* 점수제 옵션 */}
-					<div>
-						<div className="flex items-center gap-3">
-							<span className="text-sm text-slate-500">점수:</span>
-							<select className="border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-								{Array.from({ length: 10 }, (_, i) => (
-									<option key={i + 1} value={i + 1}>
-										{i + 1}점
-									</option>
-								))}
-							</select>
-						</div>
-					</div>
+					<ScoreOption
+						maxScore={10}
+						selectedScore={selectedScore}
+						onChange={setSelectedScore}
+					/>
 				</div>
 
 				{/* 버튼 영역 */}
@@ -133,7 +118,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 						</button>
 					)}
 					{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-					{(data.status === 'progress' || data.status === 'completed') && (
+					{data.status === 'progress' && (
 						<button
 							className={`${
 								data.status === 'progress' ? 'flex-1' : 'w-full'
