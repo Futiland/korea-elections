@@ -9,7 +9,7 @@ import type { LoginData } from '@/lib/types/account';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
-import IntroduceLayout from '@/components/IntroduceLayout';
+import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';

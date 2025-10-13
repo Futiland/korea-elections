@@ -10,7 +10,7 @@ import type {
 	SignupRequestData,
 	SignupStopperResponse,
 } from '@/lib/types/account';
-import IntroduceLayout from '@/components/IntroduceLayout';
+import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
@@ -18,7 +18,7 @@ import { Spinner } from '@/components/ui/spinner';
 import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 import TermsDialog from './TermsDialog';
 import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
 

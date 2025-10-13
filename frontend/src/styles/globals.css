@@ -164,3 +164,9 @@ body {
 .animate-slide-in {
 	animation: slide-in 0.8s ease-out forwards;
 }
+
+input,
+textarea,
+select {
+	background: #fff;
+}

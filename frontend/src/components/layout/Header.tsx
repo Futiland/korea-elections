@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState } from 'react';
 
-import IntroduceLayout from '@/components/IntroduceLayout';
+import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import { Info, UserRound } from 'lucide-react';
 

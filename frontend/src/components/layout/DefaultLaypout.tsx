@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react';
 import Header from './Header';
 // import BottomMenuBar from './BottomMenubar';
 import { useRouter } from 'next/router';
-import CreateVoteDialog from './CreateVote';
+import CreateVoteDialog from '../CreateVote';
 import { Plus } from 'lucide-react';
 
 interface LayoutProps {

@@ -6,7 +6,7 @@ import {
 	HydrationBoundary,
 } from '@tanstack/react-query';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import DefaultLaypout from '@/components/DefaultLaypout';
+import DefaultLaypout from '@/components/layout/DefaultLaypout';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ErrorBoundary';

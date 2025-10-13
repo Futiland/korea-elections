@@ -21,7 +21,7 @@ import { useRouter } from 'next/router';
 import { Loader2 } from 'lucide-react';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 import { useAuthToken } from '@/hooks/useAuthToken';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 
 export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
