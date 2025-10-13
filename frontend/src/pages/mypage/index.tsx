@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import type { UserInfo } from '@/lib/types/account';
 import { formatDate } from '@/lib/date';
-import IntroduceLayout from '@/components/IntroduceLayout';
+import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
