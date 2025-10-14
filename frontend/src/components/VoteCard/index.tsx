@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import StatusBadge from './StatusBadge';
-import SingleChoiceOption from './SingleChoiceOption';
-import MultipleChoiceOption from './MultipleChoiceOption';
-import ScoreOption from './ScoreOption';
+import VoteCardOptions from './VoteCardOptions';
 import { Share2 } from 'lucide-react';
+import VoteCardResults from './VoteCardResults';
 
 interface VoteData {
 	id: number;
@@ -37,6 +36,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 		string[]
 	>([]);
 	const [selectedScore, setSelectedScore] = useState<number>(1);
+	const [showResults, setShowResults] = useState<boolean>(false);
 	return (
 		<Card className="w-full hover:bg-slate-50 transition-colors">
 			<div className="px-6 py-4">
@@ -68,43 +68,19 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 				</div>
 
 				{/* 선택 옵션 */}
-				<div className="mb-6 space-y-4 flex flex-col items-start">
-					{/* 단일 선택 옵션 */}
-
-					<SingleChoiceOption
-						options={[
-							'단일 선택 A',
-							'단일 선택 B',
-							'단일 선택 단일 선택단일 선택단일 선택 C',
-							'단일 선택 D',
-							'단일 선택 E',
-							'단일 선택 F',
-							'단일 선택 G',
-						]}
-						value={selectedSingleChoice}
-						onValueChange={setSelectedSingleChoice}
-					/>
-
-					{/* 다중 선택 옵션 */}
-					<MultipleChoiceOption
-						options={[
-							'다중 선택 1',
-							'다중 선택 2',
-							'다중 선택 3',
-							'다중 선택 4',
-							'다중 선택 다중 선택다중 선택다중 선택 5',
-						]}
-						selectedValues={selectedMultipleChoices}
-						onChange={setSelectedMultipleChoices}
-					/>
-
-					{/* 점수제 옵션 */}
-					<ScoreOption
-						maxScore={10}
+				{!showResults && (
+					<VoteCardOptions
+						selectedSingleChoice={selectedSingleChoice}
+						setSelectedSingleChoice={setSelectedSingleChoice}
+						selectedMultipleChoices={selectedMultipleChoices}
+						setSelectedMultipleChoices={setSelectedMultipleChoices}
 						selectedScore={selectedScore}
-						onChange={setSelectedScore}
+						setSelectedScore={setSelectedScore}
 					/>
-				</div>
+				)}
+
+				{/* 결과 차트 */}
+				{showResults && <VoteCardResults />}
 
 				{/* 버튼 영역 */}
 				<div className="flex gap-3">
@@ -113,6 +89,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 						<button
 							className="flex-1 bg-blue-900 hover:bg-blue-800 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"
+							onClick={() => setShowResults(false)}
 						>
 							투표하러가기
 						</button>
@@ -124,6 +101,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 								data.status === 'progress' ? 'flex-1' : 'w-full'
 							} bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors`}
 							type="button"
+							onClick={() => setShowResults(true)}
 						>
 							{data.status === 'progress'
 								? '결과보기'
@@ -135,6 +113,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 						<button
 							className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"
+							onClick={() => setShowResults(true)}
 						>
 							결과보기
 						</button>
