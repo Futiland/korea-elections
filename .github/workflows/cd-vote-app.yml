@@ -11,6 +11,7 @@ on:
           - dev
           - prod
         default: 'dev'
+  workflow_call: {}
 
 env:
   REGISTRY: docker.io
