@@ -11,7 +11,12 @@ on:
           - dev
           - prod
         default: 'dev'
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target Server Environment'
+        required: true
+        type: string
 
 env:
   REGISTRY: docker.io
