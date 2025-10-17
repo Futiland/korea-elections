@@ -35,7 +35,7 @@ class AccountQueryService(
         val stopper: Stopper = stopperRepository.getStopper(serviceTarget = ServiceTarget.SIGNUP)
         return StopperResponse(
             status = stopper.status,
-            message = stopper.message
+            message = stopper.status.description,
         )
     }
 
