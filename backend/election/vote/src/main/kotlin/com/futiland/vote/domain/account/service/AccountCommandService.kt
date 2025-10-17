@@ -80,6 +80,16 @@ class AccountCommandService(
         accountRepository.save(account)
     }
 
+    override fun anonymizeDeletedAccountIfEligible(ci: String) {
+        val account = accountRepository.findByCi(ci) ?: return
+
+        // 삭제된 계정만 익명화 가능
+        if (account.deletedAt != null) {
+            account.anonymizeCi()
+            accountRepository.save(account)
+        }
+    }
+
     private fun getAccountJwtPayload(account: Account): Map<String, Any> {
         return AccountJwtPayload(
             accountId = account.id,
