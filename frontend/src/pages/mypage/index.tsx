@@ -54,7 +54,7 @@ export default function MyPage() {
 		showDialog({
 			message: '정말로 탈퇴하시겠어요?',
 			discription:
-				'탈퇴 시 투표 이력 등 모든 데이터가 삭제되며 복구가 불가능합니다.',
+				'탈퇴 시 모든 데이터가 삭제되며 복구가 불가능하며, 30일 후 재가입이 가능합니다.',
 			actions: (
 				<div className="flex gap-2 w-full">
 					<Button
@@ -144,14 +144,14 @@ export default function MyPage() {
 
 					<div>
 						<label className="text-sm">이름</label>
-						<Input value={user.data.name} disabled className="bg-white h-10" />
+						<Input value={user?.data.name} disabled className="bg-white h-10" />
 					</div>
 
 					{/* 휴대폰 번호 */}
 					<div>
 						<label className="text-sm">휴대폰 번호 (아이디)</label>
 						<Input
-							value={user.data.phoneNumber}
+							value={user?.data.phoneNumber}
 							disabled
 							className="bg-white h-10"
 						/>
@@ -161,7 +161,8 @@ export default function MyPage() {
 					<div>
 						<label className="text-sm">가입일</label>
 						<Input
-							value={formatDate(user.data.createdAt)}
+							// value={formatDate(user.data.createdAt)}
+							value="2025.02.26"
 							disabled
 							className="bg-white h-10"
 						/>
