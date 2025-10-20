@@ -161,8 +161,7 @@ export default function MyPage() {
 					<div>
 						<label className="text-sm">가입일</label>
 						<Input
-							// value={formatDate(user.data.createdAt)}
-							value="2025.02.26"
+							value={formatDate(user.data.createdAt)}
 							disabled
 							className="bg-white h-10"
 						/>
