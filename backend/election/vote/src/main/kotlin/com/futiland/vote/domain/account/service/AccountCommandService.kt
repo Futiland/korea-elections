@@ -53,6 +53,7 @@ class AccountCommandService(
                 message = "해당 가입된 사용자가 없습니다. 가입을 먼저 진행해주세요."
             )
         account.changePassword(password)
+        accountRepository.save(account)
         val token = jwtTokenProvider.generateToken(
             payload = getAccountJwtPayload(account),
             ttl = accessTokenTtl
