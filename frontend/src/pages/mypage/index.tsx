@@ -89,7 +89,7 @@ export default function MyPage() {
 
 	if (isFetching || !isReady) {
 		return (
-			<div className="text-center py-10 min-h-screen">
+			<div className="flex items-center justify-center text-center py-10 min-h-screen">
 				<Spinner />
 			</div>
 		);
@@ -160,7 +160,7 @@ export default function MyPage() {
 									</div>
 								</div>
 								<Button
-									className="bg-slate-300 text-blue-900 hover:bg-slate-200 text-xs h-6 rounded-full px-3"
+									className="bg-blue-100 text-blue-900 hover:bg-slate-200 text-xs h-6 rounded-full px-3"
 									onClick={logoutHandler}
 								>
 									로그아웃

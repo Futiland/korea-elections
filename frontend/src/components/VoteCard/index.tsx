@@ -38,7 +38,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 	const [selectedScore, setSelectedScore] = useState<number>(1);
 	const [showResults, setShowResults] = useState<boolean>(false);
 	return (
-		<Card className="w-full hover:bg-slate-50 transition-colors">
+		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
 				{/* 헤더 영역 - 상태값, 제목, 공유 버튼 */}
 				<div className="flex items-start justify-between mb-2">

@@ -20,7 +20,7 @@ export default function VoteListItem({
 }: VoteListItemProps) {
 	return (
 		<div
-			className="border border-slate-200 rounded-lg p-4 mb-3 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
+			className="border border-slate-200 rounded-lg p-4 mb-3 bg-white hover:bg-blue-50 transition-colors cursor-pointer"
 			onClick={onViewDetails}
 		>
 			<div className="flex items-center justify-between mb-2">

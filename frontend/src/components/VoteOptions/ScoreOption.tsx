@@ -40,7 +40,7 @@ export default function ScoreOption({
 						<button
 							key={i + 1}
 							onClick={() => handleValueChange([i + 1])}
-							className={`text-center px-1 py-1 transition-colors hover:bg-slate-100 rounded-4xl w-6 h-6 ${
+							className={`text-center px-1 py-1 transition-colors rounded-4xl w-6 h-6 ${
 								selectedScore === i + 1
 									? 'text-primary font-bold bg-slate-200 '
 									: 'text-slate-500 hover:text-slate-700'
