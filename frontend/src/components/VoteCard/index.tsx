@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
-import StatusBadge from './StatusBadge';
+import StatusBadge from '../StatusBadge';
 import VoteCardOptions from './VoteCardOptions';
 import { Share2 } from 'lucide-react';
 import VoteCardResults from './VoteCardResults';
