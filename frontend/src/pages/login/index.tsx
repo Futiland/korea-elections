@@ -92,7 +92,7 @@ export default function LoginPage() {
 				<title>로그인 | KEP</title>
 			</Head>
 
-			<div className="flex items-center justify-center p-5 bg-white">
+			<div className="flex items-center justify-center p-5 bg-white h-screen">
 				<div className="w-full max-w-lg mx-auto">
 					{/* 로고 */}
 					<h1 className="flex flex-col items-center mt-20 mb-25">

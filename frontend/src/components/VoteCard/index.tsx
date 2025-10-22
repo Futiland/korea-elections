@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
-import StatusBadge from './StatusBadge';
+import StatusBadge from '../StatusBadge';
 import VoteCardOptions from './VoteCardOptions';
 import { Share2 } from 'lucide-react';
 import VoteCardResults from './VoteCardResults';
@@ -11,6 +11,7 @@ interface VoteData {
 	description: string;
 	status: 'progress' | 'stopped' | 'ended';
 	endDate: string;
+	startDate: string;
 	voteCount: number;
 }
 
@@ -27,6 +28,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 			'이 투표는 모두가 참여할 수 있는 예시 투표입니다. 아래 옵션 중 하나를 선택하거나 점수를 매겨주세요.',
 		status: 'progress' as const,
 		endDate: '2024-07-01',
+		startDate: '2024-06-01',
 		voteCount: 150,
 	};
 
@@ -38,14 +40,14 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 	const [selectedScore, setSelectedScore] = useState<number>(1);
 	const [showResults, setShowResults] = useState<boolean>(false);
 	return (
-		<Card className="w-full hover:bg-slate-50 transition-colors">
+		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
 				{/* 헤더 영역 - 상태값, 제목, 공유 버튼 */}
 				<div className="flex items-start justify-between mb-2">
 					<div className="flex items-center gap-3">
 						<StatusBadge status={data.status} />
 						<span className="text-xs text-slate-500">
-							~ {data.endDate} 까지
+							{data.startDate} ~ {data.endDate} 까지
 						</span>
 					</div>
 					<button

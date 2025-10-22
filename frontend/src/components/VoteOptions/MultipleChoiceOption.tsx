@@ -25,7 +25,7 @@ export default function MultipleChoiceOption({
 			{options.map((option, index) => (
 				<div
 					key={index}
-					className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded"
+					className="flex items-center gap-3 cursor-pointer p-2 rounded"
 				>
 					<Checkbox
 						id={`checkbox-${index}`}
