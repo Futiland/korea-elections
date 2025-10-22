@@ -324,8 +324,7 @@ export default function CreateVoteDialog({
 							<div className="flex gap-3">
 								<Button
 									type="button"
-									variant="outline"
-									className="flex-1"
+									className="flex-1 bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
 									onClick={() => setIsOpen(false)}
 								>
 									취소
@@ -333,7 +332,7 @@ export default function CreateVoteDialog({
 								<Button
 									type="submit"
 									disabled={isSubmitting}
-									className="flex-1 bg-blue-900 text-white hover:bg-blue-800"
+									className="flex-1 bg-blue-900 text-white hover:bg-blue-800 h-10"
 								>
 									{isSubmitting ? '제출 중...' : '투표 생성'}
 								</Button>

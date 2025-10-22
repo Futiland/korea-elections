@@ -88,10 +88,10 @@ export default function MyPage() {
 
 	if (!isLoggedIn || !user) {
 		return (
-			<div className=" bg-slate-10 ">
+			<div className="h-screen">
 				<div className="bg-slate-50">
-					<div className="w-full max-w-lg mx-auto px-5">
-						<h1 className="text-xl font-bold py-5">로그인 하세요</h1>
+					<div className="w-full max-w-lg mx-auto px-5 py-10">
+						<h1 className="text-xl font-bold py-5">로그인 후 이용해 주세요.</h1>
 						<div className="flex flex-col items-center space-y-3.5">
 							<Button
 								type="submit"
@@ -113,7 +113,7 @@ export default function MyPage() {
 					</div>
 				</div>
 
-				<div className="w-full max-w-lg mx-auto px-7.5 py-6 bg-slate-100">
+				<div className="w-full max-w-lg mx-auto px-7.5 pt-6 pb-15 bg-slate-100">
 					<IntroduceLayout />
 				</div>
 			</div>
