@@ -7,6 +7,7 @@ interface VoteListItemProps {
 	status: 'progress' | 'stopped' | 'ended';
 	participantCount: number;
 	endDate: string;
+	startDate: string;
 	onViewDetails: () => void;
 }
 
@@ -16,6 +17,7 @@ export default function VoteListItem({
 	status,
 	participantCount,
 	endDate,
+	startDate,
 	onViewDetails,
 }: VoteListItemProps) {
 	return (
@@ -30,7 +32,9 @@ export default function VoteListItem({
 						참여자 {participantCount}명
 					</span>
 					<span className="text-slate-600 text-xs">•</span>
-					<span className="text-slate-600 text-xs">종료일 {endDate}</span>
+					<span className="text-slate-600 text-xs">
+						{startDate} ~ {endDate}
+					</span>
 				</div>
 			</div>
 			<div className="flex items-center justify-between mb-1">

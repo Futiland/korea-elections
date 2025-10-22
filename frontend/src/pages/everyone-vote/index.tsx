@@ -12,6 +12,7 @@ const mockVoteData = [
 		description: '이 투표는 모두가 참여할 수 있는 예시 투표입니다.',
 		status: 'progress' as const,
 		endDate: '2024-07-01',
+		startDate: '2024-06-01',
 		voteCount: 150,
 	},
 	{
@@ -20,6 +21,7 @@ const mockVoteData = [
 		description: '시민 여러분의 소중한 의견을 들려주세요.',
 		status: 'progress' as const,
 		endDate: '2024-06-30',
+		startDate: '2024-06-01',
 		voteCount: 89,
 	},
 	{
@@ -28,6 +30,7 @@ const mockVoteData = [
 		description: '이미 종료된 투표의 예시입니다.',
 		status: 'ended' as const,
 		endDate: '2024-05-15',
+		startDate: '2024-05-01',
 		voteCount: 234,
 	},
 ];

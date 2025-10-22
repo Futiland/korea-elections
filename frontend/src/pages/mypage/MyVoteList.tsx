@@ -32,6 +32,7 @@ export default function MyVoteList({ title }: MyVoteListProps) {
 					status="progress"
 					participantCount={25}
 					endDate="2024-12-31"
+					startDate="2024-12-01"
 					onViewDetails={() => console.log('상세보기 클릭')}
 				/>
 				<VoteListItem
@@ -40,6 +41,7 @@ export default function MyVoteList({ title }: MyVoteListProps) {
 					status="ended"
 					participantCount={42}
 					endDate="2024-12-25"
+					startDate="2024-12-01"
 					onViewDetails={() => console.log('상세보기 클릭')}
 				/>
 			</div>
