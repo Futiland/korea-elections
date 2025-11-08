@@ -8,6 +8,7 @@ import com.futiland.vote.domain.common.JwtTokenProvider
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -22,21 +23,37 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val environment: Environment
 ) : OncePerRequestFilter() {
 
-    private val excludedPaths: List<RequestMatcher> = listOf(
-        AntPathRequestMatcher("/", "GET"),
-        AntPathRequestMatcher("/account/v1/stopper", "GET"),
-        AntPathRequestMatcher("/account/v1/change-password", "POST"),
-        AntPathRequestMatcher("/account/v1/signup", "POST"),
-        AntPathRequestMatcher("/account/v1/signin", "POST"),
-        AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
-        AntPathRequestMatcher("/poll/v1/**", "GET"), // Poll 조회만 인증 제외
-        AntPathRequestMatcher("/swagger/**"),
-        AntPathRequestMatcher("/swagger-ui/**"),
-        AntPathRequestMatcher("/api-docs/**")
-    )
+    private val excludedPaths: List<RequestMatcher> by lazy {
+        val basePaths = mutableListOf(
+            AntPathRequestMatcher("/", "GET"),
+            AntPathRequestMatcher("/account/v1/stopper", "GET"),
+            AntPathRequestMatcher("/account/v1/change-password", "POST"),
+            AntPathRequestMatcher("/account/v1/signup", "POST"),
+            AntPathRequestMatcher("/account/v1/signin", "POST"),
+            AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
+            AntPathRequestMatcher("/poll/v1/**", "GET") // Poll 조회만 인증 제외
+        )
+
+        // dev 프로파일일 때만 Swagger 경로 제외
+        val activeProfiles = environment.activeProfiles
+        if (activeProfiles.contains("dev") || activeProfiles.isEmpty()) {
+            basePaths.addAll(
+                listOf(
+                    AntPathRequestMatcher("/swagger-ui.html"),
+                    AntPathRequestMatcher("/swagger-ui/**"),
+                    AntPathRequestMatcher("/v3/api-docs"),
+                    AntPathRequestMatcher("/v3/api-docs/**"),
+                    AntPathRequestMatcher("/swagger-resources/**"),
+                )
+            )
+        }
+
+        basePaths
+    }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         return excludedPaths.any { it.matches(request) }
