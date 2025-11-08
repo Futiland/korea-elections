@@ -17,11 +17,24 @@ class AccountCommandFacadeService(
     private val identityVerificationPort: IdentityVerificationPort,
 ) : AccountCommandFacadeUseCase {
     override fun signUp(request: SignUpRequest): SignupSuccessResponse {
+        // 1. 본인인증 검증
         val verificationResponse =
             identityVerificationPort.verify(identityVerificationId = request.verificationId)
 
+        val ci = verificationResponse.verifiedCustomer.ci
+
+        // 2. 가입 요건 검증 (나이, 국적)
         checkSignUpRequirements(verificationResponse)
 
+        // 3. 가입 가능 여부 검증 (중복 체크 + 재가입 대기 기간)
+        // 단일 DB 조회로 성능 최적화
+        accountQueryUseCase.validateSignUpEligibility(ci = ci)
+
+        // 4. 재가입 가능한 삭제된 계정의 CI 익명화 (Command - 상태 변경)
+        // Note: findByCi() 2번 호출되지만 CI는 UNIQUE INDEX가 있어 성능 영향 미미 (~1ms)
+        accountCommandUseCase.anonymizeDeletedAccountIfEligible(ci = ci)
+
+        // 5. 신규 계정 생성
         return accountCommandUseCase.singUp(
             phoneNumber = verificationResponse.verifiedCustomer.phoneNumber,
             password = request.password,
@@ -29,13 +42,13 @@ class AccountCommandFacadeService(
                 name = verificationResponse.verifiedCustomer.name,
                 gender = Gender.valueOf(verificationResponse.verifiedCustomer.gender),
                 birthDate = verificationResponse.verifiedCustomer.birthDate,
-                ci = verificationResponse.verifiedCustomer.ci
+                ci = ci
             )
         )
     }
 
     /**
-     * 가입자 조건 검사 : 중복가입 방지, 투표권이 있는 자만 가입 가능
+     * 가입자 조건 검사: 투표권이 있는 자만 가입 가능 (나이, 국적)
      */
     private fun checkSignUpRequirements(verificationResponse: VerificationResponse) {
         if (isNotKoreanCitizen(verificationResponse)) throw ApplicationException(
@@ -47,15 +60,6 @@ class AccountCommandFacadeService(
             code = CodeEnum.FRS_003,
             message = "만 18세 이상만 가입할 수 있습니다."
         )
-
-        if (isAlreadySignedUp(verificationResponse)) throw ApplicationException(
-            code = CodeEnum.FRS_003,
-            "이미 가입된 유저입니다. 비밀번호를 찾고자한다면 joonheealert@gmail.com으로 연락주세요."
-        )
-    }
-
-    private fun isAlreadySignedUp(verificationResponse: VerificationResponse): Boolean {
-        return accountQueryUseCase.isAlreadySignedUp(ci = verificationResponse.verifiedCustomer.ci)
     }
 
     private fun isNotAdaptedAge(verificationResponse: VerificationResponse): Boolean {

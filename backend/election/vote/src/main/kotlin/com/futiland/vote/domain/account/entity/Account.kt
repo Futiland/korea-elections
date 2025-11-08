@@ -4,6 +4,7 @@ import com.futiland.vote.application.common.EncryptConverter
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 class Account(
@@ -20,8 +21,11 @@ class Account(
     val gender: Gender,
     val birthDate: LocalDate, // TODO 생년월일은 나중에 넣을 예정
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val ci: String,    // TODO 현재는 본인인증 못해서 못넣는데 곧 넣을 예정
+    ci: String,
 ) {
+
+    var ci: String = ci
+        private set
 
     @Convert(converter = EncryptConverter::class)
     var password: String = password
@@ -87,6 +91,12 @@ class Account(
     fun delete(): Account {
         this.deletedAt = LocalDateTime.now()
         this.status = AccountStatus.INACTIVE
+        this.updatedAt = LocalDateTime.now()
+        return this
+    }
+
+    fun anonymizeCi(): Account {
+        this.ci = UUID.randomUUID().toString()
         this.updatedAt = LocalDateTime.now()
         return this
     }

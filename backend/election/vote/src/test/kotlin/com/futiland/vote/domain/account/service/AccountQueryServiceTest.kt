@@ -26,7 +26,8 @@ class AccountQueryServiceTest {
         )
         accountQueryUseCase = AccountQueryService(
             accountRepository = accountRepository,
-            stopperRepository = stopperRepository
+            stopperRepository = stopperRepository,
+            reSignupWaitingDays = 1
         )
     }
 
