@@ -32,6 +32,7 @@ class JwtAuthenticationFilter(
         AntPathRequestMatcher("/account/v1/signup", "POST"),
         AntPathRequestMatcher("/account/v1/signin", "POST"),
         AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
+        AntPathRequestMatcher("/poll/v1/**", "GET"), // Poll 조회만 인증 제외
         AntPathRequestMatcher("/swagger/**"),
         AntPathRequestMatcher("/swagger-ui/**"),
         AntPathRequestMatcher("/api-docs/**")
