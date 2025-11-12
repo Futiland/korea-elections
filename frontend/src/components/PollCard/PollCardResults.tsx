@@ -2,7 +2,7 @@ import SingleChoiceChart from '../Charts/SingleChoiceChart';
 import MultipleChoiceChart from '../Charts/MultipleChoiceChart';
 import ScoreChart from '../Charts/ScoreChart';
 
-export default function VoteCardResults() {
+export default function PollCardResults() {
 	return (
 		<div className="">
 			<SingleChoiceChart

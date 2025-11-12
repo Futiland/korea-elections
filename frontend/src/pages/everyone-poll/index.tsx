@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import VoteCard from '@/components/VoteCard';
-import VoteSearchAndFilter from '@/components/VoteSearchAndFilter';
-import { FilterOption } from '@/components/VoteFilter';
+import PollCard from '@/components/PollCard';
+import PollSearchAndFilter from '@/components/PollSearchAndFilter';
+import { FilterOption } from '@/components/PollFilter';
 import Head from 'next/head';
 
 // 임시 데이터 - 나중에 API에서 가져올 데이터
-const mockVoteData = [
+const mockPollData = [
 	{
 		id: 1,
 		title: '모두의 투표 제목입니다. 투표해주세요.',
@@ -13,7 +13,7 @@ const mockVoteData = [
 		status: 'progress' as const,
 		endDate: '2024-07-01',
 		startDate: '2024-06-01',
-		voteCount: 150,
+		pollCount: 150,
 	},
 	{
 		id: 2,
@@ -22,7 +22,7 @@ const mockVoteData = [
 		status: 'progress' as const,
 		endDate: '2024-06-30',
 		startDate: '2024-06-01',
-		voteCount: 89,
+		pollCount: 89,
 	},
 	{
 		id: 3,
@@ -31,19 +31,19 @@ const mockVoteData = [
 		status: 'ended' as const,
 		endDate: '2024-05-15',
 		startDate: '2024-05-01',
-		voteCount: 234,
+		pollCount: 234,
 	},
 ];
 
-export default function EveryoneVote() {
+export default function EveryonePoll() {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedFilter, setSelectedFilter] = useState<FilterOption>('latest');
 
 	// 필터링 및 검색 로직
-	const filteredVotes = mockVoteData.filter((vote) => {
+	const filteredPolls = mockPollData.filter((poll) => {
 		const matchesSearch =
-			vote.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			vote.description.toLowerCase().includes(searchTerm.toLowerCase());
+			poll.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			poll.description.toLowerCase().includes(searchTerm.toLowerCase());
 
 		const matchesFilter = (() => {
 			switch (selectedFilter) {
@@ -52,7 +52,7 @@ export default function EveryoneVote() {
 				case 'popular':
 					return true; // 인기순은 정렬로 처리
 				case 'ended':
-					return vote.status === 'ended';
+					return poll.status === 'ended';
 				default:
 					return true;
 			}
@@ -62,12 +62,12 @@ export default function EveryoneVote() {
 	});
 
 	// 정렬 로직
-	const sortedVotes = [...filteredVotes].sort((a, b) => {
+	const sortedPolls = [...filteredPolls].sort((a, b) => {
 		switch (selectedFilter) {
 			case 'latest':
 				return b.id - a.id; // ID가 높을수록 최신
 			case 'popular':
-				return b.voteCount - a.voteCount; // 투표수가 높을수록 인기
+				return b.pollCount - a.pollCount; // 투표수가 높을수록 인기
 			case 'ended':
 				return b.id - a.id; // 종료된 투표도 최신순
 			default:
@@ -92,7 +92,7 @@ export default function EveryoneVote() {
 					</div>
 
 					{/* 검색 및 필터 */}
-					<VoteSearchAndFilter
+					<PollSearchAndFilter
 						searchTerm={searchTerm}
 						selectedFilter={selectedFilter}
 						onSearchChange={setSearchTerm}
@@ -102,9 +102,9 @@ export default function EveryoneVote() {
 
 					{/* 투표 카드 리스트 */}
 					<div className="space-y-6">
-						{sortedVotes.length > 0 ? (
-							sortedVotes.map((vote) => (
-								<VoteCard key={vote.id} voteData={vote} />
+						{sortedPolls.length > 0 ? (
+							sortedPolls.map((poll) => (
+								<PollCard key={poll.id} pollData={poll} />
 							))
 						) : (
 							<div className="text-center py-12">

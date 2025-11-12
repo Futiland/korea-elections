@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export type FilterOption = 'latest' | 'popular' | 'ended';
 
-interface VoteFilterProps {
+interface PollFilterProps {
 	selectedFilter: FilterOption;
 	onFilterChange: (filter: FilterOption) => void;
 	className?: string;
@@ -14,11 +14,11 @@ const filterOptions = [
 	{ value: 'ended' as FilterOption, label: '종료된 투표' },
 ];
 
-export default function VoteFilter({
+export default function PollFilter({
 	selectedFilter,
 	onFilterChange,
 	className = '',
-}: VoteFilterProps) {
+}: PollFilterProps) {
 	return (
 		<div className={`flex gap-2 ${className}`}>
 			{filterOptions.map((option) => (

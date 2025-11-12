@@ -28,15 +28,15 @@ import { useAuthToken } from '@/hooks/useAuthToken';
 import { toast } from 'sonner';
 import router from 'next/router';
 
-type CreateVoteDialogProps = {
+type CreatePollDialogProps = {
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
 };
 
-export default function CreateVoteDialog({
+export default function CreatePollDialog({
 	isOpen,
 	setIsOpen,
-}: CreateVoteDialogProps) {
+}: CreatePollDialogProps) {
 	const { isLoggedIn, isReady } = useAuthToken();
 
 	// Zod schema

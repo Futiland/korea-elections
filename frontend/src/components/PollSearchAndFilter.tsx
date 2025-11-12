@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Search, X } from 'lucide-react';
-import VoteFilter, { FilterOption } from './VoteFilter';
+import PollFilter, { FilterOption } from './PollFilter';
 
-interface VoteSearchAndFilterProps {
+interface PollSearchAndFilterProps {
 	onSearchChange: (searchTerm: string) => void;
 	onFilterChange: (filter: FilterOption) => void;
 	searchTerm: string;
@@ -10,13 +10,13 @@ interface VoteSearchAndFilterProps {
 	className?: string;
 }
 
-export default function VoteSearchAndFilter({
+export default function PollSearchAndFilter({
 	onSearchChange,
 	onFilterChange,
 	searchTerm,
 	selectedFilter,
 	className = '',
-}: VoteSearchAndFilterProps) {
+}: PollSearchAndFilterProps) {
 	const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
 	const handleSearchSubmit = (e: React.FormEvent) => {
@@ -55,7 +55,7 @@ export default function VoteSearchAndFilter({
 			</form>
 
 			{/* 필터 버튼들 */}
-			<VoteFilter
+			<PollFilter
 				selectedFilter={selectedFilter}
 				onFilterChange={onFilterChange}
 			/>

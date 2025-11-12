@@ -1,4 +1,3 @@
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Head from 'next/head';
 import { getUserInfo, deleteAccount } from '@/lib/api/account';
@@ -19,7 +18,7 @@ import {
 import { UserRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
-import MyVoteList from './MyVoteList';
+import MyPollList from './MyPollList';
 
 export default function MyPage() {
 	const router = useRouter();
@@ -184,9 +183,9 @@ export default function MyPage() {
 						</CardHeader>
 					</Card>
 
-					<MyVoteList title="내가 만든 모두의 투표" />
-					<MyVoteList title="참여한 모두의 투표" />
-					<MyVoteList title="참여한 입법 투표" />
+					<MyPollList title="내가 만든 모두의 투표" />
+					<MyPollList title="참여한 모두의 투표" />
+					<MyPollList title="참여한 입법 투표" />
 				</div>
 
 				<div className="w-full flex items-center justify-center py-10">

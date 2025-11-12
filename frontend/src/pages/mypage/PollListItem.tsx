@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
 
-interface VoteListItemProps {
+interface PollListItemProps {
 	title: string;
 	description: string;
 	status: 'progress' | 'stopped' | 'ended';
@@ -11,7 +11,7 @@ interface VoteListItemProps {
 	onViewDetails: () => void;
 }
 
-export default function VoteListItem({
+export default function PollListItem({
 	title,
 	description,
 	status,
@@ -19,7 +19,7 @@ export default function VoteListItem({
 	endDate,
 	startDate,
 	onViewDetails,
-}: VoteListItemProps) {
+}: PollListItemProps) {
 	return (
 		<div
 			className="border border-slate-200 rounded-lg p-4 mb-3 bg-white hover:bg-blue-50 transition-colors cursor-pointer"
