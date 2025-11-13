@@ -8,10 +8,12 @@ import {
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
-import { QuestionType } from '@/lib/types/poll';
+import { createPoll } from '@/lib/api/poll';
+import { CreatePollData, QuestionType } from '@/lib/types/poll';
 import type { CreatePollViewProps } from './CreatePollView';
 
 export type CreatePollDialogProps = {
@@ -81,6 +83,26 @@ const defaultValues: CreatePollFormValues = {
 	allowRetriableResponses: false,
 };
 
+const toCreatePollData = (values: CreatePollFormValues): CreatePollData => {
+	const { title, description, questionType, endAt, allowRetriableResponses } =
+		values;
+	const options =
+		questionType === 'SCORE'
+			? []
+			: values.options.map((option) => ({
+					optionText: option.optionText.trim(),
+			  }));
+
+	return {
+		title,
+		description: (description ?? '').trim(),
+		questionType,
+		endAt,
+		allowRetriableResponses,
+		options,
+	};
+};
+
 export function useCreatePollPresenter({
 	isOpen,
 	setIsOpen,
@@ -100,6 +122,20 @@ export function useCreatePollPresenter({
 		resolver: zodResolver(createPollSchema) as Resolver<CreatePollFormValues>,
 		defaultValues,
 		mode: 'onChange',
+	});
+
+	const createPollMutation = useMutation({
+		mutationFn: (payload: CreatePollData) => createPoll(payload),
+		onSuccess: () => {
+			toast.success('투표 생성이 완료되었습니다.');
+			hideDialog();
+			setIsOpen(false);
+			reset(defaultValues);
+		},
+		onError: () => {
+			toast.error('투표 생성에 실패했습니다.');
+			hideDialog();
+		},
 	});
 
 	const { fields, append, remove } = useFieldArray({
@@ -179,17 +215,31 @@ export function useCreatePollPresenter({
 
 	const onSubmit = useCallback(
 		async (values: CreatePollFormValues) => {
-			console.log('onSubmit values:', values);
+			const payload = toCreatePollData(values);
 
-			try {
-				// submit placeholder
-				toast.success('유효성 검사를 통과했습니다. 제출 로직을 연결하세요.');
-				setIsOpen(false);
-			} catch (e) {
-				toast.error('제출 중 오류가 발생했습니다.');
-			}
+			showDialog({
+				message: '모투의 투표를 생성합니다.',
+				discription: '생성된 투표는 수정이 불가능합니다. 생성 하시겠습니까?',
+				actions: (
+					<div className="flex w-full gap-2">
+						<Button
+							className="flex-1 h-10 bg-slate-200 text-slate-900 hover:bg-slate-200"
+							onClick={() => hideDialog()}
+						>
+							취소
+						</Button>
+						<Button
+							className="flex-1 h-10 bg-blue-900 text-white hover:bg-blue-800"
+							disabled={createPollMutation.isPending}
+							onClick={() => createPollMutation.mutate(payload)}
+						>
+							{createPollMutation.isPending ? '생성 중...' : '생성'}
+						</Button>
+					</div>
+				),
+			});
 		},
-		[setIsOpen]
+		[createPollMutation, hideDialog, showDialog]
 	);
 
 	const handleFormSubmit = useMemo(
