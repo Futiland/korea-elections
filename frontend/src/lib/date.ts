@@ -70,3 +70,9 @@ export function isInRange(
 export function isValidDate(date: string | Date): boolean {
 	return isValid(toDate(date));
 }
+
+/** datetime-local input 형식으로 변환 (yyyy-MM-ddTHH:mm) */
+export function formatDateTimeLocal(date: Date | string): string {
+	if (typeof date === 'string') date = parseISO(date);
+	return format(date, "yyyy-MM-dd'T'HH:mm");
+}
