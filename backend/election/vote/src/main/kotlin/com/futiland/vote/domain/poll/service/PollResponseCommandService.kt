@@ -2,10 +2,8 @@ package com.futiland.vote.domain.poll.service
 
 import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
 import com.futiland.vote.domain.poll.entity.PollResponse
-import com.futiland.vote.domain.poll.entity.PollResponseOption
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.repository.PollRepository
-import com.futiland.vote.domain.poll.repository.PollResponseOptionRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 class PollResponseCommandService(
     private val pollRepository: PollRepository,
     private val pollResponseRepository: PollResponseRepository,
-    private val pollResponseOptionRepository: PollResponseOptionRepository,
 ) : PollResponseCommandUseCase {
 
     @Transactional
@@ -34,25 +31,34 @@ class PollResponseCommandService(
         poll.validateResponse(request.optionIds, request.scoreValue)
 
         // 응답 저장
-        val pollResponse = PollResponse.create(
-            pollId = pollId,
-            accountId = accountId,
-            scoreValue = request.scoreValue
-        )
-        val savedResponse = pollResponseRepository.save(pollResponse)
-
-        // 선택지 응답 저장 (단일/다중 선택인 경우)
-        if (request.optionIds != null) {
-            val responseOptions = request.optionIds.map { optionId ->
-                PollResponseOption.create(
-                    responseId = savedResponse.id,
-                    optionId = optionId
+        val responses = when {
+            // 점수제: 1개 레코드 (optionId=null, scoreValue 설정)
+            request.scoreValue != null -> {
+                listOf(
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = null,
+                        scoreValue = request.scoreValue
+                    )
                 )
             }
-            pollResponseOptionRepository.saveAll(responseOptions)
+            // 선택지 (단일/다중): optionId별로 레코드 생성
+            request.optionIds != null -> {
+                request.optionIds.map { optionId ->
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = optionId,
+                        scoreValue = null
+                    )
+                }
+            }
+            else -> throw IllegalArgumentException("응답 데이터가 없습니다")
         }
 
-        return savedResponse.id
+        val savedResponses = pollResponseRepository.saveAll(responses)
+        return savedResponses.first().id
     }
 
     @Transactional
@@ -65,32 +71,46 @@ class PollResponseCommandService(
         // 재응답 허용 여부 체크
         require(poll.isRevotable) { "응답 수정이 허용되지 않는 여론조사입니다" }
 
-        // 기존 응답 조회
-        val existingResponse = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId)
-            ?: throw IllegalArgumentException("응답 내역이 없습니다")
+        // 기존 응답 조회 (다중 선택의 경우 여러 레코드 존재 가능)
+        val existingResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        require(existingResponses.isNotEmpty()) { "응답 내역이 없습니다" }
 
         // 응답 유효성 검증
         poll.validateResponse(request.optionIds, request.scoreValue)
 
-        // 점수 업데이트
-        if (request.scoreValue != null) {
-            existingResponse.updateScore(request.scoreValue)
-        }
+        // 기존 응답 모두 삭제 (soft delete)
+        existingResponses.forEach { it.delete() }
+        pollResponseRepository.saveAll(existingResponses)
 
-        // 선택지 업데이트 (기존 선택 삭제 후 재생성)
-        if (request.optionIds != null) {
-            pollResponseOptionRepository.deleteAllByResponseId(existingResponse.id)
-            val responseOptions = request.optionIds.map { optionId ->
-                PollResponseOption.create(
-                    responseId = existingResponse.id,
-                    optionId = optionId
+        // 새로운 응답 생성
+        val responses = when {
+            // 점수제: 1개 레코드
+            request.scoreValue != null -> {
+                listOf(
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = null,
+                        scoreValue = request.scoreValue
+                    )
                 )
             }
-            pollResponseOptionRepository.saveAll(responseOptions)
+            // 선택지 (단일/다중): optionId별로 레코드 생성
+            request.optionIds != null -> {
+                request.optionIds.map { optionId ->
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = optionId,
+                        scoreValue = null
+                    )
+                }
+            }
+            else -> throw IllegalArgumentException("응답 데이터가 없습니다")
         }
 
-        pollResponseRepository.save(existingResponse)
-        return existingResponse.id
+        val savedResponses = pollResponseRepository.saveAll(responses)
+        return savedResponses.first().id
     }
 
     @Transactional

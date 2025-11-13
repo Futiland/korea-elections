@@ -5,14 +5,15 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(
-    uniqueConstraints = [
-        UniqueConstraint(columnNames = ["pollId", "accountId", "deletedAt"])
+    indexes = [
+        Index(name = "idx_poll_account", columnList = "pollId, accountId, deletedAt")
     ]
 )
 class PollResponse(
     val pollId: Long,
     val accountId: Long,
-    var scoreValue: Int? = null,
+    val optionId: Long? = null,      // 선택지 ID (SINGLE_CHOICE, MULTIPLE_CHOICE)
+    var scoreValue: Int? = null,     // 점수값 (SCORE)
     val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
     @Id
@@ -29,19 +30,16 @@ class PollResponse(
         fun create(
             pollId: Long,
             accountId: Long,
+            optionId: Long? = null,
             scoreValue: Int? = null,
         ): PollResponse {
             return PollResponse(
                 pollId = pollId,
                 accountId = accountId,
+                optionId = optionId,
                 scoreValue = scoreValue
             )
         }
-    }
-
-    fun updateScore(scoreValue: Int) {
-        this.scoreValue = scoreValue
-        this.updatedAt = LocalDateTime.now()
     }
 
     fun delete() {

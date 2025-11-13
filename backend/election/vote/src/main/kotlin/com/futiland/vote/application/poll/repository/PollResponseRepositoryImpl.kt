@@ -13,12 +13,20 @@ class PollResponseRepositoryImpl(
         return repository.save(pollResponse)
     }
 
+    override fun saveAll(pollResponses: List<PollResponse>): List<PollResponse> {
+        return repository.saveAll(pollResponses)
+    }
+
     override fun findById(id: Long): PollResponse? {
         return repository.findById(id).orElse(null)
     }
 
     override fun findByPollIdAndAccountId(pollId: Long, accountId: Long): PollResponse? {
         return repository.findByPollIdAndAccountIdAndDeletedAtIsNull(pollId, accountId)
+    }
+
+    override fun findAllByPollIdAndAccountId(pollId: Long, accountId: Long): List<PollResponse> {
+        return repository.findAllByPollIdAndAccountIdAndDeletedAtIsNull(pollId, accountId)
     }
 
     override fun findAllByPollId(pollId: Long): List<PollResponse> {
@@ -28,10 +36,16 @@ class PollResponseRepositoryImpl(
     override fun countByPollId(pollId: Long): Long {
         return repository.countByPollIdAndDeletedAtIsNull(pollId)
     }
+
+    override fun countByOptionId(optionId: Long): Long {
+        return repository.countByOptionIdAndDeletedAtIsNull(optionId)
+    }
 }
 
 interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
     fun findByPollIdAndAccountIdAndDeletedAtIsNull(pollId: Long, accountId: Long): PollResponse?
+    fun findAllByPollIdAndAccountIdAndDeletedAtIsNull(pollId: Long, accountId: Long): List<PollResponse>
     fun findAllByPollIdAndDeletedAtIsNull(pollId: Long): List<PollResponse>
     fun countByPollIdAndDeletedAtIsNull(pollId: Long): Long
+    fun countByOptionIdAndDeletedAtIsNull(optionId: Long): Long
 }

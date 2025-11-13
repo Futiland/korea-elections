@@ -6,7 +6,6 @@ import com.futiland.vote.application.poll.dto.response.ScoreResultResponse
 import com.futiland.vote.domain.poll.entity.QuestionType
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
-import com.futiland.vote.domain.poll.repository.PollResponseOptionRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import org.springframework.stereotype.Service
 
@@ -15,7 +14,6 @@ class PollResultQueryService(
     private val pollRepository: PollRepository,
     private val pollOptionRepository: PollOptionRepository,
     private val pollResponseRepository: PollResponseRepository,
-    private val pollResponseOptionRepository: PollResponseOptionRepository,
 ) : PollResultQueryUseCase {
 
     override fun getPollResult(pollId: Long): PollResultResponse {
@@ -26,7 +24,8 @@ class PollResultQueryService(
             QuestionType.SINGLE_CHOICE, QuestionType.MULTIPLE_CHOICE -> {
                 val options = pollOptionRepository.findAllByPollId(pollId)
                 val optionResults = options.map { option ->
-                    val voteCount = pollResponseOptionRepository.countByOptionId(option.id)
+                    // PollResponse의 optionId로 직접 카운트
+                    val voteCount = pollResponseRepository.countByOptionId(option.id)
                     val percentage = if (totalResponseCount > 0) {
                         (voteCount.toDouble() / totalResponseCount.toDouble()) * 100
                     } else {
@@ -61,8 +60,8 @@ class PollResultQueryService(
 
                 val scoreResult = ScoreResultResponse(
                     averageScore = averageScore,
-                    minScore = poll.minScore,
-                    maxScore = poll.maxScore,
+                    minScore = 0, // 점수제 기본 최소값
+                    maxScore = 10, // 점수제 기본 최대값
                     scoreDistribution = scoreDistribution
                 )
 
