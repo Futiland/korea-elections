@@ -24,7 +24,7 @@ class PollCommandService(
             description = request.description,
             questionType = request.questionType,
             pollType = PollType.PUBLIC,
-            allowMultipleResponses = request.allowMultipleResponses,
+            isRevotable = request.isRevotable,
             creatorAccountId = creatorAccountId,
             endAt = request.endAt
         )
@@ -57,7 +57,7 @@ class PollCommandService(
             description = request.description,
             questionType = request.questionType,
             pollType = PollType.PUBLIC,
-            allowMultipleResponses = request.allowMultipleResponses,
+            isRevotable = request.isRevotable,
             creatorAccountId = creatorAccountId
         )
 

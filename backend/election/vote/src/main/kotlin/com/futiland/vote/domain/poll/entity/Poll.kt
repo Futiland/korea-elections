@@ -14,7 +14,7 @@ class Poll(
     @Enumerated(EnumType.STRING)
     val pollType: PollType,
     initialStatus: PollStatus,
-    val allowMultipleResponses: Boolean,
+    val isRevotable: Boolean,
     val creatorAccountId: Long,
     var startAt: LocalDateTime? = null,
     var endAt: LocalDateTime? = null,
@@ -40,7 +40,7 @@ class Poll(
             description: String,
             questionType: QuestionType,
             pollType: PollType,
-            allowMultipleResponses: Boolean,
+            isRevotable: Boolean,
             creatorAccountId: Long,
         ): Poll {
             return Poll(
@@ -49,7 +49,7 @@ class Poll(
                 questionType = questionType,
                 pollType = pollType,
                 initialStatus = PollStatus.DRAFT,
-                allowMultipleResponses = allowMultipleResponses,
+                isRevotable = isRevotable,
                 creatorAccountId = creatorAccountId,
                 startAt = null,
                 endAt = null
@@ -61,7 +61,7 @@ class Poll(
             description: String,
             questionType: QuestionType,
             pollType: PollType,
-            allowMultipleResponses: Boolean,
+            isRevotable: Boolean,
             creatorAccountId: Long,
             endAt: LocalDateTime,
         ): Poll {
@@ -71,7 +71,7 @@ class Poll(
                 questionType = questionType,
                 pollType = pollType,
                 initialStatus = PollStatus.IN_PROGRESS,
-                allowMultipleResponses = allowMultipleResponses,
+                isRevotable = isRevotable,
                 creatorAccountId = creatorAccountId,
                 startAt = LocalDateTime.now(), // 현재 시간으로 자동 설정
                 endAt = endAt

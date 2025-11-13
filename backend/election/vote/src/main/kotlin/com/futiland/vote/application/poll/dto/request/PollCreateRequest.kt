@@ -25,8 +25,8 @@ data class PublicPollCreateRequest(
     )
     val questionType: QuestionType,
 
-    @Schema(description = "중복 응답 허용 여부 (사용자가 여러 번 응답할 수 있는지)", example = "false", required = true)
-    val allowMultipleResponses: Boolean,
+    @Schema(description = "재투표 가능 여부 (사용자가 여러 번 투표할 수 있는지)", example = "false", required = true)
+    val isRevotable: Boolean,
 
     @Schema(description = "여론조사 종료 일시", example = "2025-01-17T23:59:59", required = true)
     val endAt: LocalDateTime,
@@ -56,8 +56,8 @@ data class PublicPollDraftCreateRequest(
     )
     val questionType: QuestionType,
 
-    @Schema(description = "중복 응답 허용 여부", example = "false", required = true)
-    val allowMultipleResponses: Boolean,
+    @Schema(description = "재투표 가능 여부", example = "false", required = true)
+    val isRevotable: Boolean,
 
     @Schema(description = "선택지 목록 (SINGLE_CHOICE, MULTIPLE_CHOICE일 때 필수)", required = false)
     val options: List<PollOptionRequest>? = null,

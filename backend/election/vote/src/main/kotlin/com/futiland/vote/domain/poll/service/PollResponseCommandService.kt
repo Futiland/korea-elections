@@ -25,7 +25,7 @@ class PollResponseCommandService(
         require(poll.status == PollStatus.IN_PROGRESS) { "진행 중인 여론조사만 응답 가능합니다" }
 
         // 중복 응답 체크
-        if (!poll.allowMultipleResponses) {
+        if (!poll.isRevotable) {
             val existingResponse = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId)
             require(existingResponse == null) { "이미 응답한 여론조사입니다" }
         }
@@ -63,7 +63,7 @@ class PollResponseCommandService(
         require(poll.status == PollStatus.IN_PROGRESS) { "진행 중인 여론조사만 수정 가능합니다" }
 
         // 재응답 허용 여부 체크
-        require(poll.allowMultipleResponses) { "응답 수정이 허용되지 않는 여론조사입니다" }
+        require(poll.isRevotable) { "응답 수정이 허용되지 않는 여론조사입니다" }
 
         // 기존 응답 조회
         val existingResponse = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId)
