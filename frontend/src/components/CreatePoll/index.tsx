@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { toast } from 'sonner';
 import router from 'next/router';
+import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 
 type CreatePollDialogProps = {
 	isOpen: boolean;
@@ -38,6 +39,7 @@ export default function CreatePollDialog({
 	setIsOpen,
 }: CreatePollDialogProps) {
 	const { isLoggedIn, isReady } = useAuthToken();
+	const { showDialog, hideDialog } = useAlertDialog();
 
 	// Zod schema
 	const schema = useMemo(
@@ -66,7 +68,7 @@ export default function CreatePollDialog({
 							z
 								.string()
 								.trim()
-								.min(1, '빈 옵션은 허용되지 않습니다')
+								.min(2, '빈 옵션은 허용되지 않습니다')
 								.max(50, '옵션은 최대 50자')
 						)
 						.max(10, '옵션은 최대 10개')
@@ -85,22 +87,25 @@ export default function CreatePollDialog({
 
 	type FormValues = z.infer<typeof schema>;
 
+	const getDefaultValues = () => ({
+		title: '',
+		content: '',
+		endAt: new Date(Date.now() + 60 * 60 * 1000), // 기본 1시간 후
+		formType: 'single' as const,
+		options: ['옵션 1', '옵션 2'],
+		allowRevote: false,
+	});
+
 	const {
 		control,
 		register,
 		handleSubmit,
 		watch,
+		reset,
 		formState: { errors, isSubmitting },
 	} = useForm<any>({
 		resolver: zodResolver(schema),
-		defaultValues: {
-			title: '',
-			content: '',
-			endAt: new Date(Date.now() + 60 * 60 * 1000), // 기본 1시간 후
-			formType: 'single',
-			options: ['옵션 1', '옵션 2'],
-			allowRevote: false,
-		},
+		defaultValues: getDefaultValues(),
 		mode: 'onChange',
 	});
 
@@ -121,6 +126,32 @@ export default function CreatePollDialog({
 		} catch (e) {
 			toast.error('제출 중 오류가 발생했습니다.');
 		}
+	};
+
+	const handleCancel = () => {
+		showDialog({
+			message: '투표 생성을 취소하시겠습니까?',
+			actions: (
+				<div className="flex gap-2 w-full">
+					<Button
+						className="flex-1 bg-slate-200 text-slate-900 hover:bg-slate-200 h-10"
+						onClick={() => hideDialog()}
+					>
+						계속 작성
+					</Button>
+					<Button
+						className="flex-1 bg-red-600 hover:bg-red-500 text-white h-10"
+						onClick={() => {
+							reset(getDefaultValues());
+							hideDialog();
+							setIsOpen(false);
+						}}
+					>
+						투표 생성 취소
+					</Button>
+				</div>
+			),
+		});
 	};
 
 	return (
@@ -325,7 +356,7 @@ export default function CreatePollDialog({
 								<Button
 									type="button"
 									className="flex-1 bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
-									onClick={() => setIsOpen(false)}
+									onClick={handleCancel}
 								>
 									취소
 								</Button>
