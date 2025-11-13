@@ -28,6 +28,7 @@ import { useAuthToken } from '@/hooks/useAuthToken';
 import { toast } from 'sonner';
 import router from 'next/router';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
+import { QuestionType } from '@/lib/types/poll';
 
 type CreatePollDialogProps = {
 	isOpen: boolean;
@@ -62,23 +63,27 @@ export default function CreatePollDialog({
 							(d) => d.getTime() > Date.now(),
 							'종료일은 현재 이후여야 합니다'
 						),
-					formType: z.enum(['score', 'single', 'multiple']),
+					formType: z.enum(['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SCORE']),
 					options: z
-						.array(
-							z
-								.string()
-								.trim()
-								.min(2, '빈 옵션은 허용되지 않습니다')
-								.max(50, '옵션은 최대 50자')
-						)
+						.array(z.string().max(50, '옵션은 최대 50자'))
 						.max(10, '옵션은 최대 10개')
 						.default([]),
 					allowRevote: z.boolean().default(false),
 				})
 				.refine(
-					(v) => v.formType === 'score' || (v.options && v.options.length >= 2),
+					(v) => v.formType === 'SCORE' || (v.options && v.options.length >= 2),
 					{
 						message: '단일/다중 선택은 최소 2개 이상의 옵션이 필요합니다',
+						path: ['options'],
+					}
+				)
+				.refine(
+					(v) =>
+						v.formType === 'SCORE' ||
+						!v.options ||
+						v.options.every((opt) => opt && opt.trim().length >= 2),
+					{
+						message: '빈 옵션은 허용되지 않습니다',
 						path: ['options'],
 					}
 				),
@@ -91,8 +96,8 @@ export default function CreatePollDialog({
 		title: '',
 		content: '',
 		endAt: new Date(Date.now() + 60 * 60 * 1000), // 기본 1시간 후
-		formType: 'single' as const,
-		options: ['옵션 1', '옵션 2'],
+		formType: 'SINGLE_CHOICE' as QuestionType,
+		options: [''],
 		allowRevote: false,
 	});
 
@@ -102,6 +107,7 @@ export default function CreatePollDialog({
 		handleSubmit,
 		watch,
 		reset,
+		setValue,
 		formState: { errors, isSubmitting },
 	} = useForm<any>({
 		resolver: zodResolver(schema),
@@ -117,6 +123,16 @@ export default function CreatePollDialog({
 	const formType = watch('formType');
 	const titleVal = watch('title') ?? '';
 	const contentVal = watch('content') ?? '';
+	const optionsVal = watch('options') ?? [];
+
+	const handleOptionType = (value: QuestionType) => {
+		if (value === 'SCORE') {
+			setValue('options', []);
+		} else {
+			// SINGLE_CHOICE 또는 MULTIPLE_CHOICE로 변경할 때
+			setValue('options', ['']);
+		}
+	};
 
 	const onSubmit = async (values: FormValues) => {
 		try {
@@ -256,15 +272,22 @@ export default function CreatePollDialog({
 										render={({ field }) => (
 											<Select
 												value={field.value}
-												onValueChange={field.onChange}
+												onValueChange={(value) => {
+													field.onChange(value);
+													handleOptionType(value as QuestionType);
+												}}
 											>
 												<SelectTrigger className="bg-white">
 													<SelectValue placeholder="폼 타입을 선택해 주세요." />
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value="score">점수제</SelectItem>
-													<SelectItem value="single">단일 선택</SelectItem>
-													<SelectItem value="multiple">다중 선택</SelectItem>
+													<SelectItem value="SCORE">점수제</SelectItem>
+													<SelectItem value="SINGLE_CHOICE">
+														단일 선택
+													</SelectItem>
+													<SelectItem value="MULTIPLE_CHOICE">
+														다중 선택
+													</SelectItem>
 												</SelectContent>
 											</Select>
 										)}
@@ -274,8 +297,8 @@ export default function CreatePollDialog({
 									</FieldDescription>
 								</Field>
 
-								{/* 옵션 (score 제외) */}
-								{formType !== 'score' && (
+								{/* 옵션 (SCORE 제외) */}
+								{formType !== 'SCORE' && (
 									<Field>
 										<FieldLabel className="font-bold text-md">
 											옵션 설정
@@ -289,13 +312,20 @@ export default function CreatePollDialog({
 												<Field key={f.id}>
 													{/* <FieldLabel>옵션 {idx + 1}</FieldLabel> */}
 													<div className="flex items-center gap-2">
-														<Input
-															type="text"
-															placeholder={`옵션 ${idx + 1}`}
-															maxLength={50}
-															className="text-sm"
-															{...register(`options.${idx}` as const)}
-														/>
+														<div className="flex-1">
+															<Input
+																type="text"
+																placeholder={`옵션 ${idx + 1}`}
+																maxLength={50}
+																className="text-sm"
+																{...register(`options.${idx}` as const)}
+															/>
+															{/* <div className="flex justify-end text-xs mt-1">
+																<span className="text-slate-500">
+																	{optionsVal[idx]?.length ?? 0}/50
+																</span>
+															</div> */}
+														</div>
 														<Button
 															type="button"
 															variant="ghost"
