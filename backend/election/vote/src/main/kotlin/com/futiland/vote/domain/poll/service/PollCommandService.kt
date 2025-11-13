@@ -18,7 +18,7 @@ class PollCommandService(
 
     @Transactional
     override fun createPublicPoll(request: PublicPollCreateRequest, creatorAccountId: Long): PollDetailResponse {
-        // 무조건 IN_PROGRESS로 생성
+        // 무조건 IN_PROGRESS로 생성, startAt은 현재 시간으로 자동 설정
         val poll = Poll.createActive(
             title = request.title,
             description = request.description,
@@ -30,7 +30,6 @@ class PollCommandService(
             minScore = request.minScore,
             maxScore = request.maxScore,
             creatorAccountId = creatorAccountId,
-            startAt = request.startAt,
             endAt = request.endAt
         )
 

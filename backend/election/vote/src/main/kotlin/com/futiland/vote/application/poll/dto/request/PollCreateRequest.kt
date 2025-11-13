@@ -31,9 +31,6 @@ data class PublicPollCreateRequest(
     @Schema(description = "최대 점수 (SCORE일 때만 사용)", example = "10", required = true, defaultValue = "10")
     val maxScore: Int = 10,
 
-    @Schema(description = "여론조사 시작 일시", example = "2025-01-10T00:00:00", required = true)
-    val startAt: LocalDateTime,
-
     @Schema(description = "여론조사 종료 일시", example = "2025-01-17T23:59:59", required = true)
     val endAt: LocalDateTime,
 

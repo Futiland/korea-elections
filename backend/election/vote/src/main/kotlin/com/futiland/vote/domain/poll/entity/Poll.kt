@@ -79,16 +79,8 @@ class Poll(
             minScore: Int = 0,
             maxScore: Int = 10,
             creatorAccountId: Long,
-            startAt: LocalDateTime?,
-            endAt: LocalDateTime?,
+            endAt: LocalDateTime,
         ): Poll {
-            if (startAt == null || endAt == null) {
-                throw ApplicationException(
-                    code = CodeEnum.FRS_003,
-                    message = "IN_PROGRESS 상태로 생성하려면 시작일시와 종료일시가 필요합니다"
-                )
-            }
-
             return Poll(
                 title = title,
                 description = description,
@@ -101,7 +93,7 @@ class Poll(
                 minScore = minScore,
                 maxScore = maxScore,
                 creatorAccountId = creatorAccountId,
-                startAt = startAt,
+                startAt = LocalDateTime.now(), // 현재 시간으로 자동 설정
                 endAt = endAt
             )
         }
