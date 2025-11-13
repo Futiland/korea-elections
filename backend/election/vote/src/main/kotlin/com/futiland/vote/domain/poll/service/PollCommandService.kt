@@ -38,11 +38,12 @@ class PollCommandService(
 
         // 점수제가 아닌 경우 옵션 생성
         val options = if (poll.questionType != QuestionType.SCORE && request.options != null) {
-            val pollOptions = request.options.map { optionReq ->
+            val pollOptions = request.options.mapIndexed { index, optionReq ->
                 PollOption.create(
                     pollId = savedPoll.id,
                     optionText = optionReq.optionText,
-                    optionOrder = optionReq.optionOrder
+                    // optionOrder가 전달되지 않으면 리스트 순서대로 자동 부여 (1부터 시작)
+                    optionOrder = optionReq.optionOrder ?: (index + 1)
                 )
             }
             pollOptionRepository.saveAll(pollOptions)
@@ -73,11 +74,12 @@ class PollCommandService(
 
         // 점수제가 아닌 경우 옵션 생성
         val options = if (poll.questionType != QuestionType.SCORE && request.options != null) {
-            val pollOptions = request.options.map { optionReq ->
+            val pollOptions = request.options.mapIndexed { index, optionReq ->
                 PollOption.create(
                     pollId = savedPoll.id,
                     optionText = optionReq.optionText,
-                    optionOrder = optionReq.optionOrder
+                    // optionOrder가 전달되지 않으면 리스트 순서대로 자동 부여 (1부터 시작)
+                    optionOrder = optionReq.optionOrder ?: (index + 1)
                 )
             }
             pollOptionRepository.saveAll(pollOptions)

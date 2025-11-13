@@ -77,6 +77,11 @@ data class PollOptionRequest(
     @Schema(description = "선택지 텍스트", example = "사과", required = true)
     val optionText: String,
 
-    @Schema(description = "선택지 순서 (1부터 시작)", example = "1", required = true)
-    val optionOrder: Int,
+    // TODO: 추후 클라이언트에서 선택지 순서를 직접 조율할 수 있도록 확장 가능
+    //  - 현재: optionOrder를 전달하지 않으면 서버에서 리스트 순서대로 자동 부여 (1, 2, 3, ...)
+    //  - 미래: 클라이언트에서 optionOrder를 명시적으로 전달하여 원하는 순서로 배치 가능
+    //  - 예시: [{"optionText": "바나나", "optionOrder": 2}, {"optionText": "사과", "optionOrder": 1}]
+    //         -> 실제 순서: 1.사과, 2.바나나
+    @Schema(description = "선택지 순서 (1부터 시작, 미전달 시 자동 부여)", example = "1", required = false)
+    val optionOrder: Int? = null,
 )
