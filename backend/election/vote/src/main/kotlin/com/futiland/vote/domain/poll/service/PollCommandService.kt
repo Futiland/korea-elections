@@ -25,10 +25,6 @@ class PollCommandService(
             questionType = request.questionType,
             pollType = PollType.PUBLIC,
             allowMultipleResponses = request.allowMultipleResponses,
-            minSelections = request.minSelections,
-            maxSelections = request.maxSelections,
-            minScore = request.minScore,
-            maxScore = request.maxScore,
             creatorAccountId = creatorAccountId,
             endAt = request.endAt
         )
@@ -62,10 +58,6 @@ class PollCommandService(
             questionType = request.questionType,
             pollType = PollType.PUBLIC,
             allowMultipleResponses = request.allowMultipleResponses,
-            minSelections = request.minSelections,
-            maxSelections = request.maxSelections,
-            minScore = request.minScore,
-            maxScore = request.maxScore,
             creatorAccountId = creatorAccountId
         )
 

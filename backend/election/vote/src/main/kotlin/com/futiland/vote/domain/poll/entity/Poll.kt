@@ -15,10 +15,6 @@ class Poll(
     val pollType: PollType,
     initialStatus: PollStatus,
     val allowMultipleResponses: Boolean,
-    val minSelections: Int? = null,
-    val maxSelections: Int? = null,
-    val minScore: Int = 0,
-    val maxScore: Int = 10,
     val creatorAccountId: Long,
     var startAt: LocalDateTime? = null,
     var endAt: LocalDateTime? = null,
@@ -45,10 +41,6 @@ class Poll(
             questionType: QuestionType,
             pollType: PollType,
             allowMultipleResponses: Boolean,
-            minSelections: Int? = null,
-            maxSelections: Int? = null,
-            minScore: Int = 0,
-            maxScore: Int = 10,
             creatorAccountId: Long,
         ): Poll {
             return Poll(
@@ -58,10 +50,6 @@ class Poll(
                 pollType = pollType,
                 initialStatus = PollStatus.DRAFT,
                 allowMultipleResponses = allowMultipleResponses,
-                minSelections = minSelections,
-                maxSelections = maxSelections,
-                minScore = minScore,
-                maxScore = maxScore,
                 creatorAccountId = creatorAccountId,
                 startAt = null,
                 endAt = null
@@ -74,10 +62,6 @@ class Poll(
             questionType: QuestionType,
             pollType: PollType,
             allowMultipleResponses: Boolean,
-            minSelections: Int? = null,
-            maxSelections: Int? = null,
-            minScore: Int = 0,
-            maxScore: Int = 10,
             creatorAccountId: Long,
             endAt: LocalDateTime,
         ): Poll {
@@ -88,10 +72,6 @@ class Poll(
                 pollType = pollType,
                 initialStatus = PollStatus.IN_PROGRESS,
                 allowMultipleResponses = allowMultipleResponses,
-                minSelections = minSelections,
-                maxSelections = maxSelections,
-                minScore = minScore,
-                maxScore = maxScore,
                 creatorAccountId = creatorAccountId,
                 startAt = LocalDateTime.now(), // 현재 시간으로 자동 설정
                 endAt = endAt
@@ -121,17 +101,12 @@ class Poll(
             }
             QuestionType.MULTIPLE_CHOICE -> {
                 require(optionIds != null && optionIds.isNotEmpty()) { "선택지를 입력해야 합니다" }
-                minSelections?.let {
-                    require(optionIds.size >= it) { "최소 ${it}개 이상 선택해야 합니다" }
-                }
-                maxSelections?.let {
-                    require(optionIds.size <= it) { "최대 ${it}개까지만 선택 가능합니다" }
-                }
+                // 다중 선택 시 제한 없음 (minSelections, maxSelections 검증 제거)
                 require(scoreValue == null) { "선택지 타입에는 점수 입력이 불가능합니다" }
             }
             QuestionType.SCORE -> {
                 require(scoreValue != null) { "점수를 입력해야 합니다" }
-                require(scoreValue in minScore..maxScore) { "점수는 ${minScore}~${maxScore} 사이여야 합니다" }
+                require(scoreValue in 0..10) { "점수는 0~10 사이여야 합니다" }
                 require(optionIds.isNullOrEmpty()) { "점수제는 선택지를 선택할 수 없습니다" }
             }
         }
