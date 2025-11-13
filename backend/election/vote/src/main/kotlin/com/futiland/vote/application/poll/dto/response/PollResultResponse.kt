@@ -1,10 +1,10 @@
 package com.futiland.vote.application.poll.dto.response
 
-import com.futiland.vote.domain.poll.entity.QuestionType
+import com.futiland.vote.domain.poll.entity.ResponseType
 
 data class PollResultResponse(
     val pollId: Long,
-    val questionType: QuestionType,
+    val responseType: ResponseType,
     val totalResponseCount: Long,
     val optionResults: List<OptionResultResponse>?,
     val scoreResult: ScoreResultResponse?,

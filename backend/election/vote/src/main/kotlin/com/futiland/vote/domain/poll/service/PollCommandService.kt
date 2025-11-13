@@ -22,7 +22,7 @@ class PollCommandService(
         val poll = Poll.createActive(
             title = request.title,
             description = request.description,
-            questionType = request.questionType,
+            responseType = request.responseType,
             pollType = PollType.PUBLIC,
             isRevotable = request.isRevotable,
             creatorAccountId = creatorAccountId,
@@ -32,7 +32,7 @@ class PollCommandService(
         val savedPoll = pollRepository.save(poll)
 
         // 점수제가 아닌 경우 옵션 생성
-        val options = if (poll.questionType != QuestionType.SCORE && request.options != null) {
+        val options = if (poll.responseType != ResponseType.SCORE && request.options != null) {
             val pollOptions = request.options.mapIndexed { index, optionReq ->
                 PollOption.create(
                     pollId = savedPoll.id,
@@ -55,7 +55,7 @@ class PollCommandService(
         val poll = Poll.createDraft(
             title = request.title,
             description = request.description,
-            questionType = request.questionType,
+            responseType = request.responseType,
             pollType = PollType.PUBLIC,
             isRevotable = request.isRevotable,
             creatorAccountId = creatorAccountId
@@ -64,7 +64,7 @@ class PollCommandService(
         val savedPoll = pollRepository.save(poll)
 
         // 점수제가 아닌 경우 옵션 생성
-        val options = if (poll.questionType != QuestionType.SCORE && request.options != null) {
+        val options = if (poll.responseType != ResponseType.SCORE && request.options != null) {
             val pollOptions = request.options.mapIndexed { index, optionReq ->
                 PollOption.create(
                     pollId = savedPoll.id,

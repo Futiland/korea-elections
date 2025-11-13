@@ -3,7 +3,7 @@ package com.futiland.vote.domain.poll.service
 import com.futiland.vote.application.poll.dto.response.OptionResultResponse
 import com.futiland.vote.application.poll.dto.response.PollResultResponse
 import com.futiland.vote.application.poll.dto.response.ScoreResultResponse
-import com.futiland.vote.domain.poll.entity.QuestionType
+import com.futiland.vote.domain.poll.entity.ResponseType
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
@@ -20,8 +20,8 @@ class PollResultQueryService(
         val poll = pollRepository.getById(pollId)
         val totalResponseCount = pollResponseRepository.countByPollId(pollId)
 
-        return when (poll.questionType) {
-            QuestionType.SINGLE_CHOICE, QuestionType.MULTIPLE_CHOICE -> {
+        return when (poll.responseType) {
+            ResponseType.SINGLE_CHOICE, ResponseType.MULTIPLE_CHOICE -> {
                 val options = pollOptionRepository.findAllByPollId(pollId)
                 val optionResults = options.map { option ->
                     // PollResponse의 optionId로 직접 카운트
@@ -40,13 +40,13 @@ class PollResultQueryService(
                 }
                 PollResultResponse(
                     pollId = pollId,
-                    questionType = poll.questionType,
+                    responseType = poll.responseType,
                     totalResponseCount = totalResponseCount,
                     optionResults = optionResults,
                     scoreResult = null
                 )
             }
-            QuestionType.SCORE -> {
+            ResponseType.SCORE -> {
                 val responses = pollResponseRepository.findAllByPollId(pollId)
                 val scores = responses.mapNotNull { it.scoreValue }
 
@@ -67,7 +67,7 @@ class PollResultQueryService(
 
                 PollResultResponse(
                     pollId = pollId,
-                    questionType = poll.questionType,
+                    responseType = poll.responseType,
                     totalResponseCount = totalResponseCount,
                     optionResults = null,
                     scoreResult = scoreResult

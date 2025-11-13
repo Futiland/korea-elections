@@ -1,6 +1,6 @@
 package com.futiland.vote.application.poll.dto.request
 
-import com.futiland.vote.domain.poll.entity.QuestionType
+import com.futiland.vote.domain.poll.entity.ResponseType
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDateTime
 
@@ -14,7 +14,7 @@ data class PublicPollCreateRequest(
 
     @Schema(
         description = """
-            질문 유형
+            응답 유형
             - SINGLE_CHOICE: 단일 선택
             - MULTIPLE_CHOICE: 다중 선택 (제한 없이 모두 선택 가능)
             - SCORE: 점수제 (기본 0~10점)
@@ -23,7 +23,7 @@ data class PublicPollCreateRequest(
         required = true,
         allowableValues = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "SCORE"]
     )
-    val questionType: QuestionType,
+    val responseType: ResponseType,
 
     @Schema(description = "재투표 가능 여부 (사용자가 여러 번 투표할 수 있는지)", example = "false", required = true)
     val isRevotable: Boolean,
@@ -45,7 +45,7 @@ data class PublicPollDraftCreateRequest(
 
     @Schema(
         description = """
-            질문 유형
+            응답 유형
             - SINGLE_CHOICE: 단일 선택
             - MULTIPLE_CHOICE: 다중 선택 (제한 없이 모두 선택 가능)
             - SCORE: 점수제 (기본 0~10점)
@@ -54,7 +54,7 @@ data class PublicPollDraftCreateRequest(
         required = true,
         allowableValues = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "SCORE"]
     )
-    val questionType: QuestionType,
+    val responseType: ResponseType,
 
     @Schema(description = "재투표 가능 여부", example = "false", required = true)
     val isRevotable: Boolean,

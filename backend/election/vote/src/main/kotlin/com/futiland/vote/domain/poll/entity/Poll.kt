@@ -10,7 +10,7 @@ class Poll(
     var title: String,
     var description: String,
     @Enumerated(EnumType.STRING)
-    val questionType: QuestionType,
+    val responseType: ResponseType,
     @Enumerated(EnumType.STRING)
     val pollType: PollType,
     initialStatus: PollStatus,
@@ -38,7 +38,7 @@ class Poll(
         fun createDraft(
             title: String,
             description: String,
-            questionType: QuestionType,
+            responseType: ResponseType,
             pollType: PollType,
             isRevotable: Boolean,
             creatorAccountId: Long,
@@ -46,7 +46,7 @@ class Poll(
             return Poll(
                 title = title,
                 description = description,
-                questionType = questionType,
+                responseType = responseType,
                 pollType = pollType,
                 initialStatus = PollStatus.DRAFT,
                 isRevotable = isRevotable,
@@ -59,7 +59,7 @@ class Poll(
         fun createActive(
             title: String,
             description: String,
-            questionType: QuestionType,
+            responseType: ResponseType,
             pollType: PollType,
             isRevotable: Boolean,
             creatorAccountId: Long,
@@ -68,7 +68,7 @@ class Poll(
             return Poll(
                 title = title,
                 description = description,
-                questionType = questionType,
+                responseType = responseType,
                 pollType = pollType,
                 initialStatus = PollStatus.IN_PROGRESS,
                 isRevotable = isRevotable,
@@ -94,17 +94,17 @@ class Poll(
     }
 
     fun validateResponse(optionIds: List<Long>?, scoreValue: Int?) {
-        when (questionType) {
-            QuestionType.SINGLE_CHOICE -> {
+        when (responseType) {
+            ResponseType.SINGLE_CHOICE -> {
                 require(optionIds != null && optionIds.size == 1) { "단일 선택은 1개만 선택 가능합니다" }
                 require(scoreValue == null) { "선택지 타입에는 점수 입력이 불가능합니다" }
             }
-            QuestionType.MULTIPLE_CHOICE -> {
+            ResponseType.MULTIPLE_CHOICE -> {
                 require(optionIds != null && optionIds.isNotEmpty()) { "선택지를 입력해야 합니다" }
                 // 다중 선택 시 제한 없음 (minSelections, maxSelections 검증 제거)
                 require(scoreValue == null) { "선택지 타입에는 점수 입력이 불가능합니다" }
             }
-            QuestionType.SCORE -> {
+            ResponseType.SCORE -> {
                 require(scoreValue != null) { "점수를 입력해야 합니다" }
                 require(scoreValue in 0..10) { "점수는 0~10 사이여야 합니다" }
                 require(optionIds.isNullOrEmpty()) { "점수제는 선택지를 선택할 수 없습니다" }
