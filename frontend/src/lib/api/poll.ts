@@ -8,5 +8,5 @@ import {
 export const createPoll = (data: CreatePollData) =>
 	apiPost<CreatePollResponse>('/rest/poll/v1/public', data);
 
-export const getPublicPolls = (cursor: string) =>
-	apiGet<PublicPollResponse>('/rest/poll/v1/public', { cursor });
+export const getPublicPolls = (size: number, cursor: string = '') =>
+	apiGet<PublicPollResponse>('/rest/poll/v1/public', { size, cursor });

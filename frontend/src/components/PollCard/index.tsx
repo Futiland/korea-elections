@@ -4,39 +4,20 @@ import StatusBadge from '../StatusBadge';
 import PollCardOptions from './PollCardOptions';
 import { Share2 } from 'lucide-react';
 import PollCardResults from './PollCardResults';
-
-interface PollData {
-	id: number;
-	title: string;
-	description: string;
-	status: 'progress' | 'stopped' | 'ended';
-	endDate: string;
-	startDate: string;
-	pollCount: number;
-}
+import { PublicPollData, PollStatus } from '@/lib/types/poll';
+import { format } from 'date-fns';
 
 interface PollCardProps {
-	pollData?: PollData;
+	pollData?: PublicPollData;
 }
 
 export default function PollCard({ pollData }: PollCardProps) {
-	// 기본값 설정
-	const data = pollData || {
-		id: 1,
-		title: '모두의 투표 제목입니다. 투표해주세요.',
-		description:
-			'이 투표는 모두가 참여할 수 있는 예시 투표입니다. 아래 옵션 중 하나를 선택하거나 점수를 매겨주세요.',
-		status: 'progress' as const,
-		endDate: '2024-07-01',
-		startDate: '2024-06-01',
-		pollCount: 150,
-	};
-
 	// 상태 관리
 	const [selectedSingleChoice, setSelectedSingleChoice] = useState<string>('');
 	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
 		string[]
 	>([]);
+
 	const [selectedScore, setSelectedScore] = useState<number>(1);
 	const [showResults, setShowResults] = useState<boolean>(false);
 	return (
@@ -45,9 +26,15 @@ export default function PollCard({ pollData }: PollCardProps) {
 				{/* 헤더 영역 - 상태값, 제목, 공유 버튼 */}
 				<div className="flex items-start justify-between mb-2">
 					<div className="flex items-center gap-3">
-						<StatusBadge status={data.status} />
+						<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
+
 						<span className="text-xs text-slate-500">
-							{data.startDate} ~ {data.endDate} 까지
+							{pollData?.startAt && pollData?.endAt
+								? `${format(pollData.startAt, 'yyyy-MM-dd')} ~ ${format(
+										pollData.endAt,
+										'yyyy-MM-dd'
+								  )} 까지`
+								: ''}
 						</span>
 					</div>
 					<button
@@ -61,12 +48,12 @@ export default function PollCard({ pollData }: PollCardProps) {
 
 				{/* 투표 제목 */}
 				<CardHeader className="px-0 py-0">
-					<CardTitle className="text-lg">{data.title}</CardTitle>
+					<CardTitle className="text-lg">{pollData?.title}</CardTitle>
 				</CardHeader>
 
 				{/* 상세 내용 */}
 				<div className="mb-6 text-sm text-slate-600 leading-relaxed">
-					{data.description}
+					{pollData?.description}
 				</div>
 
 				{/* 선택 옵션 */}
@@ -78,6 +65,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						setSelectedMultipleChoices={setSelectedMultipleChoices}
 						selectedScore={selectedScore}
 						setSelectedScore={setSelectedScore}
+						options={pollData?.options ?? []}
 					/>
 				)}
 
@@ -87,7 +75,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 				{/* 버튼 영역 */}
 				<div className="flex gap-3">
 					{/* 진행중인 투표일 때만 투표하러가기 버튼 표시 */}
-					{data.status === 'progress' && (
+					{pollData?.status === 'IN_PROGRESS' && (
 						<button
 							className="flex-1 bg-blue-900 hover:bg-blue-800 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"
@@ -97,21 +85,21 @@ export default function PollCard({ pollData }: PollCardProps) {
 						</button>
 					)}
 					{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-					{data.status === 'progress' && (
+					{pollData?.status === 'IN_PROGRESS' && (
 						<button
 							className={`${
-								data.status === 'progress' ? 'flex-1' : 'w-full'
+								pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
 							} bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors`}
 							type="button"
 							onClick={() => setShowResults(true)}
 						>
-							{data.status === 'progress'
+							{pollData.status === 'IN_PROGRESS'
 								? '결과보기'
 								: '완료한 투표 & 결과보기'}
 						</button>
 					)}
 					{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
-					{data.status === 'ended' && (
+					{pollData?.status === 'EXPIRED' && (
 						<button
 							className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"

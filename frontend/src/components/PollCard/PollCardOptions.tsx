@@ -9,6 +9,7 @@ type PollCardOptionsProps = {
 	setSelectedMultipleChoices: (v: string[]) => void;
 	selectedScore: number;
 	setSelectedScore: (v: number) => void;
+	options: { id: number; optionText: string; optionOrder: number }[];
 };
 
 export default function PollCardOptions({
@@ -18,33 +19,20 @@ export default function PollCardOptions({
 	setSelectedMultipleChoices,
 	selectedScore,
 	setSelectedScore,
+	options,
 }: PollCardOptionsProps) {
 	return (
 		<div className="mb-6 space-y-4 flex flex-col items-start">
 			{/* 단일 선택 옵션 */}
 			<SingleChoiceOption
-				options={[
-					'단일 선택 A',
-					'단일 선택 B',
-					'단일 선택 단일 선택단일 선택단일 선택 C',
-					'단일 선택 D',
-					'단일 선택 E',
-					'단일 선택 F',
-					'단일 선택 G',
-				]}
+				options={options}
 				value={selectedSingleChoice}
 				onValueChange={setSelectedSingleChoice}
 			/>
 
 			{/* 다중 선택 옵션 */}
 			<MultipleChoiceOption
-				options={[
-					'다중 선택 1',
-					'다중 선택 2',
-					'다중 선택 3',
-					'다중 선택 4',
-					'다중 선택 다중 선택다중 선택다중 선택 5',
-				]}
+				options={options}
 				selectedValues={selectedMultipleChoices}
 				onChange={setSelectedMultipleChoices}
 			/>
