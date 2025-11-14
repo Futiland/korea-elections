@@ -23,7 +23,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
 				{/* 헤더 영역 - 상태값, 제목, 공유 버튼 */}
-				<div className="flex items-start justify-between mb-2">
+				<div className="flex items-center justify-between mb-2">
 					<div className="flex items-center gap-3">
 						<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
 
@@ -36,13 +36,10 @@ export default function PollCard({ pollData }: PollCardProps) {
 								: ''}
 						</span>
 					</div>
-					<button
-						className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-						type="button"
-						title="공유하기"
-					>
-						<Share2 className="w-4 h-4 text-slate-600" />
-					</button>
+					{pollData?.userName && (
+						<p className="text-sm text-slate-500">{pollData.userName}</p>
+					)}
+					<p className="text-xs text-slate-500">김*숙</p>
 				</div>
 
 				{/* 투표 제목 */}
@@ -105,6 +102,13 @@ export default function PollCard({ pollData }: PollCardProps) {
 							결과보기
 						</button>
 					)}
+					<button
+						className="bg-slate-100 hover:bg-slate-100 py-3 px-4 rounded-lg font-semibold"
+						type="button"
+						title="공유하기"
+					>
+						<Share2 className="w-5 h-5 text-slate-700" />
+					</button>
 				</div>
 			</div>
 		</Card>
