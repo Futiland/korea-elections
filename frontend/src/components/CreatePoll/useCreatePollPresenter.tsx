@@ -8,7 +8,7 @@ import {
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
@@ -107,6 +107,7 @@ export function useCreatePollPresenter({
 	setIsOpen,
 }: CreatePollDialogProps) {
 	const { showDialog, hideDialog } = useAlertDialog();
+	const queryClient = useQueryClient();
 
 	const {
 		control,
@@ -126,6 +127,8 @@ export function useCreatePollPresenter({
 	const createPollMutation = useMutation({
 		mutationFn: (payload: CreatePollData) => createPoll(payload),
 		onSuccess: () => {
+			// everyone-poll 페이지의 리스트만 리패치
+			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
 			toast.success('투표 생성이 완료되었습니다.');
 			hideDialog();
 			setIsOpen(false);

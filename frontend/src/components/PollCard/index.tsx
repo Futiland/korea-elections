@@ -93,6 +93,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 								: '완료한 투표 & 결과보기'}
 						</button>
 					)}
+					{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
 					{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
 					{pollData?.status === 'EXPIRED' && (
 						<button
