@@ -1,8 +1,8 @@
-import SingleChoiceOption from '../VoteOptions/SingleChoiceOption';
-import MultipleChoiceOption from '../VoteOptions/MultipleChoiceOption';
-import ScoreOption from '../VoteOptions/ScoreOption';
+import SingleChoiceOption from '../PollOptions/SingleChoiceOption';
+import MultipleChoiceOption from '../PollOptions/MultipleChoiceOption';
+import ScoreOption from '../PollOptions/ScoreOption';
 
-type VoteCardOptionsProps = {
+type PollCardOptionsProps = {
 	selectedSingleChoice: string;
 	setSelectedSingleChoice: (v: string) => void;
 	selectedMultipleChoices: string[];
@@ -11,14 +11,14 @@ type VoteCardOptionsProps = {
 	setSelectedScore: (v: number) => void;
 };
 
-export default function VoteCardOptions({
+export default function PollCardOptions({
 	selectedSingleChoice,
 	setSelectedSingleChoice,
 	selectedMultipleChoices,
 	setSelectedMultipleChoices,
 	selectedScore,
 	setSelectedScore,
-}: VoteCardOptionsProps) {
+}: PollCardOptionsProps) {
 	return (
 		<div className="mb-6 space-y-4 flex flex-col items-start">
 			{/* 단일 선택 옵션 */}

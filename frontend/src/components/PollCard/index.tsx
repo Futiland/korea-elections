@@ -1,27 +1,27 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import StatusBadge from '../StatusBadge';
-import VoteCardOptions from './VoteCardOptions';
+import PollCardOptions from './PollCardOptions';
 import { Share2 } from 'lucide-react';
-import VoteCardResults from './VoteCardResults';
+import PollCardResults from './PollCardResults';
 
-interface VoteData {
+interface PollData {
 	id: number;
 	title: string;
 	description: string;
 	status: 'progress' | 'stopped' | 'ended';
 	endDate: string;
 	startDate: string;
-	voteCount: number;
+	pollCount: number;
 }
 
-interface VoteCardProps {
-	voteData?: VoteData;
+interface PollCardProps {
+	pollData?: PollData;
 }
 
-export default function VoteCard({ voteData }: VoteCardProps) {
+export default function PollCard({ pollData }: PollCardProps) {
 	// 기본값 설정
-	const data = voteData || {
+	const data = pollData || {
 		id: 1,
 		title: '모두의 투표 제목입니다. 투표해주세요.',
 		description:
@@ -29,7 +29,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 		status: 'progress' as const,
 		endDate: '2024-07-01',
 		startDate: '2024-06-01',
-		voteCount: 150,
+		pollCount: 150,
 	};
 
 	// 상태 관리
@@ -71,7 +71,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 
 				{/* 선택 옵션 */}
 				{!showResults && (
-					<VoteCardOptions
+					<PollCardOptions
 						selectedSingleChoice={selectedSingleChoice}
 						setSelectedSingleChoice={setSelectedSingleChoice}
 						selectedMultipleChoices={selectedMultipleChoices}
@@ -82,7 +82,7 @@ export default function VoteCard({ voteData }: VoteCardProps) {
 				)}
 
 				{/* 결과 차트 */}
-				{showResults && <VoteCardResults />}
+				{showResults && <PollCardResults />}
 
 				{/* 버튼 영역 */}
 				<div className="flex gap-3">
