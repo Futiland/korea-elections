@@ -40,3 +40,31 @@ export type CreatePollResponse = {
 		}[];
 	};
 };
+
+export type PublicPollData = {
+	id: number;
+	title: string;
+	description: string;
+	responseType: QuestionType;
+	status: PollStatus;
+	startAt: Date;
+	endAt: Date;
+	createdAt: Date;
+	userName: string;
+	isRevotable: boolean;
+	responseCount: number;
+	options: {
+		id: number;
+		optionText: string;
+		optionOrder: number;
+	}[];
+};
+
+export type PublicPollResponse = {
+	code: string;
+	message: string;
+	data: {
+		content: PublicPollData[];
+		nextCursor: string;
+	};
+};
