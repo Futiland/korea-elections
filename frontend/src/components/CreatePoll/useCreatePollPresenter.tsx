@@ -36,7 +36,7 @@ const createPollSchema = z
 			.date()
 			.refine((d) => !isNaN(d.getTime()), '종료일을 선택해주세요')
 			.refine((d) => d.getTime() > Date.now(), '종료일은 현재 이후여야 합니다'),
-		questionType: z.enum(['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SCORE']),
+		responseType: z.enum(['SINGLE_CHOICE', 'MULTIPLE_CHOICE', 'SCORE']),
 		options: z
 			.array(
 				z.object({
@@ -48,10 +48,10 @@ const createPollSchema = z
 				})
 			)
 			.max(10, '옵션은 최대 10개'),
-		allowRetriableResponses: z.boolean(),
+		isRevotable: z.boolean(),
 	})
 	.refine(
-		(v) => v.questionType === 'SCORE' || (v.options && v.options.length >= 2),
+		(v) => v.responseType === 'SCORE' || (v.options && v.options.length >= 2),
 		{
 			message: '단일/다중 선택은 최소 2개 이상의 옵션이 필요합니다',
 			path: ['options'],
@@ -59,7 +59,7 @@ const createPollSchema = z
 	)
 	.refine(
 		(v) => {
-			if (v.questionType === 'SCORE') return true;
+			if (v.responseType === 'SCORE') return true;
 			if (!v.options) return true;
 			const validOptions = v.options.filter(
 				(opt) => opt && opt.optionText && opt.optionText.trim().length >= 1
@@ -78,16 +78,15 @@ const defaultValues: CreatePollFormValues = {
 	title: '',
 	description: '',
 	endAt: new Date(Date.now() + 60 * 60 * 1000),
-	questionType: 'SINGLE_CHOICE',
+	responseType: 'SINGLE_CHOICE',
 	options: [{ optionText: '' }, { optionText: '' }],
-	allowRetriableResponses: false,
+	isRevotable: false,
 };
 
 const toCreatePollData = (values: CreatePollFormValues): CreatePollData => {
-	const { title, description, questionType, endAt, allowRetriableResponses } =
-		values;
+	const { title, description, responseType, endAt, isRevotable } = values;
 	const options =
-		questionType === 'SCORE'
+		responseType === 'SCORE'
 			? []
 			: values.options.map((option) => ({
 					optionText: option.optionText.trim(),
@@ -96,9 +95,9 @@ const toCreatePollData = (values: CreatePollFormValues): CreatePollData => {
 	return {
 		title,
 		description: (description ?? '').trim(),
-		questionType,
+		responseType,
 		endAt,
-		allowRetriableResponses,
+		isRevotable,
 		options,
 	};
 };
@@ -143,16 +142,16 @@ export function useCreatePollPresenter({
 		name: 'options',
 	});
 
-	const questionType = watch('questionType');
+	const responseType = watch('responseType');
 	const titleVal = watch('title') ?? '';
 	const descriptionVal = watch('description') ?? '';
 	const optionsVal = watch('options') ?? [];
 
 	const validateOptions = useCallback(() => {
-		if (questionType !== 'SCORE') {
+		if (responseType !== 'SCORE') {
 			trigger('options');
 		}
-	}, [questionType, trigger]);
+	}, [responseType, trigger]);
 
 	const registerOption = useCallback(
 		(index: number): UseFormRegisterReturn =>
@@ -260,7 +259,7 @@ export function useCreatePollPresenter({
 				fields,
 				appendOption,
 				removeOption,
-				questionType,
+				responseType,
 				titleLength: titleVal.length,
 				descriptionLength: descriptionVal.length,
 				handleOptionType,
@@ -276,7 +275,7 @@ export function useCreatePollPresenter({
 			fields,
 			appendOption,
 			removeOption,
-			questionType,
+			responseType,
 			titleVal.length,
 			descriptionVal.length,
 			handleOptionType,

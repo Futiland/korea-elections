@@ -42,7 +42,7 @@ type FormPresenter = {
 	fields: FieldArrayWithId<CreatePollFormValues, 'options', 'id'>[];
 	appendOption: () => void;
 	removeOption: (index: number) => void;
-	questionType: QuestionType;
+	responseType: QuestionType;
 	titleLength: number;
 	descriptionLength: number;
 	handleOptionType: (value: QuestionType) => void;
@@ -68,7 +68,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 		fields,
 		appendOption,
 		removeOption,
-		questionType,
+		responseType,
 		titleLength,
 		descriptionLength,
 		handleOptionType,
@@ -164,7 +164,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 									</FieldLabel>
 									<Controller
 										control={control}
-										name="questionType"
+										name="responseType"
 										render={({ field }) => (
 											<Select
 												value={field.value}
@@ -189,11 +189,11 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 										)}
 									/>
 									<FieldDescription className="text-xs text-red-600">
-										{errors.questionType?.message?.toString()}
+										{errors.responseType?.message?.toString()}
 									</FieldDescription>
 								</Field>
 
-								{questionType !== 'SCORE' && (
+								{responseType !== 'SCORE' && (
 									<Field>
 										<FieldLabel className="text-md font-bold">
 											옵션 설정
@@ -265,7 +265,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 									</FieldLabel>
 									<Controller
 										control={control}
-										name="allowRetriableResponses"
+										name="isRevotable"
 										render={({ field }) => (
 											<Switch
 												className="data-[state=checked]:bg-blue-500"

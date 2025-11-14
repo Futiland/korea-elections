@@ -10,10 +10,10 @@ export type PollStatus =
 export type CreatePollData = {
 	title: string;
 	description: string;
-	questionType: QuestionType;
+	responseType: QuestionType;
 	// startAt: Date;
 	endAt: Date;
-	allowRetriableResponses: boolean;
+	isRevotable: boolean;
 	options: {
 		optionText: string;
 	}[];
@@ -25,14 +25,14 @@ export type CreatePollResponse = {
 	data: {
 		id: number;
 		description: string;
-		questionType: QuestionType;
+		responseType: QuestionType;
 		startAt: Date;
 		endAt: Date;
 		createdAt: Date;
 		status: PollStatus;
 		creatorAccountId: number;
 		userName: string;
-		allowRetriableResponses: boolean;
+		isRevotable: boolean;
 		options: {
 			id: number;
 			optionText: string;
