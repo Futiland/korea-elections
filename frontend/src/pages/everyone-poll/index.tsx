@@ -22,7 +22,7 @@ export default function EveryonePoll() {
 		isError,
 		isFetchingNextPage,
 		hasNextPage,
-	} = useInfinitePolls();
+	} = useInfinitePolls({ pageSize: PAGE_SIZE });
 
 	return (
 		<>

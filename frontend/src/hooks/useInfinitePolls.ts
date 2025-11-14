@@ -3,9 +3,13 @@ import { getPublicPolls } from '@/lib/api/poll';
 import { PublicPollResponse } from '@/lib/types/poll';
 import { useEffect, useRef } from 'react';
 
-const PAGE_SIZE = 10;
+type UseInfinitePollsOptions = {
+	pageSize?: number;
+};
 
-export function useInfinitePolls() {
+export function useInfinitePolls({
+	pageSize = 10,
+}: UseInfinitePollsOptions = {}) {
 	const {
 		data,
 		fetchNextPage,
@@ -14,16 +18,14 @@ export function useInfinitePolls() {
 		isLoading,
 		isError,
 	} = useInfiniteQuery({
-		queryKey: ['publicPolls'],
-		queryFn: ({ pageParam = '' }: { pageParam: string }) =>
-			getPublicPolls(PAGE_SIZE, pageParam),
+		queryKey: ['publicPolls', pageSize],
+		queryFn: ({ pageParam }: { pageParam?: string }) =>
+			getPublicPolls(pageSize, pageParam ?? ''),
 		getNextPageParam: (lastPage: PublicPollResponse) => {
 			const nextCursor = lastPage.data.nextCursor;
-			return nextCursor && nextCursor !== ''
-				? (nextCursor as string)
-				: undefined;
+			return nextCursor && nextCursor !== '' ? nextCursor : undefined;
 		},
-		initialPageParam: '',
+		initialPageParam: undefined,
 		refetchOnWindowFocus: false,
 	});
 
