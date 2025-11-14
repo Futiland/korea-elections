@@ -72,7 +72,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 					{/* 진행중인 투표일 때만 투표하러가기 버튼 표시 */}
 					{pollData?.status === 'IN_PROGRESS' && (
 						<button
-							className="flex-1 bg-blue-900 hover:bg-blue-800 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm"
 							type="button"
 							onClick={() => setShowResults(false)}
 						>
@@ -84,7 +84,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						<button
 							className={`${
 								pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
-							} bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors`}
+							} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
 							type="button"
 							onClick={() => setShowResults(true)}
 						>
@@ -93,11 +93,12 @@ export default function PollCard({ pollData }: PollCardProps) {
 								: '완료한 투표 & 결과보기'}
 						</button>
 					)}
+
 					{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
 					{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
 					{pollData?.status === 'EXPIRED' && (
 						<button
-							className="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-4 rounded-lg font-semibold transition-colors"
+							className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"
 							onClick={() => setShowResults(true)}
 						>

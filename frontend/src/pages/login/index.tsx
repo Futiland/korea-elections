@@ -136,7 +136,7 @@ export default function LoginPage() {
 						{/* 로그인 버튼 */}
 						<Button
 							type="submit"
-							className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
+							className="w-full bg-blue-800 hover:bg-blue-700 text-white h-10"
 							disabled={loginMutation.isPending}
 						>
 							{loginMutation.isPending && (
@@ -180,7 +180,7 @@ export default function LoginPage() {
 							<IntroduceLayout />
 							<DialogFooter>
 								<Button
-									className="w-full bg-blue-900 text-white hover:bg-blue-800"
+									className="w-full bg-blue-800 text-white hover:bg-blue-700"
 									onClick={() => setIsOpen(false)}
 								>
 									확인

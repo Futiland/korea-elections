@@ -40,7 +40,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 					<div className="fixed bottom-6 right-6 z-50 lg:right-[calc(50%-12rem)]">
 						<button
 							type="button"
-							className="w-14 h-14 rounded-full bg-blue-900 text-white shadow-lg flex items-center justify-center hover:bg-blue-800 transition-colors"
+							className="w-14 h-14 rounded-full bg-blue-800 text-white shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
 							aria-label="투표 생성 버튼"
 							onClick={() => setIsCreatePollOpen(true)}
 						>

@@ -232,7 +232,7 @@ export function useCreatePollPresenter({
 							취소
 						</Button>
 						<Button
-							className="flex-1 h-10 bg-blue-900 text-white hover:bg-blue-800"
+							className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
 							disabled={createPollMutation.isPending}
 							onClick={() => createPollMutation.mutate(payload)}
 						>

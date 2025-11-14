@@ -27,8 +27,8 @@ export default function PollFilter({
 					onClick={() => onFilterChange(option.value)}
 					className={`px-4 py-2 text-sm font-medium rounded-4xl transition-colors ${
 						selectedFilter === option.value
-							? 'bg-blue-900 text-white'
-							: 'bg-slate-200 text-slate-700 hover:bg-slate-200'
+							? 'bg-blue-800 text-white'
+							: 'bg-slate-200 text-slate-800 hover:bg-slate-200'
 					}`}
 				>
 					{option.label}

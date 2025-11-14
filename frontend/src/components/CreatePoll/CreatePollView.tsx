@@ -294,7 +294,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 								<Button
 									type="submit"
 									disabled={isSubmitting}
-									className="flex-1 h-10 bg-blue-900 text-white hover:bg-blue-800"
+									className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
 								>
 									{isSubmitting ? '제출 중...' : '투표 생성'}
 								</Button>

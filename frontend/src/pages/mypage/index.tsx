@@ -103,7 +103,7 @@ export default function MyPage() {
 						<div className="flex flex-col items-center space-y-3.5">
 							<Button
 								type="submit"
-								className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
+								className="w-full bg-blue-800 hover:bg-blue-700 text-white h-10"
 								onClick={() => router.push('/login')}
 							>
 								로그인
