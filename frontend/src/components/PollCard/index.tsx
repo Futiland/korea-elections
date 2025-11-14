@@ -39,7 +39,6 @@ export default function PollCard({ pollData }: PollCardProps) {
 					{pollData?.userName && (
 						<p className="text-sm text-slate-500">{pollData.userName}</p>
 					)}
-					<p className="text-xs text-slate-500">김*숙</p>
 				</div>
 
 				{/* 투표 제목 */}

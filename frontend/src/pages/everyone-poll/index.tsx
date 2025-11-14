@@ -5,6 +5,11 @@ import { FilterOption } from '@/components/PollFilter';
 import Head from 'next/head';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { Spinner } from '@/components/ui/spinner';
+import { GetServerSideProps } from 'next';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { getPublicPolls } from '@/lib/api/poll';
+
+const PAGE_SIZE = 10;
 
 export default function EveryonePoll() {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -86,3 +91,20 @@ export default function EveryonePoll() {
 		</>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+	const queryClient = new QueryClient();
+
+	await queryClient.prefetchInfiniteQuery({
+		queryKey: ['publicPolls'],
+		queryFn: ({ pageParam = '' }) =>
+			getPublicPolls(PAGE_SIZE, pageParam as string),
+		initialPageParam: '',
+	});
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+	};
+};
