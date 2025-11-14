@@ -26,7 +26,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { formatDateTimeLocal } from '@/lib/date';
+import { formatDateTimeLocal, parseDateTimeLocal } from '@/lib/date';
 import type { QuestionType } from '@/lib/types/poll';
 
 import type { CreatePollFormValues } from './useCreatePollPresenter';
@@ -147,7 +147,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 												value={formatDateTimeLocal(field.value)}
 												className="text-sm"
 												onChange={(e) =>
-													field.onChange(new Date(e.target.value))
+													field.onChange(parseDateTimeLocal(e.target.value))
 												}
 											/>
 										)}

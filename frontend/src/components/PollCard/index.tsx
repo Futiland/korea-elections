@@ -5,21 +5,20 @@ import PollCardOptions from './PollCardOptions';
 import { Share2 } from 'lucide-react';
 import PollCardResults from './PollCardResults';
 import { PublicPollData, PollStatus } from '@/lib/types/poll';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 
 interface PollCardProps {
 	pollData?: PublicPollData;
 }
 
 export default function PollCard({ pollData }: PollCardProps) {
-	// 상태 관리
-	const [selectedSingleChoice, setSelectedSingleChoice] = useState<string>('');
-	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
-		string[]
-	>([]);
-
-	const [selectedScore, setSelectedScore] = useState<number>(1);
 	const [showResults, setShowResults] = useState<boolean>(false);
+
+	const handleOptionChange = (value: string | string[] | number) => {
+		// 선택된 값 처리 (필요시 API 호출 등)
+		console.log('Selected value:', value);
+	};
+
 	return (
 		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
@@ -30,10 +29,10 @@ export default function PollCard({ pollData }: PollCardProps) {
 
 						<span className="text-xs text-slate-500">
 							{pollData?.startAt && pollData?.endAt
-								? `${format(pollData.startAt, 'yyyy-MM-dd')} ~ ${format(
-										pollData.endAt,
-										'yyyy-MM-dd'
-								  )} 까지`
+								? `${formatDate(
+										pollData.startAt,
+										'yyyy-MM-dd HH:mm'
+								  )} ~ ${formatDate(pollData.endAt, 'yyyy-MM-dd HH:mm')}`
 								: ''}
 						</span>
 					</div>
@@ -57,15 +56,11 @@ export default function PollCard({ pollData }: PollCardProps) {
 				</div>
 
 				{/* 선택 옵션 */}
-				{!showResults && (
+				{!showResults && pollData && (
 					<PollCardOptions
-						selectedSingleChoice={selectedSingleChoice}
-						setSelectedSingleChoice={setSelectedSingleChoice}
-						selectedMultipleChoices={selectedMultipleChoices}
-						setSelectedMultipleChoices={setSelectedMultipleChoices}
-						selectedScore={selectedScore}
-						setSelectedScore={setSelectedScore}
-						options={pollData?.options ?? []}
+						responseType={pollData.responseType}
+						options={pollData.options}
+						onChange={handleOptionChange}
 					/>
 				)}
 
@@ -85,7 +80,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						</button>
 					)}
 					{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-					{pollData?.status === 'IN_PROGRESS' && (
+					{pollData?.isRevotable && (
 						<button
 							className={`${
 								pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'

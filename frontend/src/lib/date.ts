@@ -76,3 +76,15 @@ export function formatDateTimeLocal(date: Date | string): string {
 	if (typeof date === 'string') date = parseISO(date);
 	return format(date, "yyyy-MM-dd'T'HH:mm");
 }
+
+/** datetime-local input 값을 Date 객체로 변환 (로컬 타임존 유지) */
+export function parseDateTimeLocal(value: string): Date {
+	// datetime-local 형식: "yyyy-MM-ddTHH:mm"
+	// 이 값을 로컬 타임존으로 해석하여 Date 객체 생성
+	const [datePart, timePart] = value.split('T');
+	const [year, month, day] = datePart.split('-').map(Number);
+	const [hours, minutes] = timePart.split(':').map(Number);
+
+	// 로컬 타임존으로 Date 객체 생성 (UTC 변환 없이)
+	return new Date(year, month - 1, day, hours, minutes);
+}

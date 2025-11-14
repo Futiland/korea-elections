@@ -215,6 +215,7 @@ export function useCreatePollPresenter({
 	const onSubmit = useCallback(
 		async (values: CreatePollFormValues) => {
 			const payload = toCreatePollData(values);
+			console.log('payload', payload);
 
 			showDialog({
 				message: '모투의 투표를 생성합니다.',
