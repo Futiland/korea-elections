@@ -56,6 +56,11 @@ class JwtAuthenticationFilter(
     }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        // /poll/v1/my는 인증 필요 (필터 적용)
+        if (request.requestURI == "/poll/v1/my" && request.method == "GET") {
+            return false
+        }
+
         return excludedPaths.any { it.matches(request) }
     }
 
