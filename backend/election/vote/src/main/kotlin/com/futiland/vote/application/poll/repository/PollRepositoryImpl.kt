@@ -54,10 +54,31 @@ class PollRepositoryImpl(
     override fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll> {
         return repository.findAllByCreatorAccountId(creatorAccountId)
     }
+
+    override fun findAllByIdIn(ids: List<Long>): List<Poll> {
+        return repository.findAllByIdIn(ids)
+    }
+
+    override fun findMyPolls(creatorAccountId: Long, size: Int, lastId: Long?): SliceContent<Poll> {
+        val pageable = PageRequest.ofSize(size + 1)
+
+        val content = if (lastId == null) {
+            repository.getMyPollsFromLatest(creatorAccountId, pageable)
+        } else {
+            repository.getMyPollsFromLastId(creatorAccountId, lastId, pageable)
+        }
+
+        val hasNext = content.size > size
+        val polls = if (hasNext) content.dropLast(1) else content
+        val nextCursor = if (hasNext) polls.lastOrNull()?.id?.toString() else null
+
+        return SliceContent(polls, nextCursor)
+    }
 }
 
 interface JpaPollRepository : JpaRepository<Poll, Long> {
     fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll>
+    fun findAllByIdIn(ids: List<Long>): List<Poll>
 
     @Query(
         """
@@ -80,4 +101,22 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         status: List<PollStatus>,
         pageable: PageRequest
     ): List<Poll>
+
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.creatorAccountId = :creatorAccountId
+        ORDER BY p.id DESC
+        """
+    )
+    fun getMyPollsFromLatest(creatorAccountId: Long, pageable: PageRequest): List<Poll>
+
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.creatorAccountId = :creatorAccountId AND p.id < :lastId
+        ORDER BY p.id DESC
+        """
+    )
+    fun getMyPollsFromLastId(creatorAccountId: Long, lastId: Long, pageable: PageRequest): List<Poll>
 }

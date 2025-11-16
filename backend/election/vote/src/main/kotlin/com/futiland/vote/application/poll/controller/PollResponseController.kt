@@ -3,9 +3,13 @@ package com.futiland.vote.application.poll.controller
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
+import com.futiland.vote.application.poll.dto.response.ParticipatedPollResponse
 import com.futiland.vote.application.poll.dto.response.PollResultResponse
+import com.futiland.vote.domain.poll.entity.PollType
+import com.futiland.vote.domain.poll.service.PollQueryUseCase
 import com.futiland.vote.domain.poll.service.PollResponseCommandUseCase
 import com.futiland.vote.domain.poll.service.PollResultQueryUseCase
+import com.futiland.vote.util.PageContent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.*
 class PollResponseController(
     private val pollResponseCommandUseCase: PollResponseCommandUseCase,
     private val pollResultQueryUseCase: PollResultQueryUseCase,
+    private val pollQueryUseCase: PollQueryUseCase,
 ) {
     @Operation(
         summary = "여론조사 응답 제출",
@@ -220,6 +225,116 @@ class PollResponseController(
         @PathVariable pollId: Long,
     ): HttpApiResponse<PollResultResponse> {
         val response = pollResultQueryUseCase.getPollResult(pollId)
+        return HttpApiResponse.of(response)
+    }
+
+    @Operation(
+        summary = "내가 참여한 모두의 투표 목록 조회",
+        description = """
+            로그인한 사용자가 참여한 **공개(PUBLIC)** 여론조사 목록을 조회합니다.
+
+            **페이지네이션:**
+            - page: 페이지 번호 (1부터 시작)
+            - size: 페이지 크기 (기본 10)
+            - totalCount: 전체 항목 개수
+            - totalPages: 전체 페이지 수
+
+            **특징:**
+            - No Offset 방식으로 빠른 성능 (커버링 인덱스 활용)
+            - 참여 일시 기준 최신순 정렬
+            - 전체 개수 포함
+
+            **인증:**
+            - JWT 토큰 필수
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "내가 참여한 모두의 투표 목록 조회 성공",
+                content = [Content(schema = Schema(implementation = PageContent::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청 (잘못된 size, page 값 등)"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "인증 실패 (로그인 필요)"
+            )
+        ]
+    )
+    @GetMapping("/public/response/my")
+    fun getMyPublicParticipatedPolls(
+        @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
+        @RequestParam(defaultValue = "1") page: Int,
+        @Parameter(description = "한 페이지에 조회할 항목 수", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    ): HttpApiResponse<PageContent<ParticipatedPollResponse>> {
+        val response = pollQueryUseCase.getParticipatedPolls(
+            accountId = userDetails.user.accountId,
+            page = page,
+            size = size,
+            pollType = PollType.PUBLIC
+        )
+        return HttpApiResponse.of(response)
+    }
+
+    @Operation(
+        summary = "내가 참여한 시스템 여론조사 목록 조회",
+        description = """
+            로그인한 사용자가 참여한 **시스템(SYSTEM)** 여론조사 목록을 조회합니다.
+
+            **페이지네이션:**
+            - page: 페이지 번호 (1부터 시작)
+            - size: 페이지 크기 (기본 10)
+            - totalCount: 전체 항목 개수
+            - totalPages: 전체 페이지 수
+
+            **특징:**
+            - No Offset 방식으로 빠른 성능 (커버링 인덱스 활용)
+            - 참여 일시 기준 최신순 정렬
+            - 전체 개수 포함
+
+            **인증:**
+            - JWT 토큰 필수
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "내가 참여한 시스템 여론조사 목록 조회 성공",
+                content = [Content(schema = Schema(implementation = PageContent::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청 (잘못된 size, page 값 등)"
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "인증 실패 (로그인 필요)"
+            )
+        ]
+    )
+    @GetMapping("/system/response/my")
+    fun getMySystemParticipatedPolls(
+        @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
+        @RequestParam(defaultValue = "1") page: Int,
+        @Parameter(description = "한 페이지에 조회할 항목 수", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    ): HttpApiResponse<PageContent<ParticipatedPollResponse>> {
+        val response = pollQueryUseCase.getParticipatedPolls(
+            accountId = userDetails.user.accountId,
+            page = page,
+            size = size,
+            pollType = PollType.SYSTEM
+        )
         return HttpApiResponse.of(response)
     }
 }

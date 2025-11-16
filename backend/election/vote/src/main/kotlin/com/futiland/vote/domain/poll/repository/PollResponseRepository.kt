@@ -11,4 +11,19 @@ interface PollResponseRepository {
     fun findAllByPollId(pollId: Long): List<PollResponse>
     fun countByPollId(pollId: Long): Long
     fun countByOptionId(optionId: Long): Long
+
+    /**
+     * No Offset 방식으로 내가 참여한 투표 조회 (커버링 인덱스 사용)
+     * idx_account_id (accountId, id, deletedAt) 인덱스 활용
+     *
+     * @param accountId 계정 ID
+     * @param lastId 마지막으로 조회한 PollResponse ID (최신순이므로 id > lastId)
+     * @param size 조회할 개수
+     */
+    fun findParticipatedPollsByAccountId(accountId: Long, lastId: Long?, size: Int): List<PollResponse>
+
+    /**
+     * 내가 참여한 투표 전체 개수 조회
+     */
+    fun countByAccountId(accountId: Long): Long
 }

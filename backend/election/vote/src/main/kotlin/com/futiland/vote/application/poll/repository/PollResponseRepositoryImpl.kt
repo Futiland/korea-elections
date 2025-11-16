@@ -2,7 +2,10 @@ package com.futiland.vote.application.poll.repository
 
 import com.futiland.vote.domain.poll.entity.PollResponse
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -40,6 +43,20 @@ class PollResponseRepositoryImpl(
     override fun countByOptionId(optionId: Long): Long {
         return repository.countByOptionIdAndDeletedAtIsNull(optionId)
     }
+
+    override fun findParticipatedPollsByAccountId(accountId: Long, lastId: Long?, size: Int): List<PollResponse> {
+        return if (lastId == null) {
+            // 첫 페이지: 최신순으로 조회
+            repository.findByAccountIdAndDeletedAtIsNullOrderByIdDesc(accountId, PageRequest.of(0, size))
+        } else {
+            // 다음 페이지: lastId보다 작은 id를 조회 (최신순)
+            repository.findByAccountIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(accountId, lastId, PageRequest.of(0, size))
+        }
+    }
+
+    override fun countByAccountId(accountId: Long): Long {
+        return repository.countByAccountIdAndDeletedAtIsNull(accountId)
+    }
 }
 
 interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
@@ -48,4 +65,36 @@ interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
     fun findAllByPollIdAndDeletedAtIsNull(pollId: Long): List<PollResponse>
     fun countByPollIdAndDeletedAtIsNull(pollId: Long): Long
     fun countByOptionIdAndDeletedAtIsNull(optionId: Long): Long
+
+    // No Offset 페이지네이션 (커버링 인덱스: idx_account_id)
+    @Query("""
+        SELECT pr FROM PollResponse pr
+        WHERE pr.accountId = :accountId
+        AND pr.deletedAt IS NULL
+        ORDER BY pr.id DESC
+    """)
+    fun findByAccountIdAndDeletedAtIsNullOrderByIdDesc(
+        accountId: Long,
+        pageable: Pageable
+    ): List<PollResponse>
+
+    @Query("""
+        SELECT pr FROM PollResponse pr
+        WHERE pr.accountId = :accountId
+        AND pr.id < :id
+        AND pr.deletedAt IS NULL
+        ORDER BY pr.id DESC
+    """)
+    fun findByAccountIdAndIdLessThanAndDeletedAtIsNullOrderByIdDesc(
+        accountId: Long,
+        id: Long,
+        pageable: Pageable
+    ): List<PollResponse>
+
+    @Query("""
+        SELECT COUNT(pr) FROM PollResponse pr
+        WHERE pr.accountId = :accountId
+        AND pr.deletedAt IS NULL
+    """)
+    fun countByAccountIdAndDeletedAtIsNull(accountId: Long): Long
 }

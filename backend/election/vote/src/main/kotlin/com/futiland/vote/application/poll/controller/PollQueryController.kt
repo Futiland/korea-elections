@@ -103,15 +103,19 @@ class PollQueryController(
     @Operation(
         summary = "내가 만든 여론조사 목록 조회",
         description = """
-            로그인한 사용자가 생성한 모든 여론조사 목록을 조회합니다.
+            로그인한 사용자가 생성한 여론조사 목록을 조회합니다.
 
-            **인증 필요:**
-            - 로그인한 사용자만 호출할 수 있습니다
-            - JWT 토큰을 Authorization 헤더에 포함해야 합니다
+            **커서 기반 페이지네이션:**
+            - 첫 페이지: nextCursor를 생략하면 최신순으로 조회됩니다
+            - 다음 페이지: 응답의 nextCursor 값을 다음 요청의 nextCursor 파라미터로 전달하면 다음 페이지를 조회할 수 있습니다
+            - nextCursor가 null이면 마지막 페이지입니다
 
             **포함 정보:**
             - 모든 상태의 여론조사 (DRAFT, IN_PROGRESS, EXPIRED, CANCELLED 등)
             - 생성 일시 기준 최신순으로 정렬됩니다
+
+            **인증:**
+            - JWT 토큰 필수
         """
     )
     @ApiResponses(
@@ -119,7 +123,11 @@ class PollQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "내 여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = List::class))]
+                content = [Content(schema = Schema(implementation = SliceContent::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청"
             ),
             ApiResponse(
                 responseCode = "401",
@@ -129,10 +137,15 @@ class PollQueryController(
     )
     @GetMapping("/my")
     fun getMyPolls(
+        @Parameter(description = "한 페이지에 조회할 항목 수", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "123")
+        @RequestParam nextCursor: String? = null,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails,
-    ): HttpApiResponse<List<PollListResponse>> {
-        val response = pollQueryUseCase.getMyPolls(userDetails.user.accountId)
+    ): HttpApiResponse<SliceContent<PollListResponse>> {
+        val response = pollQueryUseCase.getMyPolls(userDetails.user.accountId, size, nextCursor)
         return HttpApiResponse.of(response)
     }
+
 }

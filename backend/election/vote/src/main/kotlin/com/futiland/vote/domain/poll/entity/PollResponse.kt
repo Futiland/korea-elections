@@ -6,7 +6,8 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_poll_account", columnList = "pollId, accountId, deletedAt")
+        Index(name = "idx_poll_account", columnList = "pollId, accountId, deletedAt"),
+        Index(name = "idx_account_id", columnList = "accountId, id, deletedAt") // No Offset 페이지네이션용
     ]
 )
 class PollResponse(
