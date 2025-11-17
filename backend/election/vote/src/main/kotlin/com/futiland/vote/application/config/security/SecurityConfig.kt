@@ -81,6 +81,9 @@ class SecurityConfig(
             // 기본 경로
             httpRequest.requestMatchers("/").permitAll()
 
+            // Actuator health check (헬스체크용)
+            httpRequest.requestMatchers("/actuator/health").permitAll()
+
             // Account 관련 - 인증 불필요
             httpRequest.requestMatchers("/account/v1/stopper").permitAll()
             httpRequest.requestMatchers("/account/v1/change-password").permitAll()
