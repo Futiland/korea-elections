@@ -75,6 +75,9 @@ class SecurityConfig(
         // 권한 규칙 작성
         // NOTE: 인증 필요 여부는 여기서만 관리 (JwtAuthenticationFilter와 중복 없음)
         http.authorizeHttpRequests { httpRequest ->
+            // CORS preflight 요청 허용
+            httpRequest.requestMatchers("OPTIONS", "/**").permitAll()
+
             // 기본 경로
             httpRequest.requestMatchers("/").permitAll()
 
