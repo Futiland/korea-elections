@@ -31,11 +31,45 @@ class JwtAuthenticationFilter(
     // 이 필터는 Authorization 헤더가 있으면 항상 검증하고, 없으면 통과
     // SecurityConfig에서 authenticated() 규칙이 있으면 403 에러 발생
 
+    // 공개 엔드포인트 목록 (JWT 검증 스킵)
+    // GET 요청들도 포함 (브라우저/프론트가 Authorization 헤더를 실수로 보낼 수 있음)
+    private val publicEndpoints = listOf(
+        // 기본 경로
+        AntPathRequestMatcher("/"),
+
+        // Account 관련
+        AntPathRequestMatcher("/account/v1/signup"),
+        AntPathRequestMatcher("/account/v1/signin"),
+        AntPathRequestMatcher("/account/v1/change-password"),
+        AntPathRequestMatcher("/account/v1/stopper"),
+
+        // Actuator
+        AntPathRequestMatcher("/actuator/health"),
+
+        // Swagger
+        AntPathRequestMatcher("/swagger-ui.html"),
+        AntPathRequestMatcher("/swagger-ui/**"),
+        AntPathRequestMatcher("/v3/api-docs/**"),
+        AntPathRequestMatcher("/swagger-resources/**"),
+
+        // Election - GET
+        AntPathRequestMatcher("/election/v1/*/vote", "GET"),
+
+        // Poll - GET (모든 조회 API)
+        AntPathRequestMatcher("/poll/v1/public", "GET")
+    )
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        // 공개 엔드포인트는 JWT 검증 스킵
+        if (publicEndpoints.any { it.matches(request) }) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val authorizationHeader = request.getHeader("Authorization")
 
         // Authorization 헤더가 있으면 검증, 없으면 그냥 통과
