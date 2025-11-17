@@ -39,8 +39,8 @@ jobs:
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
           echo "CONTAINER_NAME=vote-app-dev" >> $GITHUB_ENV
           echo "DEPLOY_PORT=18080" >> $GITHUB_ENV
-          echo "IMAGE_TAG=dev-${{ github.sha }}" >> $GITHUB_ENV
-          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:dev-${{ github.sha }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=dev-latest" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:dev-latest" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -50,18 +50,28 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          echo "Pulling Docker image: ${{ env.TARGET_IMAGE }}"
+          echo "📥 Pulling latest Docker image: ${{ env.TARGET_IMAGE }}"
+
+          # Remove existing image with same tag to force fresh pull
+          echo "🧹 Removing existing image with tag if exists..."
+          docker rmi ${{ env.TARGET_IMAGE }} -f || true
+
+          # Pull latest image
           docker pull ${{ env.TARGET_IMAGE }}
+
+          echo "✅ Successfully pulled latest image"
 
       - name: Deploy to development environment
         run: |
-          echo "Deploying to development environment..."
+          echo "🚀 Deploying to development environment..."
 
           # Stop and remove existing container
+          echo "⏹️ Stopping existing container..."
           docker stop ${{ env.CONTAINER_NAME }} || true
           docker rm ${{ env.CONTAINER_NAME }} || true
 
           # Start new container
+          echo "▶️ Starting new container..."
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
             --restart unless-stopped \
@@ -75,12 +85,12 @@ jobs:
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             ${{ env.TARGET_IMAGE }}
 
-          echo "Development container started successfully"
+          echo "✅ Development container started successfully"
           docker ps --filter "name=${{ env.CONTAINER_NAME }}"
 
       - name: Verify deployment
         run: |
-          echo "Waiting for application to start..."
+          echo "⏳ Waiting for application to start..."
           sleep 15
 
           # Check if container is running locally
@@ -112,26 +122,37 @@ jobs:
 
       - name: Clean up old Docker images
         run: |
-          echo "Cleaning up old Docker images..."
+          echo "🧹 Cleaning up old Docker images..."
 
-          # Get current image ID
-          CURRENT_IMAGE_ID=$(docker images ${{ env.TARGET_IMAGE }} --format "{{.ID}}" | head -n 1)
-          echo "Current image ID: $CURRENT_IMAGE_ID"
+          # Get current running container's image ID
+          CURRENT_IMAGE_ID=$(docker inspect ${{ env.CONTAINER_NAME }} --format='{{.Image}}' 2>/dev/null || echo "")
 
-          # Get all images for this repository (excluding the current one)
-          OLD_IMAGES=$(docker images ${{ env.REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }} --format "{{.ID}} {{.Tag}}" | grep -v "$CURRENT_IMAGE_ID" | head -n -1 | awk '{print $1}')
+          if [ -n "$CURRENT_IMAGE_ID" ]; then
+            echo "Current container image ID: $CURRENT_IMAGE_ID"
 
-          if [ -n "$OLD_IMAGES" ]; then
-            echo "Removing old images (keeping 1 backup):"
-            echo "$OLD_IMAGES"
-            echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+            # Remove all vote-app images except the current one
+            echo "Removing old ${{ env.IMAGE_NAME }} images (keeping only current)..."
+            OLD_IMAGES=$(docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }} --format "{{.ID}}" | grep -v "$CURRENT_IMAGE_ID" || echo "")
+
+            if [ -n "$OLD_IMAGES" ]; then
+              echo "Found old images to remove:"
+              echo "$OLD_IMAGES"
+              echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+              echo "✅ Old images removed"
+            else
+              echo "No old images to clean up"
+            fi
           else
-            echo "No old images to clean up"
+            echo "⚠️ Could not get current container image ID"
           fi
 
           # Clean up dangling images
           echo "Cleaning up dangling images..."
           docker image prune -f || true
+
+          # Show remaining images
+          echo "📦 Remaining ${{ env.IMAGE_NAME }} images:"
+          docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
 
       - name: Show deployment summary
         run: |
@@ -164,8 +185,8 @@ jobs:
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
           echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
           echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
-          echo "IMAGE_TAG=prod-${{ github.sha }}" >> $GITHUB_ENV
-          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:prod-${{ github.sha }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=prod-latest" >> $GITHUB_ENV
+          echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:prod-latest" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -175,18 +196,28 @@ jobs:
 
       - name: Pull Docker image
         run: |
-          echo "Pulling Docker image: ${{ env.TARGET_IMAGE }}"
+          echo "📥 Pulling latest Docker image: ${{ env.TARGET_IMAGE }}"
+
+          # Remove existing image with same tag to force fresh pull
+          echo "🧹 Removing existing image with tag if exists..."
+          docker rmi ${{ env.TARGET_IMAGE }} -f || true
+
+          # Pull latest image
           docker pull ${{ env.TARGET_IMAGE }}
+
+          echo "✅ Successfully pulled latest image"
 
       - name: Deploy to production environment
         run: |
-          echo "Deploying to production environment..."
+          echo "🚀 Deploying to production environment..."
 
           # Stop and remove existing container
+          echo "⏹️ Stopping existing container..."
           docker stop ${{ env.CONTAINER_NAME }} || true
           docker rm ${{ env.CONTAINER_NAME }} || true
 
           # Start new container
+          echo "▶️ Starting new container..."
           docker run -d \
             --name ${{ env.CONTAINER_NAME }} \
             --restart unless-stopped \
@@ -200,12 +231,12 @@ jobs:
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             ${{ env.TARGET_IMAGE }}
 
-          echo "Production container started successfully"
+          echo "✅ Production container started successfully"
           docker ps --filter "name=${{ env.CONTAINER_NAME }}"
 
       - name: Verify deployment
         run: |
-          echo "Waiting for application to start..."
+          echo "⏳ Waiting for application to start..."
           sleep 15
 
           # Check if container is running
@@ -236,26 +267,37 @@ jobs:
 
       - name: Clean up old Docker images
         run: |
-          echo "Cleaning up old Docker images..."
+          echo "🧹 Cleaning up old Docker images..."
 
-          # Get current image ID
-          CURRENT_IMAGE_ID=$(docker images ${{ env.TARGET_IMAGE }} --format "{{.ID}}" | head -n 1)
-          echo "Current image ID: $CURRENT_IMAGE_ID"
+          # Get current running container's image ID
+          CURRENT_IMAGE_ID=$(docker inspect ${{ env.CONTAINER_NAME }} --format='{{.Image}}' 2>/dev/null || echo "")
 
-          # Get all images for this repository (excluding the current one)
-          OLD_IMAGES=$(docker images ${{ env.REGISTRY }}/${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }} --format "{{.ID}} {{.Tag}}" | grep -v "$CURRENT_IMAGE_ID" | head -n -1 | awk '{print $1}')
+          if [ -n "$CURRENT_IMAGE_ID" ]; then
+            echo "Current container image ID: $CURRENT_IMAGE_ID"
 
-          if [ -n "$OLD_IMAGES" ]; then
-            echo "Removing old images (keeping 1 backup):"
-            echo "$OLD_IMAGES"
-            echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+            # Remove all vote-app images except the current one
+            echo "Removing old ${{ env.IMAGE_NAME }} images (keeping only current)..."
+            OLD_IMAGES=$(docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }} --format "{{.ID}}" | grep -v "$CURRENT_IMAGE_ID" || echo "")
+
+            if [ -n "$OLD_IMAGES" ]; then
+              echo "Found old images to remove:"
+              echo "$OLD_IMAGES"
+              echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+              echo "✅ Old images removed"
+            else
+              echo "No old images to clean up"
+            fi
           else
-            echo "No old images to clean up"
+            echo "⚠️ Could not get current container image ID"
           fi
 
           # Clean up dangling images
           echo "Cleaning up dangling images..."
           docker image prune -f || true
+
+          # Show remaining images
+          echo "📦 Remaining ${{ env.IMAGE_NAME }} images:"
+          docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
 
       - name: Show deployment summary
         run: |
