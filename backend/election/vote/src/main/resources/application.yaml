@@ -36,6 +36,13 @@ portone:
   store-id: ${PORTONE_STORE_ID}
   auth-token: ${PORTONE_AUTH_TOKEN}
 
+# Spring Security 디버깅용 (필요 시 주석 해제)
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: DEBUG
+
 ---
 spring:
   config:
