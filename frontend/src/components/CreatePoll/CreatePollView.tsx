@@ -26,7 +26,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { formatDateTimeLocal } from '@/lib/date';
+import { formatDateTimeLocal, parseDateTimeLocal } from '@/lib/date';
 import type { QuestionType } from '@/lib/types/poll';
 
 import type { CreatePollFormValues } from './useCreatePollPresenter';
@@ -147,7 +147,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 												value={formatDateTimeLocal(field.value)}
 												className="text-sm"
 												onChange={(e) =>
-													field.onChange(new Date(e.target.value))
+													field.onChange(parseDateTimeLocal(e.target.value))
 												}
 											/>
 										)}
@@ -294,7 +294,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 								<Button
 									type="submit"
 									disabled={isSubmitting}
-									className="flex-1 h-10 bg-blue-900 text-white hover:bg-blue-800"
+									className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
 								>
 									{isSubmitting ? '제출 중...' : '투표 생성'}
 								</Button>

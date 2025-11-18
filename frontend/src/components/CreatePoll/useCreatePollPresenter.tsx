@@ -8,7 +8,7 @@ import {
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
@@ -92,11 +92,16 @@ const toCreatePollData = (values: CreatePollFormValues): CreatePollData => {
 					optionText: option.optionText.trim(),
 			  }));
 
+	// Date 객체를 UTC ISO 문자열로 변환하여 서버에 전송
+	// 사용자가 선택한 로컬 시간을 UTC로 변환하여 서버에 전송
+	// 예: 2025-11-18T00:41:00.000Z (UTC)
+	const endAtISO: string = endAt.toISOString();
+
 	return {
 		title,
 		description: (description ?? '').trim(),
 		responseType,
-		endAt,
+		endAt: endAtISO, // UTC ISO 문자열로 전송
 		isRevotable,
 		options,
 	};
@@ -107,6 +112,7 @@ export function useCreatePollPresenter({
 	setIsOpen,
 }: CreatePollDialogProps) {
 	const { showDialog, hideDialog } = useAlertDialog();
+	const queryClient = useQueryClient();
 
 	const {
 		control,
@@ -126,6 +132,8 @@ export function useCreatePollPresenter({
 	const createPollMutation = useMutation({
 		mutationFn: (payload: CreatePollData) => createPoll(payload),
 		onSuccess: () => {
+			// everyone-poll 페이지의 리스트만 리패치
+			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
 			toast.success('투표 생성이 완료되었습니다.');
 			hideDialog();
 			setIsOpen(false);
@@ -215,6 +223,10 @@ export function useCreatePollPresenter({
 	const onSubmit = useCallback(
 		async (values: CreatePollFormValues) => {
 			const payload = toCreatePollData(values);
+			// 디버깅: 사용자가 선택한 원본 시간과 서버에 보낼 시간 모두 표시
+			console.log('사용자가 선택한 시간 (로컬):', values.endAt);
+			console.log('서버에 보낼 시간 (UTC ISO):', payload.endAt);
+			console.log('전체 payload:', payload);
 
 			showDialog({
 				message: '모투의 투표를 생성합니다.',
@@ -228,7 +240,7 @@ export function useCreatePollPresenter({
 							취소
 						</Button>
 						<Button
-							className="flex-1 h-10 bg-blue-900 text-white hover:bg-blue-800"
+							className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
 							disabled={createPollMutation.isPending}
 							onClick={() => createPollMutation.mutate(payload)}
 						>

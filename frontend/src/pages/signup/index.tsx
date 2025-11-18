@@ -295,7 +295,7 @@ export default function SignupPage() {
 								</>
 							)}
 							<Button
-								className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10"
+								className="w-full bg-blue-800 text-white hover:bg-blue-700 h-10"
 								type="submit"
 								disabled={
 									signupMutation.isPending || stopper?.data.status === 'ACTIVE'

@@ -45,7 +45,7 @@ export default function Header() {
 					<IntroduceLayout />
 					<DialogFooter>
 						<Button
-							className="w-full bg-blue-900 text-white hover:bg-blue-800"
+							className="w-full bg-blue-800 text-white hover:bg-blue-700"
 							onClick={() => setIsOpen(false)}
 						>
 							확인

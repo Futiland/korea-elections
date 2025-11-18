@@ -29,7 +29,7 @@ export default function ChangePasswordPage() {
 				discription: '변경된 비밀번호로 로그인 해주세요.',
 				actions: (
 					<Button
-						className="w-full bg-blue-900 text-white"
+						className="w-full bg-blue-800 text-white hover:bg-blue-700"
 						onClick={() => {
 							router.push('/login');
 							hideDialog();
@@ -136,7 +136,7 @@ export default function ChangePasswordPage() {
 						</div>
 
 						<Button
-							className="w-full bg-blue-900 text-white hover:bg-blue-800 h-10 mt-8"
+							className="w-full bg-blue-800 text-white hover:bg-blue-700 h-10 mt-8"
 							type="submit"
 							disabled={changePasswordMutation.isPending}
 						>

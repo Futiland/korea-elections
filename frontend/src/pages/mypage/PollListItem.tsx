@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import StatusBadge from '@/components/StatusBadge';
+import { PollStatus } from '@/lib/types/poll';
 
 interface PollListItemProps {
 	title: string;
 	description: string;
-	status: 'progress' | 'stopped' | 'ended';
+	status: PollStatus;
 	participantCount: number;
 	endDate: string;
 	startDate: string;
