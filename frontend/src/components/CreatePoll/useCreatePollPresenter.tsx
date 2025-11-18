@@ -92,11 +92,16 @@ const toCreatePollData = (values: CreatePollFormValues): CreatePollData => {
 					optionText: option.optionText.trim(),
 			  }));
 
+	// Date 객체를 UTC ISO 문자열로 변환하여 서버에 전송
+	// 사용자가 선택한 로컬 시간을 UTC로 변환하여 서버에 전송
+	// 예: 2025-11-18T00:41:00.000Z (UTC)
+	const endAtISO: string = endAt.toISOString();
+
 	return {
 		title,
 		description: (description ?? '').trim(),
 		responseType,
-		endAt,
+		endAt: endAtISO, // UTC ISO 문자열로 전송
 		isRevotable,
 		options,
 	};
@@ -218,7 +223,10 @@ export function useCreatePollPresenter({
 	const onSubmit = useCallback(
 		async (values: CreatePollFormValues) => {
 			const payload = toCreatePollData(values);
-			console.log('payload', payload);
+			// 디버깅: 사용자가 선택한 원본 시간과 서버에 보낼 시간 모두 표시
+			console.log('사용자가 선택한 시간 (로컬):', values.endAt);
+			console.log('서버에 보낼 시간 (UTC ISO):', payload.endAt);
+			console.log('전체 payload:', payload);
 
 			showDialog({
 				message: '모투의 투표를 생성합니다.',

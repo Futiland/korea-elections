@@ -12,7 +12,7 @@ export type CreatePollData = {
 	description: string;
 	responseType: QuestionType;
 	// startAt: Date;
-	endAt: Date;
+	endAt: Date | string; // Date 객체 또는 ISO 문자열
 	isRevotable: boolean;
 	options: {
 		optionText: string;
@@ -47,9 +47,9 @@ export type PublicPollData = {
 	description: string;
 	responseType: QuestionType;
 	status: PollStatus;
-	startAt: Date;
-	endAt: Date;
-	createdAt: Date;
+	startAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
+	endAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
+	createdAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
 	userName: string;
 	isRevotable: boolean;
 	responseCount: number;

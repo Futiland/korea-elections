@@ -5,7 +5,7 @@ import PollCardOptions from './PollCardOptions';
 import { Share2 } from 'lucide-react';
 import PollCardResults from './PollCardResults';
 import { PublicPollData, PollStatus } from '@/lib/types/poll';
-import { formatDate } from '@/lib/date';
+import { formatDateTimeLocal } from '@/lib/date';
 
 interface PollCardProps {
 	pollData?: PublicPollData;
@@ -28,11 +28,14 @@ export default function PollCard({ pollData }: PollCardProps) {
 						<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
 
 						<span className="text-xs text-slate-500">
-							{pollData?.startAt && pollData?.endAt
-								? `${formatDate(
-										pollData.startAt,
+							{pollData?.createdAt && pollData?.endAt
+								? `${formatDateTimeLocal(
+										pollData.createdAt,
 										'yyyy-MM-dd HH:mm'
-								  )} ~ ${formatDate(pollData.endAt, 'yyyy-MM-dd HH:mm')}`
+								  )} ~ ${formatDateTimeLocal(
+										pollData.endAt,
+										'yyyy-MM-dd HH:mm'
+								  )}`
 								: ''}
 						</span>
 					</div>
