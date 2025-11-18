@@ -12,7 +12,7 @@ export type CreatePollData = {
 	description: string;
 	responseType: QuestionType;
 	// startAt: Date;
-	endAt: Date;
+	endAt: Date | string; // Date 객체 또는 ISO 문자열
 	isRevotable: boolean;
 	options: {
 		optionText: string;
@@ -38,5 +38,33 @@ export type CreatePollResponse = {
 			optionText: string;
 			optionOrder: number;
 		}[];
+	};
+};
+
+export type PublicPollData = {
+	id: number;
+	title: string;
+	description: string;
+	responseType: QuestionType;
+	status: PollStatus;
+	startAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
+	endAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
+	createdAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
+	userName: string;
+	isRevotable: boolean;
+	responseCount: number;
+	options: {
+		id: number;
+		optionText: string;
+		optionOrder: number;
+	}[];
+};
+
+export type PublicPollResponse = {
+	code: string;
+	message: string;
+	data: {
+		content: PublicPollData[];
+		nextCursor: string;
 	};
 };

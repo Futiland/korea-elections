@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import PollListItem from './PollListItem';
+import { PollStatus } from '@/lib/types/poll';
 
 export interface MyPollListProps {
 	title: string;
@@ -29,7 +30,7 @@ export default function MyPollList({ title }: MyPollListProps) {
 				<PollListItem
 					title="샘플 투표 제목 1"
 					description="이것은 샘플 투표 설명입니다. 투표에 대한 자세한 내용을 여기에 표시합니다."
-					status="progress"
+					status="IN_PROGRESS"
 					participantCount={25}
 					endDate="2024-12-31"
 					startDate="2024-12-01"
@@ -38,7 +39,7 @@ export default function MyPollList({ title }: MyPollListProps) {
 				<PollListItem
 					title="샘플 투표 제목 2"
 					description="또 다른 샘플 투표 설명입니다."
-					status="ended"
+					status="EXPIRED"
 					participantCount={42}
 					endDate="2024-12-25"
 					startDate="2024-12-01"

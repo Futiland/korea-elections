@@ -2,7 +2,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 
 interface MultipleChoiceOptionProps {
-	options: string[];
+	options: { id: number; optionText: string; optionOrder: number }[];
 	selectedValues?: string[];
 	onChange?: (values: string[]) => void;
 }
@@ -22,21 +22,23 @@ export default function MultipleChoiceOption({
 
 	return (
 		<div className="flex flex-wrap items-start gap-2 w-full">
-			{options.map((option, index) => (
+			{options.map((option) => (
 				<div
-					key={index}
+					key={option.id}
 					className="flex items-center gap-3 cursor-pointer p-2 rounded"
 				>
 					<Checkbox
-						id={`checkbox-${index}`}
-						checked={selectedValues.includes(option)}
-						onCheckedChange={(checked) => handleOptionChange(option, !!checked)}
+						id={`checkbox-${option.id}`}
+						checked={selectedValues.includes(option.id.toString())}
+						onCheckedChange={(checked) =>
+							handleOptionChange(option.id.toString(), !!checked)
+						}
 					/>
 					<Label
-						htmlFor={`checkbox-${index}`}
+						htmlFor={`checkbox-${option.id}`}
 						className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 					>
-						{option}
+						{option.optionText}
 					</Label>
 				</div>
 			))}

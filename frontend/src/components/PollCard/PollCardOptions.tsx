@@ -1,60 +1,66 @@
+import { useState } from 'react';
 import SingleChoiceOption from '../PollOptions/SingleChoiceOption';
 import MultipleChoiceOption from '../PollOptions/MultipleChoiceOption';
 import ScoreOption from '../PollOptions/ScoreOption';
+import { QuestionType } from '@/lib/types/poll';
 
 type PollCardOptionsProps = {
-	selectedSingleChoice: string;
-	setSelectedSingleChoice: (v: string) => void;
-	selectedMultipleChoices: string[];
-	setSelectedMultipleChoices: (v: string[]) => void;
-	selectedScore: number;
-	setSelectedScore: (v: number) => void;
+	responseType: QuestionType;
+	options: { id: number; optionText: string; optionOrder: number }[];
+	onChange?: (value: string | string[] | number) => void;
 };
 
 export default function PollCardOptions({
-	selectedSingleChoice,
-	setSelectedSingleChoice,
-	selectedMultipleChoices,
-	setSelectedMultipleChoices,
-	selectedScore,
-	setSelectedScore,
+	responseType,
+	options,
+	onChange,
 }: PollCardOptionsProps) {
+	const [selectedSingleChoice, setSelectedSingleChoice] = useState<string>('');
+	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
+		string[]
+	>([]);
+	const [selectedScore, setSelectedScore] = useState<number>(1);
+
+	const handleSingleChoiceChange = (value: string) => {
+		setSelectedSingleChoice(value);
+		onChange?.(value);
+	};
+
+	const handleMultipleChoiceChange = (values: string[]) => {
+		setSelectedMultipleChoices(values);
+		onChange?.(values);
+	};
+
+	const handleScoreChange = (score: number) => {
+		setSelectedScore(score);
+		onChange?.(score);
+	};
+
 	return (
 		<div className="mb-6 space-y-4 flex flex-col items-start">
-			{/* 단일 선택 옵션 */}
-			<SingleChoiceOption
-				options={[
-					'단일 선택 A',
-					'단일 선택 B',
-					'단일 선택 단일 선택단일 선택단일 선택 C',
-					'단일 선택 D',
-					'단일 선택 E',
-					'단일 선택 F',
-					'단일 선택 G',
-				]}
-				value={selectedSingleChoice}
-				onValueChange={setSelectedSingleChoice}
-			/>
+			{responseType === 'SINGLE_CHOICE' && (
+				<SingleChoiceOption
+					options={options}
+					value={selectedSingleChoice}
+					onValueChange={handleSingleChoiceChange}
+				/>
+			)}
 
-			{/* 다중 선택 옵션 */}
-			<MultipleChoiceOption
-				options={[
-					'다중 선택 1',
-					'다중 선택 2',
-					'다중 선택 3',
-					'다중 선택 4',
-					'다중 선택 다중 선택다중 선택다중 선택 5',
-				]}
-				selectedValues={selectedMultipleChoices}
-				onChange={setSelectedMultipleChoices}
-			/>
+			{responseType === 'MULTIPLE_CHOICE' && (
+				<MultipleChoiceOption
+					options={options}
+					selectedValues={selectedMultipleChoices}
+					onChange={handleMultipleChoiceChange}
+				/>
+			)}
 
-			{/* 점수제 옵션 */}
-			<ScoreOption
-				maxScore={10}
-				selectedScore={selectedScore}
-				onChange={setSelectedScore}
-			/>
+			{responseType === 'SCORE' && (
+				<ScoreOption
+					maxScore={10}
+					selectedScore={selectedScore}
+					onChange={handleScoreChange}
+				/>
+			)}
 		</div>
 	);
 }
