@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import StatusBadge from '../StatusBadge';
 import PollCardOptions from './PollCardOptions';
-import { Share2 } from 'lucide-react';
+import { Share2, Users } from 'lucide-react';
+import { addCommas } from '@/lib/utils';
 import PollCardResults from './PollCardResults';
 import { PublicPollData, PollStatus } from '@/lib/types/poll';
-import { formatDateTimeLocal } from '@/lib/date';
+import { formatDateTimeLocal, getRemainingTimeLabel } from '@/lib/date';
 
 interface PollCardProps {
 	pollData?: PublicPollData;
@@ -19,10 +20,29 @@ export default function PollCard({ pollData }: PollCardProps) {
 		console.log('Selected value:', value);
 	};
 
+	const participationMessage =
+		pollData?.responseCount && pollData.responseCount > 0
+			? `지금까지 ${addCommas(pollData.responseCount)}명이 참여했어요!`
+			: '첫 번째 참여자가 되어 주세요!';
+
+	const remainingTimeLabel = pollData?.endAt
+		? getRemainingTimeLabel(pollData.endAt)
+		: null;
+
 	return (
 		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
-				{/* 헤더 영역 - 상태값, 제목, 공유 버튼 */}
+				{/* 헤더 영역 - 참여자 수, 상태값, 제목, 공유 버튼 */}
+
+				{/* 참여자 수 */}
+				<div className="mb-3 inline-flex items-center gap-2 rounded-full bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-600">
+					<Users className="w-4 h-4 text-fuchsia-600" />
+					<span>
+						{participationMessage}
+						{remainingTimeLabel ? ` · ${remainingTimeLabel}` : ''}
+					</span>
+				</div>
+
 				<div className="flex items-center justify-between mb-2">
 					<div className="flex items-center gap-3">
 						<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
