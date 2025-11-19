@@ -224,9 +224,9 @@ export function useCreatePollPresenter({
 		async (values: CreatePollFormValues) => {
 			const payload = toCreatePollData(values);
 			// 디버깅: 사용자가 선택한 원본 시간과 서버에 보낼 시간 모두 표시
-			console.log('사용자가 선택한 시간 (로컬):', values.endAt);
-			console.log('서버에 보낼 시간 (UTC ISO):', payload.endAt);
-			console.log('전체 payload:', payload);
+			// console.log('사용자가 선택한 시간 (로컬):', values.endAt);
+			// console.log('서버에 보낼 시간 (UTC ISO):', payload.endAt);
+			// console.log('전체 payload:', payload);
 
 			showDialog({
 				message: '모투의 투표를 생성합니다.',

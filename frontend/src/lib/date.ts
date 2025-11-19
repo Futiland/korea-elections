@@ -128,3 +128,38 @@ export function toLocalISOString(date: Date): string {
 
 	return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
+
+/** 남은 시간을 표현하는 라벨 생성 (최대 7일, 24시간 미만이면 시간 단위) */
+export function getRemainingTimeLabel(endAt: Date | string): string | null {
+	const endDate = toDate(endAt);
+	const now = new Date();
+	const diffMs = endDate.getTime() - now.getTime();
+
+	if (diffMs <= 0) {
+		return null;
+	}
+
+	const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+	if (diffMinutes < 1) {
+		return '남은 시간 1분';
+	}
+
+	if (diffMinutes < 60) {
+		return `남은 시간 ${diffMinutes}분`;
+	}
+
+	const diffHours = Math.floor(diffMinutes / 60);
+
+	if (diffHours < 24) {
+		return `남은 시간 ${diffHours}시간`;
+	}
+
+	const diffDays = Math.floor(diffHours / 24);
+
+	if (diffDays > 7) {
+		return null;
+	}
+
+	return `남은 시간 ${diffDays}일`;
+}
