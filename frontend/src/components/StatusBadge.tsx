@@ -14,32 +14,32 @@ export default function StatusBadge({
 			case 'IN_PROGRESS':
 				return {
 					text: '진행중',
-					className: 'bg-green-100 text-green-800',
+					className: 'bg-green-100 text-green-700',
 				};
 			case 'EXPIRED':
 				return {
 					text: '종료',
-					className: 'bg-gray-100 text-gray-800',
+					className: 'bg-gray-100 text-gray-700',
 				};
 			case 'DELETED':
 				return {
 					text: '삭제된투표',
-					className: 'bg-gray-100 text-gray-800',
+					className: 'bg-gray-100 text-gray-700',
 				};
 			case 'CANCELLED':
 				return {
 					text: '투표중단',
-					className: 'bg-red-100 text-red-800',
+					className: 'bg-red-100 text-red-700',
 				};
 			case 'DRAFT':
 				return {
 					text: '투표예정',
-					className: 'bg-blue-100 text-blue-800',
+					className: 'bg-blue-100 text-blue-700',
 				};
 			default:
 				return {
 					text: '진행중',
-					className: 'bg-green-100 text-green-800',
+					className: 'bg-green-100 text-green-700',
 				};
 		}
 	};
