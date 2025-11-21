@@ -68,3 +68,9 @@ export type PublicPollResponse = {
 		nextCursor: string;
 	};
 };
+
+export type PublicPollSubmitResponse = {
+	code: string;
+	message: string;
+	data: number;
+};
