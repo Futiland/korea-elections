@@ -53,11 +53,13 @@ export type PublicPollData = {
 	userName: string;
 	isRevotable: boolean;
 	responseCount: number;
-	options: {
-		id: number;
-		optionText: string;
-		optionOrder: number;
-	}[];
+	options: OptionData[];
+};
+
+export type OptionData = {
+	id: number;
+	optionText: string;
+	optionOrder: number;
 };
 
 export type PublicPollResponse = {

@@ -26,7 +26,7 @@ export function useInfinitePolls({
 			return nextCursor && nextCursor !== '' ? nextCursor : undefined;
 		},
 		initialPageParam: undefined,
-		refetchOnWindowFocus: false,
+		refetchOnWindowFocus: true,
 	});
 
 	const observerTarget = useRef<HTMLDivElement>(null);

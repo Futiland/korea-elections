@@ -7,6 +7,7 @@ import { addCommas } from '@/lib/utils';
 import PollCardResults from './PollCardResults';
 import { PublicPollData, PollStatus } from '@/lib/types/poll';
 import { formatDateTimeLocal, getRemainingTimeLabel } from '@/lib/date';
+import { OptionData } from '@/lib/types/poll';
 
 interface PollCardProps {
 	pollData?: PublicPollData;
@@ -14,16 +15,32 @@ interface PollCardProps {
 
 export default function PollCard({ pollData }: PollCardProps) {
 	const [showResults, setShowResults] = useState<boolean>(false);
+	const [selectedOptionId, setSelectedOptionId] = useState<number[]>([]);
+	const [selectedScoreValue, setSelectedScoreValue] = useState<number>(1);
 
-	const handleOptionChange = (value: string | string[] | number) => {
-		// 선택된 값 처리 (필요시 API 호출 등)
-		console.log('Selected value:', value);
+	const handleOptionChange = (value: OptionData[] | number) => {
+		// if (Array.isArray(value)) {
+		// 	setSelectedOptionId(value.map(Number));
+		// } else {
+		// 	setSelectedOptionId([value as number]);
+		// }
 	};
 
-	const participationMessage =
-		pollData?.responseCount && pollData.responseCount > 0
-			? `지금까지 ${addCommas(pollData.responseCount)}명이 참여했어요!`
-			: '첫 번째 참여자가 되어 주세요!';
+	const handleScoreChange = (score: number) => {
+		setSelectedScoreValue(score);
+	};
+
+	const isExpired = pollData?.status === 'EXPIRED';
+	const hasParticipants =
+		!!pollData?.responseCount && pollData.responseCount > 0;
+
+	const participationMessage = isExpired
+		? hasParticipants
+			? `총 ${addCommas(pollData.responseCount)}명이 참여했습니다.`
+			: '아쉽게도 참여자가 없었습니다. 😢'
+		: hasParticipants
+		? `지금까지 ${addCommas(pollData.responseCount)}명이 참여했어요!`
+		: '첫 번째 참여자가 되어 주세요!';
 
 	const remainingTimeLabel = pollData?.endAt
 		? getRemainingTimeLabel(pollData.endAt)
@@ -33,8 +50,8 @@ export default function PollCard({ pollData }: PollCardProps) {
 		<Card className="w-full transition-colors">
 			<div className="px-6 py-4">
 				{/* 헤더 영역 - 참여자 수, 상태값, 제목, 공유 버튼 */}
+				{/* 참여 독력 메세지 */}
 
-				{/* 참여자 수 */}
 				<div className="mb-3 inline-flex items-center gap-2 rounded-full bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-600">
 					<Users className="w-4 h-4 text-fuchsia-600" />
 					<span>
