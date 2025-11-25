@@ -40,23 +40,21 @@ class PollResponseCommandService(
         }
 
         // 응답 유효성 검증
-        poll.validateResponse(request.optionIds, request.scoreValue)
+        poll.validateResponse(request)
 
         // 응답 저장
-        val responses = when {
-            // 점수제: 1개 레코드 (optionId=null, scoreValue 설정)
-            request.scoreValue != null -> {
+        val responses = when (request) {
+            is PollResponseSubmitRequest.SingleChoice -> {
                 listOf(
                     PollResponse.create(
                         pollId = pollId,
                         accountId = accountId,
-                        optionId = null,
-                        scoreValue = request.scoreValue
+                        optionId = request.optionId,
+                        scoreValue = null
                     )
                 )
             }
-            // 선택지 (단일/다중): optionId별로 레코드 생성
-            request.optionIds != null -> {
+            is PollResponseSubmitRequest.MultipleChoice -> {
                 request.optionIds.map { optionId ->
                     PollResponse.create(
                         pollId = pollId,
@@ -66,10 +64,16 @@ class PollResponseCommandService(
                     )
                 }
             }
-            else -> throw ApplicationException(
-                code = CodeEnum.FRS_003,
-                message = "응답 데이터가 없습니다"
-            )
+            is PollResponseSubmitRequest.Score -> {
+                listOf(
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = null,
+                        scoreValue = request.scoreValue
+                    )
+                )
+            }
         }
 
         val savedResponses = pollResponseRepository.saveAll(responses)
@@ -106,27 +110,25 @@ class PollResponseCommandService(
         }
 
         // 응답 유효성 검증
-        poll.validateResponse(request.optionIds, request.scoreValue)
+        poll.validateResponse(request)
 
         // 기존 응답 모두 삭제 (soft delete)
         existingResponses.forEach { it.delete() }
         pollResponseRepository.saveAll(existingResponses)
 
         // 새로운 응답 생성
-        val responses = when {
-            // 점수제: 1개 레코드
-            request.scoreValue != null -> {
+        val responses = when (request) {
+            is PollResponseSubmitRequest.SingleChoice -> {
                 listOf(
                     PollResponse.create(
                         pollId = pollId,
                         accountId = accountId,
-                        optionId = null,
-                        scoreValue = request.scoreValue
+                        optionId = request.optionId,
+                        scoreValue = null
                     )
                 )
             }
-            // 선택지 (단일/다중): optionId별로 레코드 생성
-            request.optionIds != null -> {
+            is PollResponseSubmitRequest.MultipleChoice -> {
                 request.optionIds.map { optionId ->
                     PollResponse.create(
                         pollId = pollId,
@@ -136,10 +138,16 @@ class PollResponseCommandService(
                     )
                 }
             }
-            else -> throw ApplicationException(
-                code = CodeEnum.FRS_003,
-                message = "응답 데이터가 없습니다"
-            )
+            is PollResponseSubmitRequest.Score -> {
+                listOf(
+                    PollResponse.create(
+                        pollId = pollId,
+                        accountId = accountId,
+                        optionId = null,
+                        scoreValue = request.scoreValue
+                    )
+                )
+            }
         }
 
         val savedResponses = pollResponseRepository.saveAll(responses)

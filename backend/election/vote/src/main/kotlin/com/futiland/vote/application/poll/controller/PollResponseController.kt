@@ -33,12 +33,13 @@ class PollResponseController(
         description = """
             여론조사에 응답을 제출합니다.
 
-            **응답 유형별 요청:**
-            - SINGLE_CHOICE: optionIds에 1개의 옵션 ID 전달
-            - MULTIPLE_CHOICE: optionIds에 여러 개의 옵션 ID 전달 (minSelections ~ maxSelections 범위 내)
-            - SCORE: scoreValue에 점수 전달 (minScore ~ maxScore 범위 내)
+            **응답 유형별 요청 예시:**
+            - SINGLE_CHOICE: {"responseType": "SINGLE_CHOICE", "optionId": 1}
+            - MULTIPLE_CHOICE: {"responseType": "MULTIPLE_CHOICE", "optionIds": [1, 2, 3]}
+            - SCORE: {"responseType": "SCORE", "scoreValue": 8}
 
             **주의사항:**
+            - responseType은 여론조사의 responseType과 일치해야 합니다
             - 이미 응답한 경우 에러가 발생합니다 (updateResponse 사용)
             - 투표 기간(startAt ~ endAt)에만 응답 가능합니다
             - 인증된 사용자만 응답 가능합니다
@@ -91,12 +92,13 @@ class PollResponseController(
         description = """
             이미 제출한 여론조사 응답을 수정합니다.
 
-            **응답 유형별 요청:**
-            - SINGLE_CHOICE: optionIds에 1개의 옵션 ID 전달
-            - MULTIPLE_CHOICE: optionIds에 여러 개의 옵션 ID 전달 (minSelections ~ maxSelections 범위 내)
-            - SCORE: scoreValue에 점수 전달 (minScore ~ maxScore 범위 내)
+            **응답 유형별 요청 예시:**
+            - SINGLE_CHOICE: {"responseType": "SINGLE_CHOICE", "optionId": 1}
+            - MULTIPLE_CHOICE: {"responseType": "MULTIPLE_CHOICE", "optionIds": [1, 2, 3]}
+            - SCORE: {"responseType": "SCORE", "scoreValue": 8}
 
             **주의사항:**
+            - responseType은 여론조사의 responseType과 일치해야 합니다
             - 응답하지 않은 경우 에러가 발생합니다 (submitResponse 사용)
             - 투표 기간(startAt ~ endAt)에만 수정 가능합니다
             - 재투표가 허용된 여론조사만 수정 가능합니다

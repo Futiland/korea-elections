@@ -65,9 +65,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[0].id
             )
 
             // Act
@@ -108,9 +107,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id, poll.options[1].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.MultipleChoice(
+                optionIds = listOf(poll.options[0].id, poll.options[1].id)
             )
 
             // Act & Assert
@@ -142,9 +140,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[0].id
             )
 
             // 첫 번째 응답
@@ -182,9 +179,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id, poll.options[1].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.MultipleChoice(
+                optionIds = listOf(poll.options[0].id, poll.options[1].id)
             )
 
             // Act
@@ -220,9 +216,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[0].id
             )
 
             // Act & Assert
@@ -252,9 +247,8 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id, poll.options[1].id, poll.options[2].id),
-                scoreValue = null
+            val request = PollResponseSubmitRequest.MultipleChoice(
+                optionIds = listOf(poll.options[0].id, poll.options[1].id, poll.options[2].id)
             )
 
             // Act & Assert
@@ -284,8 +278,7 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = null,
+            val request = PollResponseSubmitRequest.Score(
                 scoreValue = 7
             )
 
@@ -319,8 +312,7 @@ class PollResponseCommandServiceTest {
                 creatorAccountId = 100L
             )
 
-            val request = PollResponseSubmitRequest(
-                optionIds = null,
+            val request = PollResponseSubmitRequest.Score(
                 scoreValue = 15
             )
 
@@ -353,16 +345,14 @@ class PollResponseCommandServiceTest {
             )
 
             // 첫 번째 응답
-            val firstRequest = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[0].id),
-                scoreValue = null
+            val firstRequest = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[0].id
             )
             pollResponseCommandUseCase.submitResponse(poll.id, 200L, firstRequest)
 
             // 응답 수정
-            val updateRequest = PollResponseSubmitRequest(
-                optionIds = listOf(poll.options[1].id),
-                scoreValue = null
+            val updateRequest = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[1].id
             )
 
             // Act

@@ -1,7 +1,6 @@
 package com.futiland.vote.domain.poll.entity
 
-import com.futiland.vote.application.common.httpresponse.CodeEnum
-import com.futiland.vote.application.exception.ApplicationException
+import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -93,21 +92,22 @@ class Poll(
         }
     }
 
-    fun validateResponse(optionIds: List<Long>?, scoreValue: Int?) {
-        when (responseType) {
-            ResponseType.SINGLE_CHOICE -> {
-                require(optionIds != null && optionIds.size == 1) { "단일 선택은 1개만 선택 가능합니다" }
-                require(scoreValue == null) { "선택지 타입에는 점수 입력이 불가능합니다" }
+    fun validateResponse(request: PollResponseSubmitRequest) {
+        // 1. Poll의 responseType과 요청의 responseType 일치 검증
+        require(request.responseType == this.responseType) {
+            "여론조사 타입(${this.responseType})과 응답 타입(${request.responseType})이 일치하지 않습니다"
+        }
+
+        // 2. 각 타입별 세부 검증 (기본 null/empty 검증은 Bean Validation에서 처리)
+        when (request) {
+            is PollResponseSubmitRequest.SingleChoice -> {
+                // optionId는 이미 @NotNull로 검증됨
             }
-            ResponseType.MULTIPLE_CHOICE -> {
-                require(optionIds != null && optionIds.isNotEmpty()) { "선택지를 입력해야 합니다" }
-                // 다중 선택 시 제한 없음 (minSelections, maxSelections 검증 제거)
-                require(scoreValue == null) { "선택지 타입에는 점수 입력이 불가능합니다" }
+            is PollResponseSubmitRequest.MultipleChoice -> {
+                // optionIds는 이미 @NotEmpty로 검증됨
             }
-            ResponseType.SCORE -> {
-                require(scoreValue != null) { "점수를 입력해야 합니다" }
-                require(scoreValue in 0..10) { "점수는 0~10 사이여야 합니다" }
-                require(optionIds.isNullOrEmpty()) { "점수제는 선택지를 선택할 수 없습니다" }
+            is PollResponseSubmitRequest.Score -> {
+                require(request.scoreValue in 0..10) { "점수는 0~10 사이여야 합니다" }
             }
         }
     }
