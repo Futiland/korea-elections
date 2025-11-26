@@ -4,6 +4,7 @@ import {
 	CreatePollResponse,
 	PublicPollResponse,
 	PublicPollSubmitResponse,
+	QuestionType,
 } from '../types/poll';
 
 export const createPoll = (data: CreatePollData) =>
@@ -18,10 +19,22 @@ export const getPublicPolls = (size: number, nextCursor?: string) =>
 
 export const submitPublicPoll = (
 	pollId: number,
-	optionId: number[],
-	scoreValue: number
-) =>
-	apiPost<PublicPollSubmitResponse>(`/rest/poll/v1/${pollId}/response`, {
-		optionId,
-		scoreValue,
-	});
+	optionId: number[] | number,
+	responseType: QuestionType
+) => {
+	const payload: {
+		responseType: QuestionType;
+		scoreValue?: number;
+		optionId?: number[] | number;
+	} = { responseType };
+	// responseType에 따른 payload 설정
+	if (responseType === 'SCORE') {
+		payload.scoreValue = optionId as number;
+	} else {
+		payload.optionId = optionId;
+	}
+	return apiPost<PublicPollSubmitResponse>(
+		`/rest/poll/v1/${pollId}/response`,
+		payload
+	);
+};
