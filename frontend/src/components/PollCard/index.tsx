@@ -16,6 +16,7 @@ import { OptionData } from '@/lib/types/poll';
 import { submitPublicPoll } from '@/lib/api/poll';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useRequireLogin } from '@/hooks/useRequireLogin';
 
 interface PollCardProps {
 	pollData: PublicPollData;
@@ -26,6 +27,8 @@ export default function PollCard({ pollData }: PollCardProps) {
 	const [selectedOptionValue, setSelectedOptionValue] = useState<
 		number[] | number
 	>([]);
+	const { ensureLoggedIn } = useRequireLogin();
+
 	const isExpired = pollData?.status === 'EXPIRED';
 	const hasParticipants =
 		!!pollData?.responseCount && pollData.responseCount > 0;
@@ -51,6 +54,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 			submitPublicPoll(payload.pollId, payload.optionId, payload.responseType),
 		onSuccess: () => {
 			toast.success('투표가 완료되었습니다.');
+			// 결과를 바로 보여줄것인가 버튼을 보여줄것인가.
 			// setShowResults(true);
 		},
 		onError: (data: PublicPollSubmitResponse) => {
@@ -64,14 +68,15 @@ export default function PollCard({ pollData }: PollCardProps) {
 	}, []);
 
 	const handlePollResultView = useCallback(
-		(showResults: boolean) => {
-			setShowResults(showResults);
-		},
-		[pollData?.id, pollData?.responseType]
+		(showResults: boolean) =>
+			ensureLoggedIn({
+				onSuccess: () => setShowResults(showResults),
+				description: '투표 결과를 확인하려면 로그인이 필요합니다.',
+			}),
+		[ensureLoggedIn]
 	);
 
 	const handlePollSubmit = useCallback(() => {
-		console.log('handlePollSubmit selectedOptionValue', selectedOptionValue);
 		if (
 			Array.isArray(selectedOptionValue) &&
 			selectedOptionValue.length === 0
@@ -80,12 +85,24 @@ export default function PollCard({ pollData }: PollCardProps) {
 			return;
 		}
 
-		submitPublicPollMutation.mutate({
-			pollId: pollData?.id,
-			optionId: selectedOptionValue,
-			responseType: pollData?.responseType,
+		const submitPoll = () =>
+			submitPublicPollMutation.mutate({
+				pollId: pollData?.id,
+				optionId: selectedOptionValue,
+				responseType: pollData?.responseType,
+			});
+
+		ensureLoggedIn({
+			onSuccess: submitPoll,
+			description: '투표 참여는 로그인 후 가능합니다.',
 		});
-	}, [pollData?.id, pollData?.responseType, selectedOptionValue]);
+	}, [
+		ensureLoggedIn,
+		pollData?.id,
+		pollData?.responseType,
+		selectedOptionValue,
+		submitPublicPollMutation,
+	]);
 
 	return (
 		<Card className="w-full transition-colors">
@@ -149,13 +166,13 @@ export default function PollCard({ pollData }: PollCardProps) {
 					{/* 진행중인 투표일 때만 투표하기 버튼 표시 */}
 					{pollData?.status === 'IN_PROGRESS' && (
 						<button
-							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm"
+							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
 							type="button"
 							onClick={handlePollSubmit}
 							disabled={submitPublicPollMutation.isPending}
 						>
 							{submitPublicPollMutation.isPending ? (
-								<Loader2 className="w-4 h-4 animate-spin text-center" />
+								<Loader2 className="w-6 h-6 animate-spin text-center" />
 							) : (
 								'투표하기'
 							)}

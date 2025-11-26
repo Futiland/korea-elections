@@ -11,7 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 			className="toaster group text-md"
 			style={
 				{
-					'--normal-bg': 'rgba(0, 0, 0, 0.60)',
+					'--normal-bg': 'rgba(0, 0, 0, 0.65)',
 					'--normal-text': '#ffffff',
 					'--normal-border': 'rgba(255, 255, 255, 0.12)',
 					fontSize: '14px',
