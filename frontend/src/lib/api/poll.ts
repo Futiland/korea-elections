@@ -19,19 +19,19 @@ export const getPublicPolls = (size: number, nextCursor?: string) =>
 
 export const submitPublicPoll = (
 	pollId: number,
-	optionId: number[] | number,
+	optionIds: number[] | number,
 	responseType: QuestionType
 ) => {
 	const payload: {
 		responseType: QuestionType;
 		scoreValue?: number;
-		optionId?: number[] | number;
+		optionIds?: number[] | number;
 	} = { responseType };
 	// responseType에 따른 payload 설정
 	if (responseType === 'SCORE') {
-		payload.scoreValue = optionId as number;
+		payload.scoreValue = optionIds as number;
 	} else {
-		payload.optionId = optionId;
+		payload.optionIds = optionIds;
 	}
 	return apiPost<PublicPollSubmitResponse>(
 		`/rest/poll/v1/${pollId}/response`,

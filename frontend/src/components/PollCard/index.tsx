@@ -1,35 +1,31 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Card, CardHeader, CardTitle } from '../ui/card';
 import StatusBadge from '../StatusBadge';
 import PollCardOptions from './PollCardOptions';
-import { Share2, Users } from 'lucide-react';
+import { Loader2, Share2, Users } from 'lucide-react';
 import { addCommas } from '@/lib/utils';
 import PollCardResults from './PollCardResults';
-import { PublicPollData, PollStatus } from '@/lib/types/poll';
+import {
+	PublicPollData,
+	PollStatus,
+	QuestionType,
+	PublicPollSubmitResponse,
+} from '@/lib/types/poll';
 import { formatDateTimeLocal, getRemainingTimeLabel } from '@/lib/date';
 import { OptionData } from '@/lib/types/poll';
+import { submitPublicPoll } from '@/lib/api/poll';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface PollCardProps {
-	pollData?: PublicPollData;
+	pollData: PublicPollData;
 }
 
 export default function PollCard({ pollData }: PollCardProps) {
 	const [showResults, setShowResults] = useState<boolean>(false);
-	const [selectedOptionId, setSelectedOptionId] = useState<number[]>([]);
-	const [selectedScoreValue, setSelectedScoreValue] = useState<number>(1);
-
-	const handleOptionChange = (value: OptionData[] | number) => {
-		// if (Array.isArray(value)) {
-		// 	setSelectedOptionId(value.map(Number));
-		// } else {
-		// 	setSelectedOptionId([value as number]);
-		// }
-	};
-
-	const handleScoreChange = (score: number) => {
-		setSelectedScoreValue(score);
-	};
-
+	const [selectedOptionValue, setSelectedOptionValue] = useState<
+		number[] | number
+	>([]);
 	const isExpired = pollData?.status === 'EXPIRED';
 	const hasParticipants =
 		!!pollData?.responseCount && pollData.responseCount > 0;
@@ -45,6 +41,51 @@ export default function PollCard({ pollData }: PollCardProps) {
 	const remainingTimeLabel = pollData?.endAt
 		? getRemainingTimeLabel(pollData.endAt)
 		: null;
+
+	const submitPublicPollMutation = useMutation({
+		mutationFn: (payload: {
+			pollId: number;
+			optionId: number[] | number;
+			responseType: QuestionType;
+		}) =>
+			submitPublicPoll(payload.pollId, payload.optionId, payload.responseType),
+		onSuccess: () => {
+			toast.success('투표가 완료되었습니다.');
+			// setShowResults(true);
+		},
+		onError: (data: PublicPollSubmitResponse) => {
+			toast.error(data.message);
+		},
+	});
+
+	const onSharePoll = useCallback(() => {
+		// TODO: 투표 공유 링크 생성
+		navigator.clipboard.writeText(window.location.href);
+	}, []);
+
+	const handlePollResultView = useCallback(
+		(showResults: boolean) => {
+			setShowResults(showResults);
+		},
+		[pollData?.id, pollData?.responseType]
+	);
+
+	const handlePollSubmit = useCallback(() => {
+		console.log('handlePollSubmit selectedOptionValue', selectedOptionValue);
+		if (
+			Array.isArray(selectedOptionValue) &&
+			selectedOptionValue.length === 0
+		) {
+			toast.error('투표 옵션을 선택해주세요.');
+			return;
+		}
+
+		submitPublicPollMutation.mutate({
+			pollId: pollData?.id,
+			optionId: selectedOptionValue,
+			responseType: pollData?.responseType,
+		});
+	}, [pollData?.id, pollData?.responseType, selectedOptionValue]);
 
 	return (
 		<Card className="w-full transition-colors">
@@ -96,7 +137,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 					<PollCardOptions
 						responseType={pollData.responseType}
 						options={pollData.options}
-						onChange={handleOptionChange}
+						onChange={setSelectedOptionValue}
 					/>
 				)}
 
@@ -105,14 +146,19 @@ export default function PollCard({ pollData }: PollCardProps) {
 
 				{/* 버튼 영역 */}
 				<div className="flex gap-3">
-					{/* 진행중인 투표일 때만 투표하러가기 버튼 표시 */}
+					{/* 진행중인 투표일 때만 투표하기 버튼 표시 */}
 					{pollData?.status === 'IN_PROGRESS' && (
 						<button
 							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm"
 							type="button"
-							onClick={() => setShowResults(false)}
+							onClick={handlePollSubmit}
+							disabled={submitPublicPollMutation.isPending}
 						>
-							투표하러가기
+							{submitPublicPollMutation.isPending ? (
+								<Loader2 className="w-4 h-4 animate-spin text-center" />
+							) : (
+								'투표하기'
+							)}
 						</button>
 					)}
 					{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
@@ -122,7 +168,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 								pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
 							} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
 							type="button"
-							onClick={() => setShowResults(true)}
+							onClick={() => handlePollResultView(true)}
 						>
 							{pollData.status === 'IN_PROGRESS'
 								? '결과보기'
@@ -136,7 +182,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						<button
 							className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
 							type="button"
-							onClick={() => setShowResults(true)}
+							onClick={() => handlePollResultView(true)}
 						>
 							결과보기
 						</button>
@@ -145,6 +191,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						className="bg-slate-100 hover:bg-slate-100 py-3 px-4 rounded-lg font-semibold"
 						type="button"
 						title="공유하기"
+						onClick={onSharePoll}
 					>
 						<Share2 className="w-5 h-5 text-slate-700" />
 					</button>

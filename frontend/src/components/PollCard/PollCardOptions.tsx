@@ -8,7 +8,7 @@ import { OptionData } from '@/lib/types/poll';
 type PollCardOptionsProps = {
 	responseType: QuestionType;
 	options: OptionData[];
-	onChange?: (value: OptionData[]) => void;
+	onChange: (value: number[] | number) => void;
 };
 
 export default function PollCardOptions({
@@ -23,28 +23,21 @@ export default function PollCardOptions({
 	const [selectedScore, setSelectedScore] = useState<number>(1);
 
 	const handleSingleChoiceChange = (value: string) => {
-		const selecteOoption = options.find(
-			(option) => option.id === Number(value)
-		);
-
 		setSelectedSingleChoice(value);
 
-		if (selecteOoption) {
-			onChange?.([selecteOoption]);
-		}
+		onChange([Number(value)]);
 	};
 
 	const handleMultipleChoiceChange = (values: string[]) => {
-		const selectedOptions = options.filter((option) =>
-			values.includes(option.id.toString())
-		);
 		setSelectedMultipleChoices(values);
-		onChange?.(selectedOptions);
+		const selectedOptions = values.map(Number);
+
+		onChange(selectedOptions);
 	};
 
 	const handleScoreChange = (score: number) => {
 		setSelectedScore(score);
-		// onChange?.(score);
+		onChange(score);
 	};
 
 	return (
