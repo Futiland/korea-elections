@@ -4,9 +4,7 @@ import Header from './Header';
 import { useRouter } from 'next/router';
 import CreatePollDialog from '../CreatePoll';
 import { Plus } from 'lucide-react';
-import { useAuthToken } from '@/hooks/useAuthToken';
-import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
-import { Button } from '@/components/ui/button';
+import { useRequireLogin } from '@/hooks/useRequireLogin';
 
 interface LayoutProps {
 	children: ReactNode;
@@ -16,8 +14,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 	const [isCreatePollOpen, setIsCreatePollOpen] = useState(false);
 
 	const router = useRouter();
-	const { isLoggedIn, isReady } = useAuthToken();
-	const { showDialog, hideDialog } = useAlertDialog();
+	const { ensureLoggedIn } = useRequireLogin();
 
 	const isLoginPage = router.pathname === '/login';
 	const isSignUpPage = router.pathname === '/signup';
@@ -26,41 +23,12 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 	const visibleCreatePollButton = !isLoginPage && !isSignUpPage;
 	// const visibleBottomMenuBar = !isLoginPage && !isSignUpPage;
 
-	const handleCreatePollClick = () => {
-		if (!isReady) return; // 로그인 상태 확인 중
-
-		if (!isLoggedIn) {
-			showDialog({
-				message: '로그인이 필요합니다',
-				discription: '모두의 투표를 생성하려면 로그인이 필요합니다.',
-				actions: (
-					<div className="flex gap-2 w-full">
-						<Button
-							className="flex-1 h-10 bg-slate-200 text-slate-900 hover:bg-slate-200"
-							onClick={() => hideDialog()}
-						>
-							취소
-						</Button>
-						<Button
-							className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
-							onClick={() => {
-								hideDialog();
-								router.push({
-									pathname: '/login',
-									query: { redirect: router.asPath },
-								});
-							}}
-						>
-							로그인하기
-						</Button>
-					</div>
-				),
-			});
-			return;
-		}
-
-		setIsCreatePollOpen(true);
-	};
+	const handleCreatePollClick = () =>
+		// 로그인 여부 체크
+		ensureLoggedIn({
+			onSuccess: () => setIsCreatePollOpen(true),
+			description: '모두의 투표를 생성하려면 로그인이 필요합니다.',
+		});
 
 	return (
 		<>

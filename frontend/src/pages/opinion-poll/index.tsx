@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-export default function Legislation() {
+export default function OpinionPoll() {
 	return (
 		<>
 			<Head>

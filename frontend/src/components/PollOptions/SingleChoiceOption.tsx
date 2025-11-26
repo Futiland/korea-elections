@@ -1,8 +1,9 @@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { OptionData } from '@/lib/types/poll';
 
 interface SingleChoiceOptionProps {
-	options: { id: number; optionText: string; optionOrder: number }[];
+	options: OptionData[];
 	value?: string;
 	onValueChange?: (value: string) => void;
 }
