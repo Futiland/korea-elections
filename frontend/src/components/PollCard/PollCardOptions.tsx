@@ -3,11 +3,12 @@ import SingleChoiceOption from '../PollOptions/SingleChoiceOption';
 import MultipleChoiceOption from '../PollOptions/MultipleChoiceOption';
 import ScoreOption from '../PollOptions/ScoreOption';
 import { QuestionType } from '@/lib/types/poll';
+import { OptionData } from '@/lib/types/poll';
 
 type PollCardOptionsProps = {
 	responseType: QuestionType;
-	options: { id: number; optionText: string; optionOrder: number }[];
-	onChange?: (value: string | string[] | number) => void;
+	options: OptionData[];
+	onChange: (value: number[] | number) => void;
 };
 
 export default function PollCardOptions({
@@ -23,17 +24,20 @@ export default function PollCardOptions({
 
 	const handleSingleChoiceChange = (value: string) => {
 		setSelectedSingleChoice(value);
-		onChange?.(value);
+
+		onChange([Number(value)]);
 	};
 
 	const handleMultipleChoiceChange = (values: string[]) => {
 		setSelectedMultipleChoices(values);
-		onChange?.(values);
+		const selectedOptions = values.map(Number);
+
+		onChange(selectedOptions);
 	};
 
 	const handleScoreChange = (score: number) => {
 		setSelectedScore(score);
-		onChange?.(score);
+		onChange(score);
 	};
 
 	return (

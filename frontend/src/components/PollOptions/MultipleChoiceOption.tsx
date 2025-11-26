@@ -1,8 +1,9 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { OptionData } from '@/lib/types/poll';
 
 interface MultipleChoiceOptionProps {
-	options: { id: number; optionText: string; optionOrder: number }[];
+	options: OptionData[];
 	selectedValues?: string[];
 	onChange?: (values: string[]) => void;
 }
