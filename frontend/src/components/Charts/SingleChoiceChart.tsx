@@ -1,14 +1,9 @@
+import { optionResultsDate } from '@/lib/types/poll';
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
-type SingleChoiceData = {
-	option: string;
-	count: number;
-	percentage: number;
-};
-
 type SingleChoiceChartProps = {
-	data: SingleChoiceData[];
+	data: optionResultsDate[];
 	totalResponses: number;
 	height?: number;
 };
@@ -19,7 +14,8 @@ export default function SingleChoiceChart({
 	height = 300,
 }: SingleChoiceChartProps) {
 	// 데이터를 투표 수 기준으로 내림차순 정렬
-	const sortedData = [...data].sort((a, b) => b.count - a.count);
+	// const sortedData = [...data].sort((a, b) => b.count - a.count);
+	console.log('SingleChoiceChart data:', data, totalResponses);
 
 	const colors = [
 		'#3b82f6', // blue
@@ -52,10 +48,10 @@ export default function SingleChoiceChart({
 			const data = payload[0].payload;
 			return (
 				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-					<p className="font-semibold text-gray-800">{data.option}</p>
+					<p className="font-semibold text-gray-800">{data.optionText}</p>
 					<p className="text-blue-600">
 						명수:{' '}
-						<span className="font-bold">{data.count.toLocaleString()}</span>
+						<span className="font-bold">{data.voteCount.toLocaleString()}</span>
 					</p>
 					<p className="text-gray-600">
 						비율:{' '}
@@ -84,7 +80,7 @@ export default function SingleChoiceChart({
 						</div>
 						<div className="text-right">
 							<span className="font-semibold text-gray-800">
-								{entry.payload.count.toLocaleString()}명
+								{entry.payload.voteCount.toLocaleString()}명
 							</span>
 							<span className="text-gray-500 ml-2">
 								({entry.payload.percentage.toFixed(1)}%)
@@ -128,7 +124,7 @@ export default function SingleChoiceChart({
 	return (
 		<div className="w-full">
 			<div className="flex items-center justify-between mb-4">
-				<h3 className="text-lg font-semibold">단일선택 투표 결과</h3>
+				<h3 className="text-lg font-semibold">투표 결과</h3>
 				<span className="text-sm text-gray-500">
 					총 응답: {totalResponses.toLocaleString()}명
 				</span>
@@ -138,16 +134,16 @@ export default function SingleChoiceChart({
 					<ResponsiveContainer width="100%" height={height}>
 						<PieChart>
 							<Pie
-								data={sortedData}
+								data={data}
 								cx="50%"
 								cy="50%"
 								labelLine={false}
 								label={renderSliceLabel}
 								outerRadius={80}
 								fill="#8884d8"
-								dataKey="count"
+								dataKey="voteCount"
 							>
-								{sortedData.map((entry, index) => (
+								{data.map((entry, index) => (
 									<Cell
 										key={`cell-${index}`}
 										fill={colors[index % colors.length]}
@@ -161,8 +157,8 @@ export default function SingleChoiceChart({
 				<div className="w-56">
 					{/* 차트 외부 사이드 패널로 범례 표시 */}
 					<CustomLegend
-						payload={sortedData.map((d, i) => ({
-							value: d.option,
+						payload={data.map((d, i) => ({
+							value: d.optionText,
 							color: colors[i % colors.length],
 							payload: d,
 						}))}

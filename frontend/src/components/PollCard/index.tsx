@@ -159,50 +159,67 @@ export default function PollCard({ pollData }: PollCardProps) {
 				)}
 
 				{/* 결과 차트 */}
-				{showResults && <PollCardResults />}
+				{showResults && (
+					<PollCardResults
+						canShowResults={showResults}
+						pollId={pollData.id}
+						responsType={pollData.responseType}
+					/>
+				)}
 
 				{/* 버튼 영역 */}
 				<div className="flex gap-3">
-					{/* 진행중인 투표일 때만 투표하기 버튼 표시 */}
-					{pollData?.status === 'IN_PROGRESS' && (
+					{showResults ? (
 						<button
 							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
 							type="button"
-							onClick={handlePollSubmit}
-							disabled={submitPublicPollMutation.isPending}
+							onClick={() => handlePollResultView(false)}
 						>
-							{submitPublicPollMutation.isPending ? (
-								<Loader2 className="w-6 h-6 animate-spin text-center" />
-							) : (
-								'투표하기'
+							투표 보기
+						</button>
+					) : (
+						<>
+							{/* 진행중인 투표일 때만 투표하기 버튼 표시 */}
+							{pollData?.status === 'IN_PROGRESS' && (
+								<button
+									className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
+									type="button"
+									onClick={handlePollSubmit}
+									disabled={submitPublicPollMutation.isPending}
+								>
+									{submitPublicPollMutation.isPending ? (
+										<Loader2 className="w-6 h-6 animate-spin text-center" />
+									) : (
+										'투표하기'
+									)}
+								</button>
 							)}
-						</button>
-					)}
-					{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-					{pollData?.isRevotable && (
-						<button
-							className={`${
-								pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
-							} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
-							type="button"
-							onClick={() => handlePollResultView(true)}
-						>
-							{pollData.status === 'IN_PROGRESS'
-								? '결과보기'
-								: '완료한 투표 & 결과보기'}
-						</button>
-					)}
-
-					{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
-					{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
-					{pollData?.status === 'EXPIRED' && (
-						<button
-							className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
-							type="button"
-							onClick={() => handlePollResultView(true)}
-						>
-							결과보기
-						</button>
+							{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
+							{pollData?.isRevotable && (
+								<button
+									className={`${
+										pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
+									} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
+									type="button"
+									onClick={() => handlePollResultView(true)}
+								>
+									{pollData.status === 'IN_PROGRESS'
+										? '결과보기'
+										: '완료한 투표 & 결과보기'}
+								</button>
+							)}
+							{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
+							{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
+							{pollData?.status === 'EXPIRED' && (
+								<button
+									className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+									type="button"
+									onClick={() => handlePollResultView(true)}
+								>
+									결과보기
+								</button>
+							)}
+						</>
 					)}
 					<button
 						className="bg-slate-100 hover:bg-slate-100 py-3 px-4 rounded-lg font-semibold"
