@@ -1,6 +1,25 @@
 server:
   port: 8080
 
+spring:
+  profiles:
+    active: ${SPRING_PROFILE:dev} # 기본값 dev, 환경변수로 변경 가능
+  jackson:
+    time-zone: Asia/Seoul
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 1000
+
 access_token:
   ttl: 86400000 # 1 day(테스트용
 
@@ -17,19 +36,25 @@ portone:
   store-id: ${PORTONE_STORE_ID}
   auth-token: ${PORTONE_AUTH_TOKEN}
 
+# Spring Security 디버깅용 (필요 시 주석 해제)
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: DEBUG
+
+---
 spring:
-  jackson:
-    time-zone: Asia/Seoul
-  datasource:
-    url: ${DB_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          batch_size: 1000
+  config:
+    activate:
+      on-profile: dev
+
+# dev 프로파일 전용 설정 (필요시 추가)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+# prod 프로파일 전용 설정 (필요시 추가)

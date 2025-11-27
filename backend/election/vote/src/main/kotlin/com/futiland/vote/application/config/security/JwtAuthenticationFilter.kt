@@ -8,6 +8,7 @@ import com.futiland.vote.domain.common.JwtTokenProvider
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -22,38 +23,60 @@ import org.springframework.web.filter.OncePerRequestFilter
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val environment: Environment
 ) : OncePerRequestFilter() {
 
-    private val excludedPaths: List<RequestMatcher> = listOf(
-        AntPathRequestMatcher("/", "GET"),
-        AntPathRequestMatcher("/account/v1/stopper", "GET"),
-        AntPathRequestMatcher("/account/v1/change-password", "POST"),
-        AntPathRequestMatcher("/account/v1/signup", "POST"),
-        AntPathRequestMatcher("/account/v1/signin", "POST"),
-        AntPathRequestMatcher("/election/v1/*/vote", "GET"), // GET만 제외
-        AntPathRequestMatcher("/swagger/**"),
-        AntPathRequestMatcher("/swagger-ui/**"),
-        AntPathRequestMatcher("/api-docs/**")
-    )
+    // NOTE: 인증 필요 여부는 SecurityConfig의 authorizeHttpRequests에서만 관리
+    // 이 필터는 Authorization 헤더가 있으면 항상 검증하고, 없으면 통과
+    // SecurityConfig에서 authenticated() 규칙이 있으면 403 에러 발생
 
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        return excludedPaths.any { it.matches(request) }
-    }
+    // 공개 엔드포인트 목록 (JWT 검증 스킵)
+    // GET 요청들도 포함 (브라우저/프론트가 Authorization 헤더를 실수로 보낼 수 있음)
+    private val publicEndpoints = listOf(
+        // 기본 경로
+        AntPathRequestMatcher("/"),
+
+        // Account 관련
+        AntPathRequestMatcher("/account/v1/signup"),
+        AntPathRequestMatcher("/account/v1/signin"),
+        AntPathRequestMatcher("/account/v1/change-password"),
+        AntPathRequestMatcher("/account/v1/stopper"),
+
+        // Actuator
+        AntPathRequestMatcher("/actuator/health"),
+
+        // Swagger
+        AntPathRequestMatcher("/swagger-ui.html"),
+        AntPathRequestMatcher("/swagger-ui/**"),
+        AntPathRequestMatcher("/v3/api-docs/**"),
+        AntPathRequestMatcher("/swagger-resources/**"),
+
+        // Election - GET
+        AntPathRequestMatcher("/election/v1/*/vote", "GET"),
+
+        // Poll - GET (모든 조회 API)
+        AntPathRequestMatcher("/poll/v1/public", "GET")
+    )
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val authorizationHeader = request.getHeader("Authorization")
-
-        if (authorizationHeader.isNullOrBlank() || !authorizationHeader.startsWith("Bearer ")) {
-            throw BadCredentialsException("Invalid Authorization header")
+        // 공개 엔드포인트는 JWT 검증 스킵
+        if (publicEndpoints.any { it.matches(request) }) {
+            filterChain.doFilter(request, response)
+            return
         }
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        val authorizationHeader = request.getHeader("Authorization")
+
+        // Authorization 헤더가 있으면 검증, 없으면 그냥 통과
+        // SecurityConfig에서 authenticated() 규칙이 있으면 인증 없을 때 403 처리됨
+        if (!authorizationHeader.isNullOrBlank() && authorizationHeader.startsWith("Bearer ")) {
             val token = authorizationHeader.substring(7)
+
             if (jwtTokenProvider.validateToken(token)) {
                 val tokenResult: AccountJwtPayload = jwtTokenProvider.parseAuthorizationToken(token)
 
@@ -64,13 +87,11 @@ class JwtAuthenticationFilter(
                         )
                     )
 
-                if (userDetails != null) {
-                    val usernamePasswordAuthenticationToken =
-                        UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-                    SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
-                }
-            } else{
-                // 여기서 바로 예외 응답
+                val usernamePasswordAuthenticationToken =
+                    UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+                SecurityContextHolder.getContext().authentication = usernamePasswordAuthenticationToken
+            } else {
+                // 토큰이 유효하지 않은 경우
                 response.contentType = "application/json"
                 response.status = HttpStatus.UNAUTHORIZED.value()
                 val errorResponse = HttpApiResponse.fromExceptionMessage(
@@ -81,6 +102,7 @@ class JwtAuthenticationFilter(
                 return
             }
         }
+
         filterChain.doFilter(request, response)
     }
 }
