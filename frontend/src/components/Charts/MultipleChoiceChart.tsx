@@ -62,12 +62,12 @@ export default function MultipleChoiceChart({
 				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
 					<p className="font-semibold text-gray-800">{label}</p>
 					<p className="text-blue-600">
-						명수:{' '}
-						<span className="font-bold">{data.voteCount.toLocaleString()}</span>
+						<span className="font-bold">
+							{data.voteCount.toLocaleString()}명
+						</span>
 					</p>
 					<p className="text-gray-600">
-						비율:{' '}
-						<span className="font-bold">{data.percentage.toFixed(1)}%</span>
+						<span className="font-bold">{Math.round(data.percentage)}%</span>
 					</p>
 				</div>
 			);
@@ -78,7 +78,7 @@ export default function MultipleChoiceChart({
 	return (
 		<div className="w-full">
 			<div className="flex items-center justify-between mb-4">
-				<h3 className="text-lg font-semibold">다중선택 투표 결과</h3>
+				<h3 className="text-lg font-semibold">투표 결과</h3>
 				<span className="text-sm text-gray-500">
 					총 응답: {totalResponses.toLocaleString()}명
 				</span>

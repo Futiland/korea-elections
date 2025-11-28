@@ -50,12 +50,12 @@ export default function SingleChoiceChart({
 				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
 					<p className="font-semibold text-gray-800">{data.optionText}</p>
 					<p className="text-blue-600">
-						명수:{' '}
-						<span className="font-bold">{data.voteCount.toLocaleString()}</span>
+						<span className="font-bold">
+							{data.voteCount.toLocaleString()}명
+						</span>
 					</p>
 					<p className="text-gray-600">
-						비율:{' '}
-						<span className="font-bold">{data.percentage.toFixed(1)}%</span>
+						<span className="font-bold">{Math.round(data.percentage)}%</span>
 					</p>
 				</div>
 			);

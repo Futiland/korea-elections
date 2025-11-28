@@ -64,19 +64,8 @@ export default function PollCardResults({
 
 			{responsType === 'SCORE' && (
 				<ScoreChart
-					data={[
-						{ score: 1, count: 3, percentage: 1.5 },
-						{ score: 2, count: 7, percentage: 3.5 },
-						{ score: 3, count: 12, percentage: 6.0 },
-						{ score: 4, count: 18, percentage: 9.0 },
-						{ score: 5, count: 25, percentage: 12.5 },
-						{ score: 6, count: 32, percentage: 16.0 },
-						{ score: 7, count: 38, percentage: 19.0 },
-						{ score: 8, count: 35, percentage: 17.5 },
-						{ score: 9, count: 22, percentage: 11.0 },
-						{ score: 10, count: 8, percentage: 4.0 },
-					]}
-					totalResponses={100}
+					data={resultData?.scoreResult}
+					totalResponses={resultData?.totalResponseCount || 0}
 				/>
 			)}
 		</div>

@@ -84,17 +84,19 @@ export type OptionResultsDate = {
 	percentage: number;
 };
 
+export type ScoreResultDate = {
+	averageScore: 0.1;
+	minScore: 1073741824;
+	maxScore: 1073741824;
+	scoreDistribution: {
+		[id: number]: number;
+	};
+};
+
 export type PublicPollResultResponse = {
 	pollId: number;
 	responseType: QuestionType;
 	totalResponseCount: number;
 	optionResults: OptionResultsDate[];
-	scoreResult: {
-		averageScore: 0.1;
-		minScore: 1073741824;
-		maxScore: 1073741824;
-		scoreDistribution: {
-			[id: number]: number;
-		};
-	};
+	scoreResult: ScoreResultDate;
 };
