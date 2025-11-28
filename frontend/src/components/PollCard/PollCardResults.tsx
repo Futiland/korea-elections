@@ -57,11 +57,8 @@ export default function PollCardResults({
 
 			{responsType === 'MULTIPLE_CHOICE' && (
 				<MultipleChoiceChart
-					data={[
-						{ option: '옵션 A', count: 45, percentage: 22.5 },
-						{ option: '옵션 B', count: 38, percentage: 19.0 },
-					]}
-					totalResponses={100}
+					data={resultData?.optionResults || []}
+					totalResponses={resultData?.totalResponseCount || 0}
 				/>
 			)}
 

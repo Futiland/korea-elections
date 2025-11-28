@@ -1,9 +1,9 @@
-import { optionResultsDate } from '@/lib/types/poll';
+import { OptionResultsDate } from '@/lib/types/poll';
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 type SingleChoiceChartProps = {
-	data: optionResultsDate[];
+	data: OptionResultsDate[];
 	totalResponses: number;
 	height?: number;
 };

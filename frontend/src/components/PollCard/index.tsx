@@ -195,19 +195,19 @@ export default function PollCard({ pollData }: PollCardProps) {
 								</button>
 							)}
 							{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-							{pollData?.isRevotable && (
-								<button
-									className={`${
-										pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
-									} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
-									type="button"
-									onClick={() => handlePollResultView(true)}
-								>
-									{pollData.status === 'IN_PROGRESS'
-										? '결과보기'
-										: '완료한 투표 & 결과보기'}
-								</button>
-							)}
+							{/* {pollData?.isRevotable && ( */}
+							<button
+								className={`${
+									pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
+								} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
+								type="button"
+								onClick={() => handlePollResultView(true)}
+							>
+								{pollData.status === 'IN_PROGRESS'
+									? '결과보기'
+									: '완료한 투표 & 결과보기'}
+							</button>
+
 							{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
 							{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
 							{pollData?.status === 'EXPIRED' && (

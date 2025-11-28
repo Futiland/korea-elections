@@ -1,4 +1,5 @@
-import React from 'react';
+import { OptionResultsDate } from '@/lib/types/poll';
+import React, { useMemo } from 'react';
 import {
 	BarChart,
 	Bar,
@@ -10,14 +11,8 @@ import {
 	Cell,
 } from 'recharts';
 
-type MultipleChoiceData = {
-	option: string;
-	count: number;
-	percentage: number;
-};
-
 type MultipleChoiceChartProps = {
-	data: MultipleChoiceData[];
+	data: OptionResultsDate[];
 	totalResponses: number;
 	height?: number;
 };
@@ -28,12 +23,37 @@ export default function MultipleChoiceChart({
 	height = 300,
 }: MultipleChoiceChartProps) {
 	// 데이터를 투표 수 기준으로 내림차순 정렬
-	const sortedData = [...data].sort((a, b) => b.count - a.count);
-
-	// 디버깅을 위한 콘솔 출력
-	console.log('MultipleChoiceChart data:', sortedData);
+	// const sortedData = [...data].sort((a, b) => b.count - a.count);
 
 	const color = '#2b7fff'; // blue
+
+	const getTickStep = (maxValue: number) => {
+		if (maxValue <= 10) return 1;
+		if (maxValue <= 50) return 5;
+		if (maxValue <= 100) return 10;
+		if (maxValue <= 500) return 50;
+		if (maxValue <= 1000) return 100;
+		const magnitude = Math.pow(10, Math.floor(Math.log10(maxValue)) - 1);
+		return magnitude > 0 ? magnitude * 5 : 100;
+	};
+
+	const axisTicks = useMemo(() => {
+		const maxVoteCount =
+			data.reduce((max, cur) => Math.max(max, cur.voteCount), 0) || 0;
+		const step = getTickStep(maxVoteCount);
+		const upperBound = Math.ceil(maxVoteCount / step) * step || step;
+
+		const ticks: number[] = [];
+		for (let i = 0; i <= upperBound; i += step) {
+			ticks.push(i);
+		}
+		// 마지막 값이 upperBound가 아니면 추가
+		if (ticks[ticks.length - 1] !== upperBound) {
+			ticks.push(upperBound);
+		}
+
+		return ticks;
+	}, [data]);
 
 	const CustomTooltip = ({ active, payload, label }: any) => {
 		if (active && payload && payload.length) {
@@ -43,7 +63,7 @@ export default function MultipleChoiceChart({
 					<p className="font-semibold text-gray-800">{label}</p>
 					<p className="text-blue-600">
 						명수:{' '}
-						<span className="font-bold">{data.count.toLocaleString()}</span>
+						<span className="font-bold">{data.voteCount.toLocaleString()}</span>
 					</p>
 					<p className="text-gray-600">
 						비율:{' '}
@@ -65,7 +85,7 @@ export default function MultipleChoiceChart({
 			</div>
 			<ResponsiveContainer width="100%" height={height}>
 				<BarChart
-					data={sortedData}
+					data={data}
 					layout="vertical"
 					margin={{
 						top: 20,
@@ -79,11 +99,14 @@ export default function MultipleChoiceChart({
 						type="number"
 						tick={{ fontSize: 12 }}
 						tickFormatter={(value) => value.toLocaleString()}
+						allowDecimals={false}
+						ticks={axisTicks}
+						domain={[0, axisTicks[axisTicks.length - 1] || 0]}
 						label={{ value: '', position: 'insideBottom', offset: -5 }}
 					/>
 					<YAxis
 						type="category"
-						dataKey="option"
+						dataKey="optionText"
 						tick={{ fontSize: 12 }}
 						max-width={200}
 						min-width={60}
@@ -97,7 +120,7 @@ export default function MultipleChoiceChart({
 							/>
 						))}
 					</Bar> */}
-					<Bar dataKey="count" fill={color} />
+					<Bar dataKey="voteCount" fill={color} />
 				</BarChart>
 			</ResponsiveContainer>
 		</div>

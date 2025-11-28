@@ -77,7 +77,7 @@ export type PublicPollSubmitResponse = {
 	data: number;
 };
 
-export type optionResultsDate = {
+export type OptionResultsDate = {
 	optionId: number;
 	optionText: string;
 	voteCount: number;
@@ -88,15 +88,13 @@ export type PublicPollResultResponse = {
 	pollId: number;
 	responseType: QuestionType;
 	totalResponseCount: number;
-	optionResults: optionResultsDate[];
+	optionResults: OptionResultsDate[];
 	scoreResult: {
 		averageScore: 0.1;
 		minScore: 1073741824;
 		maxScore: 1073741824;
 		scoreDistribution: {
-			additionalProp1: number;
-			additionalProp2: number;
-			additionalProp3: number;
+			[id: number]: number;
 		};
 	};
 };
