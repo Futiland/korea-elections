@@ -1,5 +1,7 @@
 package com.futiland.vote.domain.poll.service
 
+import com.futiland.vote.application.exception.ApplicationException
+import com.futiland.vote.application.common.httpresponse.CodeEnum
 import com.futiland.vote.application.poll.dto.response.OptionResultResponse
 import com.futiland.vote.application.poll.dto.response.PollResultResponse
 import com.futiland.vote.application.poll.dto.response.ScoreResultResponse
@@ -16,7 +18,9 @@ class PollResultQueryService(
     private val pollResponseRepository: PollResponseRepository,
 ) : PollResultQueryUseCase {
 
-    override fun getPollResult(pollId: Long): PollResultResponse {
+    override fun getPollResult(pollId: Long, accountId: Long): PollResultResponse {
+        validateParticipation(pollId, accountId)
+
         val poll = pollRepository.getById(pollId)
         val totalResponseCount = pollResponseRepository.countByPollId(pollId)
 
@@ -74,5 +78,13 @@ class PollResultQueryService(
                 )
             }
         }
+    }
+
+    // TODO 중복된 조회가 있는것으로 보이므로 추후 수정하기
+    private fun validateParticipation(pollId: Long, accountId: Long) {
+        val response = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId) ?: throw ApplicationException(
+            code = CodeEnum.FRS_002,
+            message = "투표에 참여한 사용자만 결과를 볼 수 있습니다"
+        )
     }
 }

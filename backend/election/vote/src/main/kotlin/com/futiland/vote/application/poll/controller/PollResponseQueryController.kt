@@ -37,7 +37,7 @@ class PollResponseQueryController(
             - SCORE: 평균 점수, 최소/최대 점수 등
 
             **주의사항:**
-            - 인증 없이 조회 가능합니다
+            - 투표에 참여한 사용자만 결과를 조회할 수 있습니다
             - 진행 중이거나 종료된 여론조사의 결과를 확인할 수 있습니다
         """
     )
@@ -49,6 +49,14 @@ class PollResponseQueryController(
                 content = [Content(schema = Schema(implementation = PollResultResponse::class))]
             ),
             ApiResponse(
+                responseCode = "401",
+                description = "인증 실패 (로그인 필요)"
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "권한 없음 (투표에 참여하지 않은 사용자)"
+            ),
+            ApiResponse(
                 responseCode = "404",
                 description = "여론조사를 찾을 수 없음"
             )
@@ -58,8 +66,10 @@ class PollResponseQueryController(
     fun getPollResult(
         @Parameter(description = "여론조사 ID", required = true)
         @PathVariable pollId: Long,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<PollResultResponse> {
-        val response = pollResultQueryUseCase.getPollResult(pollId)
+        val response = pollResultQueryUseCase.getPollResult(pollId, userDetails.user.accountId)
         return HttpApiResponse.of(response)
     }
 

@@ -48,3 +48,7 @@ class PollResponse(
         updatedAt = LocalDateTime.now()
     }
 }
+
+fun List<PollResponse>.deleteAll() {
+    this.forEach { it.delete() }
+}
