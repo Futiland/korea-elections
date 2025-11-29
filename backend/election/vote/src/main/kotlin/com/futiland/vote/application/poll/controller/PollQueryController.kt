@@ -39,6 +39,10 @@ class PollQueryController(
 
             **정렬:**
             - 생성 일시 기준 최신순으로 정렬됩니다
+
+            **투표 여부 (isVoted):**
+            - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
+            - 비로그인: 항상 false
         """
     )
     @ApiResponses(
@@ -116,6 +120,7 @@ class PollQueryController(
             **포함 정보:**
             - 모든 상태의 여론조사 (DRAFT, IN_PROGRESS, EXPIRED, CANCELLED 등)
             - 생성 일시 기준 최신순으로 정렬됩니다
+            - isVoted: 각 여론조사에 투표했는지 여부 (true/false)
 
             **인증:**
             - JWT 토큰 필수

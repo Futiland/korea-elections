@@ -33,8 +33,13 @@ class PollResponseQueryController(
             **응답 내용:**
             - 전체 응답 수
             - 질문 유형별 집계 결과
-            - SINGLE_CHOICE/MULTIPLE_CHOICE: 각 옵션별 득표 수와 비율
-            - SCORE: 평균 점수, 최소/최대 점수 등
+              - SINGLE_CHOICE/MULTIPLE_CHOICE: 각 옵션별 득표 수와 비율
+              - SCORE: 평균 점수, 최소/최대 점수, 점수별 분포
+            - 내 응답 정보 (myResponse)
+              - SINGLE_CHOICE: selectedOptionId
+              - MULTIPLE_CHOICE: selectedOptionIds
+              - SCORE: scoreValue
+              - 공통: createdAt, updatedAt
 
             **주의사항:**
             - 투표에 참여한 사용자만 결과를 조회할 수 있습니다
