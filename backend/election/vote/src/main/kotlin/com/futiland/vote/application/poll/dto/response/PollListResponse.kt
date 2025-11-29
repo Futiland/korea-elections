@@ -18,9 +18,10 @@ data class PollListResponse(
     val createdAt: LocalDateTime,
     val responseCount: Long,
     val options: List<PollOptionResponse>,
+    val isVoted: Boolean,
 ) {
     companion object {
-        fun from(poll: Poll, responseCount: Long, options: List<PollOptionResponse>): PollListResponse {
+        fun from(poll: Poll, responseCount: Long, options: List<PollOptionResponse>, isVoted: Boolean): PollListResponse {
             return PollListResponse(
                 id = poll.id,
                 title = poll.title,
@@ -32,7 +33,8 @@ data class PollListResponse(
                 endAt = poll.endAt,
                 createdAt = poll.createdAt,
                 responseCount = responseCount,
-                options = options
+                options = options,
+                isVoted = isVoted
             )
         }
     }

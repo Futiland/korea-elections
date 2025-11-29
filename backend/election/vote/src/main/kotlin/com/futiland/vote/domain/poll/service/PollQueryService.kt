@@ -24,7 +24,7 @@ class PollQueryService(
         return PollDetailResponse.from(poll, options)
     }
 
-    override fun getPublicPollList(size: Int, nextCursor: String?): SliceContent<PollListResponse> {
+    override fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
         val pollsSlice = pollRepository.findAllPublicDisplayable(size, nextCursor)
         val polls = pollsSlice.content
 
@@ -37,10 +37,15 @@ class PollQueryService(
         // pollId별로 option 그룹화
         val optionsByPollId = allOptions.groupBy { it.pollId }
 
+        // 투표 여부 조회 (비로그인이면 빈 Set)
+        val votedPollIds = accountId?.let {
+            pollResponseRepository.findVotedPollIds(it, pollIds)
+        } ?: emptySet()
+
         val pollListResponses = polls.map { poll ->
             val responseCount = pollResponseRepository.countByPollId(poll.id)
             val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
-            PollListResponse.from(poll, responseCount, options)
+            PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id))
         }
         return SliceContent(pollListResponses, pollsSlice.nextCursor)
     }
@@ -58,10 +63,13 @@ class PollQueryService(
         // pollId별로 option 그룹화
         val optionsByPollId = allOptions.groupBy { it.pollId }
 
+        // 투표 여부 조회
+        val votedPollIds = pollResponseRepository.findVotedPollIds(accountId, pollIds)
+
         val pollListResponses = polls.map { poll ->
             val responseCount = pollResponseRepository.countByPollId(poll.id)
             val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
-            PollListResponse.from(poll, responseCount, options)
+            PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id))
         }
 
         return SliceContent(pollListResponses, pollsSlice.nextCursor)

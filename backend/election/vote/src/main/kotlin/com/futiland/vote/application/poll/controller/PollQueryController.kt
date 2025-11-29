@@ -60,8 +60,11 @@ class PollQueryController(
         @RequestParam(defaultValue = "10") size: Int,
         @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "eyJpZCI6MTIzfQ==")
         @RequestParam nextCursor: String? = null,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
-        val response = pollQueryUseCase.getPublicPollList(size, nextCursor)
+        val accountId = userDetails?.user?.accountId
+        val response = pollQueryUseCase.getPublicPollList(accountId, size, nextCursor)
         return HttpApiResponse.of(response)
     }
 

@@ -26,4 +26,9 @@ interface PollResponseRepository {
      * 내가 참여한 투표 전체 개수 조회
      */
     fun countByAccountId(accountId: Long): Long
+
+    /**
+     * 주어진 pollIds 중 해당 사용자가 투표한 pollId 목록 조회
+     */
+    fun findVotedPollIds(accountId: Long, pollIds: List<Long>): Set<Long>
 }
