@@ -8,6 +8,7 @@ data class PollResultResponse(
     val totalResponseCount: Long,
     val optionResults: List<OptionResultResponse>?,
     val scoreResult: ScoreResultResponse?,
+    val myResponse: MyPollResponse?,
 )
 
 data class OptionResultResponse(
