@@ -51,7 +51,26 @@ class PollResponseQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "결과 조회 성공",
-                content = [Content(schema = Schema(implementation = PollResultResponse::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{
+                            "pollId": 1,
+                            "responseType": "SINGLE_CHOICE",
+                            "totalResponseCount": 1234,
+                            "optionResults": [
+                                {"optionId": 1, "optionText": "매우 찬성", "voteCount": 500, "percentage": 40.5},
+                                {"optionId": 2, "optionText": "찬성", "voteCount": 300, "percentage": 24.3}
+                            ],
+                            "scoreResult": null,
+                            "myResponse": {
+                                "selectedOptionId": 1,
+                                "createdAt": "2024-01-15T10:30:00",
+                                "updatedAt": null
+                            }
+                        }"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "401",
@@ -103,7 +122,29 @@ class PollResponseQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "내가 참여한 모두의 투표 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = PageContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{
+                            "content": [
+                                {
+                                    "pollId": 1,
+                                    "pollTitle": "2024년 대통령 지지율 조사",
+                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "responseType": "SINGLE_CHOICE",
+                                    "pollStatus": "IN_PROGRESS",
+                                    "isRevotable": true,
+                                    "startAt": "2024-01-01T00:00:00",
+                                    "endAt": "2024-12-31T23:59:59",
+                                    "participatedAt": "2024-06-15T14:30:00",
+                                    "responseId": 100
+                                }
+                            ],
+                            "totalCount": 25,
+                            "totalPages": 3
+                        }"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
@@ -158,7 +199,29 @@ class PollResponseQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "내가 참여한 시스템 여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = PageContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{
+                            "content": [
+                                {
+                                    "pollId": 1,
+                                    "pollTitle": "2024년 대통령 지지율 조사",
+                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "responseType": "SINGLE_CHOICE",
+                                    "pollStatus": "IN_PROGRESS",
+                                    "isRevotable": true,
+                                    "startAt": "2024-01-01T00:00:00",
+                                    "endAt": "2024-12-31T23:59:59",
+                                    "participatedAt": "2024-06-15T14:30:00",
+                                    "responseId": 100
+                                }
+                            ],
+                            "totalCount": 25,
+                            "totalPages": 3
+                        }"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",

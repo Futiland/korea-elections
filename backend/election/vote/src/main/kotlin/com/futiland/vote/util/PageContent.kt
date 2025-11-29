@@ -1,19 +1,15 @@
 package com.futiland.vote.util
 
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlin.math.ceil
 
-/**
- * 페이지네이션 응답 컨테이너
- *
- * @property content 실제 데이터 목록
- * @property totalCount 전체 항목 개수
- * @property totalPages 전체 페이지 수
- *
- * Note: size와 page는 클라이언트가 요청 시 제공했으므로 응답에 포함하지 않습니다.
- */
+@Schema(description = "페이지 기반 페이지네이션 응답")
 data class PageContent<T>(
+    @Schema(description = "조회 결과 목록")
     val content: List<T>,
+    @Schema(description = "전체 항목 개수", example = "100")
     val totalCount: Long,
+    @Schema(description = "전체 페이지 수", example = "10")
     val totalPages: Int
 ) {
     companion object {

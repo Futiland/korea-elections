@@ -8,6 +8,7 @@ import com.futiland.vote.domain.poll.service.PollQueryUseCase
 import com.futiland.vote.util.SliceContent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -50,7 +51,12 @@ class PollQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = SliceContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
@@ -131,7 +137,12 @@ class PollQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "내 여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = SliceContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
