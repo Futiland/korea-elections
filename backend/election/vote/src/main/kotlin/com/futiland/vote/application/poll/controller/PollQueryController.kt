@@ -8,6 +8,7 @@ import com.futiland.vote.domain.poll.service.PollQueryUseCase
 import com.futiland.vote.util.SliceContent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.ArraySchema
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -39,6 +40,10 @@ class PollQueryController(
 
             **정렬:**
             - 생성 일시 기준 최신순으로 정렬됩니다
+
+            **투표 여부 (isVoted):**
+            - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
+            - 비로그인: 항상 false
         """
     )
     @ApiResponses(
@@ -46,7 +51,12 @@ class PollQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = SliceContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",
@@ -60,8 +70,11 @@ class PollQueryController(
         @RequestParam(defaultValue = "10") size: Int,
         @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "eyJpZCI6MTIzfQ==")
         @RequestParam nextCursor: String? = null,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
-        val response = pollQueryUseCase.getPublicPollList(size, nextCursor)
+        val accountId = userDetails?.user?.accountId
+        val response = pollQueryUseCase.getPublicPollList(accountId, size, nextCursor)
         return HttpApiResponse.of(response)
     }
 
@@ -113,6 +126,7 @@ class PollQueryController(
             **포함 정보:**
             - 모든 상태의 여론조사 (DRAFT, IN_PROGRESS, EXPIRED, CANCELLED 등)
             - 생성 일시 기준 최신순으로 정렬됩니다
+            - isVoted: 각 여론조사에 투표했는지 여부 (true/false)
 
             **인증:**
             - JWT 토큰 필수
@@ -123,7 +137,12 @@ class PollQueryController(
             ApiResponse(
                 responseCode = "200",
                 description = "내 여론조사 목록 조회 성공",
-                content = [Content(schema = Schema(implementation = SliceContent::class))]
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                    )
+                )]
             ),
             ApiResponse(
                 responseCode = "400",

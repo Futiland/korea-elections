@@ -9,7 +9,7 @@ import com.futiland.vote.util.SliceContent
 
 interface PollQueryUseCase {
     fun getPollDetail(pollId: Long): PollDetailResponse
-    fun getPublicPollList(size: Int, nextCursor: String?): SliceContent<PollListResponse>
+    fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse>
 
     /**
      * 내가 만든 여론조사 목록 조회 (No Offset 방식)

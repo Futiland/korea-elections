@@ -57,6 +57,11 @@ class PollResponseRepositoryImpl(
     override fun countByAccountId(accountId: Long): Long {
         return repository.countByAccountIdAndDeletedAtIsNull(accountId)
     }
+
+    override fun findVotedPollIds(accountId: Long, pollIds: List<Long>): Set<Long> {
+        if (pollIds.isEmpty()) return emptySet()
+        return repository.findPollIdsByAccountIdAndPollIdIn(accountId, pollIds).toSet()
+    }
 }
 
 interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
@@ -97,4 +102,12 @@ interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
         AND pr.deletedAt IS NULL
     """)
     fun countByAccountIdAndDeletedAtIsNull(accountId: Long): Long
+
+    @Query("""
+        SELECT DISTINCT pr.pollId FROM PollResponse pr
+        WHERE pr.accountId = :accountId
+        AND pr.pollId IN :pollIds
+        AND pr.deletedAt IS NULL
+    """)
+    fun findPollIdsByAccountIdAndPollIdIn(accountId: Long, pollIds: List<Long>): List<Long>
 }

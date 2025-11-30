@@ -1,5 +1,8 @@
 package com.futiland.vote.domain.poll.service
 
+import com.futiland.vote.application.exception.ApplicationException
+import com.futiland.vote.application.common.httpresponse.CodeEnum
+import com.futiland.vote.application.poll.dto.response.MyPollResponse
 import com.futiland.vote.application.poll.dto.response.OptionResultResponse
 import com.futiland.vote.application.poll.dto.response.PollResultResponse
 import com.futiland.vote.application.poll.dto.response.ScoreResultResponse
@@ -16,15 +19,16 @@ class PollResultQueryService(
     private val pollResponseRepository: PollResponseRepository,
 ) : PollResultQueryUseCase {
 
-    override fun getPollResult(pollId: Long): PollResultResponse {
+    override fun getPollResult(pollId: Long, accountId: Long): PollResultResponse {
         val poll = pollRepository.getById(pollId)
         val totalResponseCount = pollResponseRepository.countByPollId(pollId)
+
+        val myResponse = getMyResponse(pollId, accountId, poll.responseType)
 
         return when (poll.responseType) {
             ResponseType.SINGLE_CHOICE, ResponseType.MULTIPLE_CHOICE -> {
                 val options = pollOptionRepository.findAllByPollId(pollId)
                 val optionResults = options.map { option ->
-                    // PollResponse의 optionId로 직접 카운트
                     val voteCount = pollResponseRepository.countByOptionId(option.id)
                     val percentage = if (totalResponseCount > 0) {
                         (voteCount.toDouble() / totalResponseCount.toDouble()) * 100
@@ -43,7 +47,8 @@ class PollResultQueryService(
                     responseType = poll.responseType,
                     totalResponseCount = totalResponseCount,
                     optionResults = optionResults,
-                    scoreResult = null
+                    scoreResult = null,
+                    myResponse = myResponse
                 )
             }
             ResponseType.SCORE -> {
@@ -60,8 +65,8 @@ class PollResultQueryService(
 
                 val scoreResult = ScoreResultResponse(
                     averageScore = averageScore,
-                    minScore = 0, // 점수제 기본 최소값
-                    maxScore = 10, // 점수제 기본 최대값
+                    minScore = 0,
+                    maxScore = 10,
                     scoreDistribution = scoreDistribution
                 )
 
@@ -70,9 +75,41 @@ class PollResultQueryService(
                     responseType = poll.responseType,
                     totalResponseCount = totalResponseCount,
                     optionResults = null,
-                    scoreResult = scoreResult
+                    scoreResult = scoreResult,
+                    myResponse = myResponse
                 )
             }
+        }
+    }
+
+    private fun getMyResponse(pollId: Long, accountId: Long, responseType: ResponseType): MyPollResponse {
+        val myResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        if (myResponses.isEmpty()) {
+            throw ApplicationException(
+                code = CodeEnum.FRS_002,
+                message = "투표에 참여한 사용자만 결과를 볼 수 있습니다"
+            )
+        }
+
+        val createdAt = myResponses.maxOf { it.createdAt }
+        val updatedAt = myResponses.mapNotNull { it.updatedAt }.maxOrNull()
+
+        return when (responseType) {
+            ResponseType.SINGLE_CHOICE -> MyPollResponse.SingleChoice(
+                selectedOptionId = myResponses.first().optionId!!,
+                createdAt = createdAt,
+                updatedAt = updatedAt
+            )
+            ResponseType.MULTIPLE_CHOICE -> MyPollResponse.MultipleChoice(
+                selectedOptionIds = myResponses.mapNotNull { it.optionId },
+                createdAt = createdAt,
+                updatedAt = updatedAt
+            )
+            ResponseType.SCORE -> MyPollResponse.Score(
+                scoreValue = myResponses.first().scoreValue!!,
+                createdAt = createdAt,
+                updatedAt = updatedAt
+            )
         }
     }
 }

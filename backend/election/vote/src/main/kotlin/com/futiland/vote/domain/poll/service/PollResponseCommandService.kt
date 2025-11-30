@@ -5,6 +5,7 @@ import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
 import com.futiland.vote.domain.poll.entity.PollResponse
 import com.futiland.vote.domain.poll.entity.PollStatus
+import com.futiland.vote.domain.poll.entity.deleteAll
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import org.springframework.stereotype.Service
@@ -28,15 +29,17 @@ class PollResponseCommandService(
             )
         }
 
-        // 중복 응답 체크
-        if (!poll.isRevotable) {
-            val existingResponse = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId)
-            if (existingResponse != null) {
+        // 중복 응답 체크 및 재투표 처리
+        val existingResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        if (existingResponses.isNotEmpty()) {
+            if (!poll.isRevotable) {
                 throw ApplicationException(
                     code = CodeEnum.FRS_003,
                     message = "이미 응답한 여론조사입니다"
                 )
             }
+            existingResponses.deleteAll()
+            pollResponseRepository.saveAll(existingResponses)
         }
 
         // 응답 유효성 검증
@@ -113,7 +116,7 @@ class PollResponseCommandService(
         poll.validateResponse(request)
 
         // 기존 응답 모두 삭제 (soft delete)
-        existingResponses.forEach { it.delete() }
+        existingResponses.deleteAll()
         pollResponseRepository.saveAll(existingResponses)
 
         // 새로운 응답 생성

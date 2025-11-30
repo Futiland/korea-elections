@@ -53,10 +53,7 @@ class JwtAuthenticationFilter(
         AntPathRequestMatcher("/swagger-resources/**"),
 
         // Election - GET
-        AntPathRequestMatcher("/election/v1/*/vote", "GET"),
-
-        // Poll - GET (모든 조회 API)
-        AntPathRequestMatcher("/poll/v1/public", "GET")
+        AntPathRequestMatcher("/election/v1/*/vote", "GET")
     )
 
     override fun doFilterInternal(
