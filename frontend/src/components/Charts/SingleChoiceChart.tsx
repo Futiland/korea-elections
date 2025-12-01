@@ -13,10 +13,6 @@ export default function SingleChoiceChart({
 	totalResponses,
 	height = 300,
 }: SingleChoiceChartProps) {
-	// 데이터를 투표 수 기준으로 내림차순 정렬
-	// const sortedData = [...data].sort((a, b) => b.count - a.count);
-	console.log('SingleChoiceChart data:', data, totalResponses);
-
 	const colors = [
 		'#3b82f6', // blue
 		'#ef4444', // red

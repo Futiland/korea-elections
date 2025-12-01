@@ -48,9 +48,10 @@ export default function PollCard({ pollData }: PollCardProps) {
 		? `지금까지 ${addCommas(pollData.responseCount)}명이 참여했어요!`
 		: '첫 번째 참여자가 되어 주세요!';
 
-	const remainingTimeLabel = pollData?.endAt
-		? getRemainingTimeLabel(pollData.endAt)
-		: null;
+	const remainingTimeLabel =
+		pollData?.startAt && pollData?.endAt
+			? getRemainingTimeLabel(pollData.startAt, pollData.endAt)
+			: null;
 
 	const submitPublicPollMutation = useMutation({
 		mutationFn: (payload: {
@@ -126,7 +127,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 						</span>
 					</div>
 					<button
-						className="bg-slate-200 hover:bg-slate-100 py-2 px-2 rounded-full font-semibold"
+						className="bg-slate-100 hover:bg-slate-200 py-2 px-2 rounded-full font-semibold"
 						type="button"
 						title="공유하기"
 						onClick={onSharePoll}
