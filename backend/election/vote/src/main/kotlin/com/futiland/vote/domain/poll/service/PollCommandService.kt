@@ -3,7 +3,9 @@ package com.futiland.vote.domain.poll.service
 import com.futiland.vote.application.poll.dto.request.PublicPollCreateRequest
 import com.futiland.vote.application.poll.dto.request.PublicPollDraftCreateRequest
 import com.futiland.vote.application.poll.dto.request.PollUpdateRequest
+import com.futiland.vote.application.poll.dto.response.CreatorInfoResponse
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
+import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.poll.entity.*
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class PollCommandService(
     private val pollRepository: PollRepository,
     private val pollOptionRepository: PollOptionRepository,
+    private val accountRepository: AccountRepository,
 ) : PollCommandUseCase {
 
     @Transactional
@@ -46,7 +49,9 @@ class PollCommandService(
             emptyList()
         }
 
-        return PollDetailResponse.from(savedPoll, options)
+        val account = accountRepository.getById(creatorAccountId)
+        val creatorInfo = CreatorInfoResponse(account.id, account.name)
+        return PollDetailResponse.from(savedPoll, options, creatorInfo)
     }
 
     @Transactional
@@ -78,7 +83,9 @@ class PollCommandService(
             emptyList()
         }
 
-        return PollDetailResponse.from(savedPoll, options)
+        val account = accountRepository.getById(creatorAccountId)
+        val creatorInfo = CreatorInfoResponse(account.id, account.name)
+        return PollDetailResponse.from(savedPoll, options, creatorInfo)
     }
 
     @Transactional
@@ -92,7 +99,9 @@ class PollCommandService(
         )
         val savedPoll = pollRepository.save(poll)
         val options = pollOptionRepository.findAllByPollId(pollId)
-        return PollDetailResponse.from(savedPoll, options)
+        val account = accountRepository.getById(savedPoll.creatorAccountId)
+        val creatorInfo = CreatorInfoResponse(account.id, account.name)
+        return PollDetailResponse.from(savedPoll, options, creatorInfo)
     }
 
     @Transactional
