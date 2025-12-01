@@ -11,7 +11,7 @@ import {
 	QuestionType,
 	PublicPollSubmitResponse,
 } from '@/lib/types/poll';
-import { formatDateTimeLocal, getRemainingTimeLabel } from '@/lib/date';
+import { formatDateTimeLocal, getDateRangeDurationLabel } from '@/lib/date';
 import { OptionData } from '@/lib/types/poll';
 import { submitPublicPoll } from '@/lib/api/poll';
 import {
@@ -50,7 +50,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 
 	const remainingTimeLabel =
 		pollData?.startAt && pollData?.endAt
-			? getRemainingTimeLabel(pollData.startAt, pollData.endAt)
+			? getDateRangeDurationLabel(pollData.startAt, pollData.endAt)
 			: null;
 
 	const submitPublicPollMutation = useMutation({

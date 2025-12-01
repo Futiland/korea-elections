@@ -129,12 +129,12 @@ export function toLocalISOString(date: Date): string {
 	return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
 
-/** 남은 시간을 표현하는 라벨 생성 (시작~종료까지의 전체 기간 기준)
+/** 날짜 범위를 표현하는 라벨 생성 (시작~종료까지의 전체 기간 기준)
  *
  * - 항상 시작일 기준 종료일까지의 남은 기간을 계산
  * - 이미 종료된 경우 null
  */
-export function getRemainingTimeLabel(
+export function getDateRangeDurationLabel(
 	startAt: Date | string,
 	endAt: Date | string
 ): string | null {
