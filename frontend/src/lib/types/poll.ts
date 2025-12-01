@@ -50,9 +50,13 @@ export type PublicPollData = {
 	startAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
 	endAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
 	createdAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
-	userName: string;
+	creatorInfo: {
+		accountId: number;
+		name: string;
+	};
 	isRevotable: boolean;
 	responseCount: number;
+	isVoted: boolean;
 	options: OptionData[];
 };
 
@@ -75,4 +79,28 @@ export type PublicPollSubmitResponse = {
 	code: string;
 	message: string;
 	data: number;
+};
+
+export type OptionResultsDate = {
+	optionId: number;
+	optionText: string;
+	voteCount: number;
+	percentage: number;
+};
+
+export type ScoreResultDate = {
+	averageScore: 0.1;
+	minScore: 1073741824;
+	maxScore: 1073741824;
+	scoreDistribution: {
+		[id: number]: number;
+	};
+};
+
+export type PublicPollResultResponse = {
+	pollId: number;
+	responseType: QuestionType;
+	totalResponseCount: number;
+	optionResults: OptionResultsDate[];
+	scoreResult: ScoreResultDate;
 };
