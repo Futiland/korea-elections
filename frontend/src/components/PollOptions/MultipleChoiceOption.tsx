@@ -6,12 +6,14 @@ interface MultipleChoiceOptionProps {
 	options: OptionData[];
 	selectedValues?: string[];
 	onChange?: (values: string[]) => void;
+	isVoted: boolean;
 }
 
 export default function MultipleChoiceOption({
 	options,
 	selectedValues = [],
 	onChange,
+	isVoted,
 }: MultipleChoiceOptionProps) {
 	const handleOptionChange = (option: string, checked: boolean) => {
 		if (checked) {
@@ -34,6 +36,7 @@ export default function MultipleChoiceOption({
 						onCheckedChange={(checked) =>
 							handleOptionChange(option.id.toString(), !!checked)
 						}
+						disabled={isVoted}
 					/>
 					<Label
 						htmlFor={`checkbox-${option.id}`}

@@ -9,12 +9,14 @@ type PollCardOptionsProps = {
 	responseType: QuestionType;
 	options: OptionData[];
 	onChange: (value: number[] | number) => void;
+	isVoted: boolean;
 };
 
 export default function PollCardOptions({
 	responseType,
 	options,
 	onChange,
+	isVoted,
 }: PollCardOptionsProps) {
 	const [selectedSingleChoice, setSelectedSingleChoice] = useState<string>('');
 	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
@@ -47,6 +49,7 @@ export default function PollCardOptions({
 					options={options}
 					value={selectedSingleChoice}
 					onValueChange={handleSingleChoiceChange}
+					isVoted={isVoted}
 				/>
 			)}
 
@@ -55,6 +58,7 @@ export default function PollCardOptions({
 					options={options}
 					selectedValues={selectedMultipleChoices}
 					onChange={handleMultipleChoiceChange}
+					isVoted={isVoted}
 				/>
 			)}
 
@@ -63,6 +67,7 @@ export default function PollCardOptions({
 					maxScore={10}
 					selectedScore={selectedScore}
 					onChange={handleScoreChange}
+					isVoted={isVoted}
 				/>
 			)}
 		</div>

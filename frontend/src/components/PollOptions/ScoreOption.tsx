@@ -5,12 +5,14 @@ interface ScoreOptionProps {
 	maxScore?: number;
 	selectedScore?: number;
 	onChange?: (score: number) => void;
+	isVoted: boolean;
 }
 
 export default function ScoreOption({
 	maxScore = 10,
 	selectedScore: initialScore = 1,
 	onChange,
+	isVoted,
 }: ScoreOptionProps) {
 	const [selectedScore, setSelectedScore] = useState(initialScore);
 
@@ -45,6 +47,7 @@ export default function ScoreOption({
 									? 'text-primary font-bold bg-slate-200 '
 									: 'text-slate-500 hover:text-slate-700'
 							}`}
+							disabled={isVoted}
 						>
 							{i + 1}
 						</button>

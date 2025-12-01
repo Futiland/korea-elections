@@ -14,7 +14,11 @@ import {
 import { formatDateTimeLocal, getRemainingTimeLabel } from '@/lib/date';
 import { OptionData } from '@/lib/types/poll';
 import { submitPublicPoll } from '@/lib/api/poll';
-import { useMutation } from '@tanstack/react-query';
+import {
+	useIsFetching,
+	useMutation,
+	useQueryClient,
+} from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useRequireLogin } from '@/hooks/useRequireLogin';
 
@@ -28,6 +32,9 @@ export default function PollCard({ pollData }: PollCardProps) {
 		number[] | number
 	>([]);
 	const { ensureLoggedIn } = useRequireLogin();
+
+	const queryClient = useQueryClient();
+	const isRefreshingPolls = useIsFetching({ queryKey: ['publicPolls'] }) > 0;
 
 	const isExpired = pollData?.status === 'EXPIRED';
 	const hasParticipants =
@@ -54,7 +61,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 			submitPublicPoll(payload.pollId, payload.optionId, payload.responseType),
 		onSuccess: () => {
 			toast.success('투표가 완료되었습니다.');
-			// 결과를 바로 보여줄것인가 버튼을 보여줄것인가.
+			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
 			// setShowResults(true);
 		},
 		onError: (data: PublicPollSubmitResponse) => {
@@ -110,12 +117,22 @@ export default function PollCard({ pollData }: PollCardProps) {
 				{/* 헤더 영역 - 참여자 수, 상태값, 제목, 공유 버튼 */}
 				{/* 참여 독력 메세지 */}
 
-				<div className="mb-3 inline-flex items-center gap-2 rounded-full bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-600">
-					<Users className="w-4 h-4 text-fuchsia-600" />
-					<span>
-						{participationMessage}
-						{remainingTimeLabel ? ` · ${remainingTimeLabel}` : ''}
-					</span>
+				<div className="flex justify-between items-center mb-3">
+					<div className="inline-flex items-center gap-2 rounded-full bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-600">
+						<Users className="w-4 h-4 text-fuchsia-600" />
+						<span>
+							{participationMessage}
+							{remainingTimeLabel ? ` · ${remainingTimeLabel}` : ''}
+						</span>
+					</div>
+					<button
+						className="bg-slate-200 hover:bg-slate-100 py-2 px-2 rounded-full font-semibold"
+						type="button"
+						title="공유하기"
+						onClick={onSharePoll}
+					>
+						<Share2 className="w-4 h-4 text-slate-700" />
+					</button>
 				</div>
 
 				<div className="flex items-center justify-between mb-2">
@@ -157,6 +174,10 @@ export default function PollCard({ pollData }: PollCardProps) {
 						responseType={pollData.responseType}
 						options={pollData.options}
 						onChange={setSelectedOptionValue}
+						isVoted={
+							(pollData.isVoted && !pollData.isRevotable) ||
+							pollData?.status === 'EXPIRED'
+						}
 					/>
 				)}
 
@@ -173,7 +194,7 @@ export default function PollCard({ pollData }: PollCardProps) {
 				<div className="flex gap-3">
 					{showResults ? (
 						<button
-							className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
+							className="w-full bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm"
 							type="button"
 							onClick={() => handlePollResultView(false)}
 						>
@@ -181,39 +202,67 @@ export default function PollCard({ pollData }: PollCardProps) {
 						</button>
 					) : (
 						<>
-							{/* 진행중인 투표일 때만 투표하기 버튼 표시 */}
+							{/* 진행 중 상태 */}
 							{pollData?.status === 'IN_PROGRESS' && (
-								<button
-									className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
-									type="button"
-									onClick={handlePollSubmit}
-									disabled={submitPublicPollMutation.isPending}
-								>
-									{submitPublicPollMutation.isPending ? (
-										<Loader2 className="w-6 h-6 animate-spin text-center" />
-									) : pollData.isVoted && pollData?.isRevotable ? (
-										'다시 투표하기'
-									) : (
-										'투표하기'
+								<>
+									{/* 투표 미참여 */}
+									{!pollData?.isVoted && (
+										<button
+											className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
+											type="button"
+											onClick={handlePollSubmit}
+											disabled={submitPublicPollMutation.isPending}
+										>
+											{submitPublicPollMutation.isPending ||
+											isRefreshingPolls ? (
+												<Loader2 className="w-6 h-6 animate-spin text-center" />
+											) : (
+												'투표하기'
+											)}
+										</button>
 									)}
-								</button>
-							)}
-							{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-							{pollData?.isVoted && (
-								<button
-									className={`${
-										pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
-									} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
-									type="button"
-									onClick={() => handlePollResultView(true)}
-								>
-									결과보기
-								</button>
+
+									{/* 투표 완료 */}
+									{pollData?.isVoted && !pollData?.isRevotable && (
+										<button
+											className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+											type="button"
+											onClick={() => handlePollResultView(true)}
+										>
+											결과보기
+										</button>
+									)}
+
+									{/* 재투표 가능 */}
+									{pollData?.isVoted && pollData?.isRevotable && (
+										<>
+											<button
+												className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm flex items-center justify-center"
+												type="button"
+												onClick={handlePollSubmit}
+												disabled={submitPublicPollMutation.isPending}
+											>
+												{submitPublicPollMutation.isPending ||
+												isRefreshingPolls ? (
+													<Loader2 className="w-6 h-6 animate-spin text-center" />
+												) : (
+													'다시 투표하기'
+												)}
+											</button>
+											<button
+												className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+												type="button"
+												onClick={() => handlePollResultView(true)}
+											>
+												결과보기
+											</button>
+										</>
+									)}
+								</>
 							)}
 
-							{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
-							{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
-							{pollData?.status === 'EXPIRED' && (
+							{/* 종료된 투표 */}
+							{pollData?.status === 'EXPIRED' && pollData?.isVoted && (
 								<button
 									className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
 									type="button"
@@ -224,14 +273,6 @@ export default function PollCard({ pollData }: PollCardProps) {
 							)}
 						</>
 					)}
-					<button
-						className="bg-slate-100 hover:bg-slate-100 py-3 px-4 rounded-lg font-semibold"
-						type="button"
-						title="공유하기"
-						onClick={onSharePoll}
-					>
-						<Share2 className="w-5 h-5 text-slate-700" />
-					</button>
 				</div>
 			</div>
 		</Card>

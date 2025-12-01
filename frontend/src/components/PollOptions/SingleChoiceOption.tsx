@@ -6,18 +6,21 @@ interface SingleChoiceOptionProps {
 	options: OptionData[];
 	value?: string;
 	onValueChange?: (value: string) => void;
+	isVoted: boolean;
 }
 
 export default function SingleChoiceOption({
 	options,
 	value,
 	onValueChange,
+	isVoted,
 }: SingleChoiceOptionProps) {
 	return (
 		<RadioGroup
 			value={value}
 			onValueChange={onValueChange}
 			className="flex flex-wrap items-start gap-2 w-full"
+			disabled={isVoted}
 		>
 			{options.map((option, index) => (
 				<div
