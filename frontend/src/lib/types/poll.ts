@@ -50,9 +50,13 @@ export type PublicPollData = {
 	startAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
 	endAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
 	createdAt: Date | string; // 서버에서 UTC ISO 문자열로 받음
-	userName: string;
+	creatorInfo: {
+		accountId: number;
+		name: string;
+	};
 	isRevotable: boolean;
 	responseCount: number;
+	isVoted: boolean;
 	options: OptionData[];
 };
 

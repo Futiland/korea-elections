@@ -123,9 +123,9 @@ export default function PollCard({ pollData }: PollCardProps) {
 						<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
 
 						<span className="text-xs text-slate-500">
-							{pollData?.createdAt && pollData?.endAt
+							{pollData?.startAt && pollData?.endAt
 								? `${formatDateTimeLocal(
-										pollData.createdAt,
+										pollData.startAt,
 										'yyyy-MM-dd HH:mm'
 								  )} ~ ${formatDateTimeLocal(
 										pollData.endAt,
@@ -134,8 +134,10 @@ export default function PollCard({ pollData }: PollCardProps) {
 								: ''}
 						</span>
 					</div>
-					{pollData?.userName && (
-						<p className="text-sm text-slate-500">{pollData.userName}</p>
+					{pollData?.creatorInfo && (
+						<p className="text-xs text-slate-500">
+							{pollData.creatorInfo.name}
+						</p>
 					)}
 				</div>
 
@@ -189,24 +191,25 @@ export default function PollCard({ pollData }: PollCardProps) {
 								>
 									{submitPublicPollMutation.isPending ? (
 										<Loader2 className="w-6 h-6 animate-spin text-center" />
+									) : pollData.isVoted && pollData?.isRevotable ? (
+										'다시 투표하기'
 									) : (
 										'투표하기'
 									)}
 								</button>
 							)}
 							{/* 진행중이거나 완료된 투표일 때 결과보기 버튼 표시 */}
-							{/* {pollData?.isRevotable && ( */}
-							<button
-								className={`${
-									pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
-								} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
-								type="button"
-								onClick={() => handlePollResultView(true)}
-							>
-								{pollData.status === 'IN_PROGRESS'
-									? '결과보기'
-									: '완료한 투표 & 결과보기'}
-							</button>
+							{pollData?.isVoted && (
+								<button
+									className={`${
+										pollData.status === 'IN_PROGRESS' ? 'flex-1' : 'w-full'
+									} bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors`}
+									type="button"
+									onClick={() => handlePollResultView(true)}
+								>
+									결과보기
+								</button>
+							)}
 
 							{/* TODO: 완료된 투표 & 종료된 투표 결과보기 버튼 표시 */}
 							{/* 종료된 투표일 때만 결과보기 버튼 표시 */}
