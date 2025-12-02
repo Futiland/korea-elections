@@ -28,6 +28,18 @@ export default function EveryonePoll() {
 		<>
 			<Head>
 				<title>모두의 투표</title>
+				<meta name="description" content="모두의 투표" />
+				<meta property="og:title" content="모두의 투표" />
+				<meta property="og:description" content="모두의 투표" />
+				<meta property="og:image" content="/img/everyone-poll.png" />
+				<meta
+					property="og:url"
+					content={`${process.env.NEXT_PUBLIC_BASE_URL}/everyone-poll`}
+				/>
+				<meta property="og:locale" content="ko_KR" />
+				<meta property="og:type" content="website" />
+				<meta property="og:site_name" content="KEP" />
+				<meta property="og:image:width" content="1200" />
 			</Head>
 
 			<div className="min-h-screen bg-slate-50">
