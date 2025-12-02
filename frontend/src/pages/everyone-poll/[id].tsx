@@ -6,6 +6,8 @@ import PollCard from '@/components/PollCard';
 import type { PollResponse } from '@/lib/types/poll';
 import { getPoll } from '@/lib/api/poll';
 import { Spinner } from '@/components/ui/spinner';
+import { Button } from '@/components/ui/button';
+import { Home } from 'lucide-react';
 
 export default function EveryonePollDetailPage() {
 	const router = useRouter();
@@ -51,10 +53,34 @@ export default function EveryonePollDetailPage() {
 				<title>{poll.data.title} - 모두의 투표</title>
 			</Head>
 
-			<main className="min-h-screen bg-slate-50">
+			<main className="min-h-screen bg-slate-50 pb-24">
 				<section className="mx-auto max-w-2xl py-8 px-4">
 					<PollCard pollData={poll.data} />
 				</section>
+
+				{/* 하단 플로팅 네비게이션 */}
+				<div className="fixed bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none">
+					<div className="mx-auto px-4 justify-center flex w-full max-w-sm items-center gap-2">
+						<Button
+							type="button"
+							variant="outline"
+							size="icon"
+							className="h-14 w-14 rounded-full"
+							onClick={() => router.push('/')}
+							aria-label="홈으로 이동"
+						>
+							<Home className="size-5" />
+						</Button>
+						<Button
+							type="button"
+							size="default"
+							className="w-34 h-14 rounded-full border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold text-sm"
+							onClick={() => router.push('/everyone-poll')}
+						>
+							다른 투표 보기
+						</Button>
+					</div>
+				</div>
 			</main>
 		</>
 	);

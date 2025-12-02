@@ -50,7 +50,7 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 	if (res.status === 401) {
 		if (typeof window !== 'undefined') {
 			localStorage.removeItem('token');
-			window.location.href = '/login';
+			window.location.href = '/login'; //토큰이 없으면 로그인 페이지로..
 		}
 		throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
 	}

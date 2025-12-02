@@ -28,9 +28,15 @@ export default function EveryonePoll() {
 		<>
 			<Head>
 				<title>모두의 투표</title>
-				<meta name="description" content="모두의 투표" />
+				<meta
+					name="description"
+					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
+				/>
 				<meta property="og:title" content="모두의 투표" />
-				<meta property="og:description" content="모두의 투표" />
+				<meta
+					property="og:description"
+					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
+				/>
 				<meta property="og:image" content="/img/everyone-poll.png" />
 				<meta
 					property="og:url"
