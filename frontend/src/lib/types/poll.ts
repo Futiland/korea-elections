@@ -75,6 +75,12 @@ export type PublicPollResponse = {
 	};
 };
 
+export type PollResponse = {
+	code: string;
+	message: string;
+	data: PublicPollData;
+};
+
 export type PublicPollSubmitResponse = {
 	code: string;
 	message: string;

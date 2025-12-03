@@ -6,6 +6,7 @@ import {
 	PublicPollResultResponse,
 	PublicPollSubmitResponse,
 	QuestionType,
+	PollResponse,
 } from '../types/poll';
 
 export const createPoll = (data: CreatePollData) =>
@@ -42,3 +43,6 @@ export const submitPublicPoll = (
 
 export const getPublicPollResult = (pollId: number) =>
 	apiGet<PublicPollResultResponse>(`/rest/poll/v1/${pollId}/result`);
+
+export const getPoll = (pollId: number) =>
+	apiGet<PollResponse>(`/rest/poll/v1/${pollId}`);
