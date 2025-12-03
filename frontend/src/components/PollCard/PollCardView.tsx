@@ -2,6 +2,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import StatusBadge from '@/components/StatusBadge';
 import PollCardOptions from '@/components/PollCard/PollCardOptions';
 import PollCardResults from '@/components/PollCard/PollCardResults';
+import { PollParticipationBadge } from '@/components/PollCard/PollParticipationBadge';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -10,7 +11,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { Loader2, Share2, Users } from 'lucide-react';
+import { Loader2, Share2 } from 'lucide-react';
 import { formatDateTimeLocal } from '@/lib/date';
 
 import type { PollCardViewProps } from './usePollCardPresenter';
@@ -40,14 +41,11 @@ export default function PollCardView({
 					{/* 헤더 영역 - 참여자 수, 상태값, 제목, 공유 버튼 */}
 					{/* 참여 독력 메세지 */}
 
-					<div className="flex justify-between items-center mb-3">
-						<div className="inline-flex items-center gap-2 rounded-full bg-fuchsia-50 px-3 py-1 text-sm font-medium text-fuchsia-600">
-							<Users className="w-4 h-4 text-fuchsia-600" />
-							<span>
-								{participationMessage}
-								{remainingTimeLabel ? ` · ${remainingTimeLabel}` : ''}
-							</span>
-						</div>
+					<div className="mb-3 flex items-center justify-between">
+						<PollParticipationBadge
+							participationMessage={participationMessage}
+							remainingTimeLabel={remainingTimeLabel}
+						/>
 						<button
 							className="bg-slate-100 hover:bg-slate-200 py-2 px-2 rounded-full font-semibold"
 							type="button"
