@@ -1,7 +1,10 @@
 // import HomePage from '@/components/PresidentElection';
 import Head from 'next/head';
 
-import { useState } from 'react';
+import PollPreviewSection from '@/components/Home/PollPreviewSection';
+import router from 'next/router';
+import PollCarouselSection from '@/components/Home/PollCarouselSection';
+import ClosingSoonCarouselCard from '@/components/Home/cards/ClosingSoonCarouselCard';
 
 export default function Home() {
 	return (
@@ -13,11 +16,39 @@ export default function Home() {
 				</title>
 			</Head>
 
-			{/* <HomePage /> */}
-			<div className="flex flex-col items-center justify-center h-screen">
-				<p className="text-2xl font-bold">모두의 투표가 준비중 입니다.</p>
-				<p className="text-sm text-muted-foreground">개발자는 열일 중...</p>
-			</div>
+			<main className="flex min-h-screen flex-col items-center bg-slate-50 pb-16">
+				{/* 추후 히어로 영역 / 배너 등을 이 위에 추가할 수 있어요 */}
+				<PollCarouselSection
+					onClickMore={() => {
+						router.push('/everyone-poll');
+					}}
+					onClickPoll={(pollId) => {
+						router.push(`/everyone-poll/${pollId}`);
+					}}
+				/>
+				<PollPreviewSection
+					title="인기있는 모두의 투표"
+					description="지금 가장 인기있는 모두의 투표를 확인해보세요."
+					onClickMore={() => {
+						router.push('/everyone-poll');
+					}}
+					onClickPoll={(pollId) => {
+						router.push(`/everyone-poll/${pollId}`);
+					}}
+				/>
+				<PollCarouselSection
+					title="마감 임박 투표"
+					description="지금 마감 임박 투표를 확인해보세요."
+					moreLabel={true}
+					onClickMore={() => {
+						router.push('/everyone-poll');
+					}}
+					onClickPoll={(pollId) => {
+						router.push(`/everyone-poll/${pollId}`);
+					}}
+					CardComponent={ClosingSoonCarouselCard}
+				/>
+			</main>
 		</>
 	);
 }

@@ -13,7 +13,7 @@ import {
 	type PublicPollSubmitResponse,
 } from '@/lib/types/poll';
 import { getDateRangeDurationLabel } from '@/lib/date';
-import { addCommas } from '@/lib/utils';
+import { getParticipationMessage } from '@/lib/utils';
 import { useRequireLogin } from '@/hooks/useRequireLogin';
 
 declare global {
@@ -65,17 +65,10 @@ export function usePollCardPresenter({
 	const queryClient = useQueryClient();
 	const isRefreshingPolls = useIsFetching({ queryKey: ['publicPolls'] }) > 0;
 
-	const isExpired = pollData?.status === 'EXPIRED';
-	const hasParticipants =
-		!!pollData?.responseCount && pollData.responseCount > 0;
-
-	const participationMessage = isExpired
-		? hasParticipants
-			? `총 ${addCommas(pollData.responseCount)}명이 참여했습니다.`
-			: '아쉽게도 참여자가 없었습니다. 😢'
-		: hasParticipants
-		? `지금까지 ${addCommas(pollData.responseCount)}명이 참여했어요!`
-		: '첫 번째 참여자가 되어 주세요!';
+	const participationMessage = getParticipationMessage(
+		pollData?.status,
+		pollData?.responseCount
+	);
 
 	const remainingTimeLabel =
 		pollData?.startAt && pollData?.endAt
