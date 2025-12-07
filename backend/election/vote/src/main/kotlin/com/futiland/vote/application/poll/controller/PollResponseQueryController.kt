@@ -74,15 +74,18 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "권한 없음 (투표에 참여하지 않은 사용자)"
+                description = "권한 없음 (투표에 참여하지 않은 사용자)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "여론조사를 찾을 수 없음"
+                description = "여론조사를 찾을 수 없음",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -148,11 +151,13 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (잘못된 size, page 값 등)"
+                description = "잘못된 요청 (잘못된 size, page 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -225,11 +230,13 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (잘못된 size, page 값 등)"
+                description = "잘못된 요청 (잘못된 size, page 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )

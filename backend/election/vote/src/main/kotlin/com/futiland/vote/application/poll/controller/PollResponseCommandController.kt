@@ -46,15 +46,18 @@ class PollResponseCommandController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (이미 응답한 경우, 유효하지 않은 옵션, 범위를 벗어난 점수 등)"
+                description = "잘못된 요청 (이미 응답한 경우, 유효하지 않은 옵션, 범위를 벗어난 점수 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패"
+                description = "인증 실패",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "여론조사를 찾을 수 없음"
+                description = "여론조사를 찾을 수 없음",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -105,15 +108,18 @@ class PollResponseCommandController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (응답하지 않은 경우, 재투표 불가능한 경우, 유효하지 않은 옵션 등)"
+                description = "잘못된 요청 (응답하지 않은 경우, 재투표 불가능한 경우, 유효하지 않은 옵션 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패"
+                description = "인증 실패",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "여론조사를 찾을 수 없음"
+                description = "여론조사를 찾을 수 없음",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -154,19 +160,23 @@ class PollResponseCommandController(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "응답 삭제 성공"
+                description = "응답 삭제 성공",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (응답하지 않은 경우, 재투표 불가능한 경우 등)"
+                description = "잘못된 요청 (응답하지 않은 경우, 재투표 불가능한 경우 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패"
+                description = "인증 실패",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "여론조사를 찾을 수 없음"
+                description = "여론조사를 찾을 수 없음",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
