@@ -54,6 +54,27 @@ class FakePollRepository : PollRepository {
         return polls.values.filter { it.creatorAccountId == creatorAccountId }
     }
 
+    override fun findAllByIdIn(ids: List<Long>): List<Poll> {
+        return polls.values.filter { it.id in ids }
+    }
+
+    override fun findMyPolls(creatorAccountId: Long, size: Int, lastId: Long?): SliceContent<Poll> {
+        val filteredPolls = polls.values
+            .filter { it.creatorAccountId == creatorAccountId }
+            .sortedByDescending { it.id }
+
+        val startIndex = if (lastId == null) {
+            0
+        } else {
+            filteredPolls.indexOfFirst { it.id < lastId }.takeIf { it >= 0 } ?: filteredPolls.size
+        }
+
+        val content = filteredPolls.drop(startIndex).take(size)
+        val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
+
+        return SliceContent(content, cursor)
+    }
+
     fun clear() {
         polls.clear()
         idGenerator.set(1)
