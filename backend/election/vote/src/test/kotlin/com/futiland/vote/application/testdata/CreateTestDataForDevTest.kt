@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -37,7 +36,6 @@ import java.time.LocalDateTime
  * - 중복 체크를 하므로 여러 번 실행해도 안전합니다
  */
 @SpringBootTest
-@ActiveProfiles("local")
 class CreateTestDataForDevTest {
 
     @Autowired
