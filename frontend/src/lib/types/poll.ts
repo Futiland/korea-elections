@@ -110,3 +110,13 @@ export type PublicPollResultResponse = {
 	optionResults: OptionResultsDate[];
 	scoreResult: ScoreResultDate;
 };
+
+export type MyPollResponse = {
+	code: string;
+	message: string;
+	data: {
+		content: PublicPollData[];
+		totalCount: number;
+		totalPages: number;
+	};
+};

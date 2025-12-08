@@ -47,13 +47,19 @@ export const getPublicPollResult = (pollId: number) =>
 export const getPoll = (pollId: number) =>
 	apiGet<PollResponse>(`/rest/poll/v1/${pollId}`);
 
+// 내 투표 목록 조회 헬퍼 함수
+const getMyPollList = (endpoint: string) => (size: number, page?: string) =>
+	apiGet<PublicPollResponse>(endpoint, page ? { size, page } : { size });
+
 // 내가 만든 투표 목록
-export const getMyPolls = () => apiGet<PublicPollResponse>('/rest/poll/v1/my');
+export const getMyPolls = getMyPollList('/rest/poll/v1/my');
 
 // 내가 참여한 모두의 투표
-export const getMyParticipatedPublicPolls = () =>
-	apiGet<PublicPollResponse>('/rest/poll/v1/public/response/my');
+export const getMyParticipatedPublicPolls = getMyPollList(
+	'/rest/poll/v1/public/response/my'
+);
 
 // 내가 참여한 여론 조사
-export const getMyParticipatedOpinionPolls = () =>
-	apiGet<PublicPollResponse>('/rest//poll/v1/system/response/my');
+export const getMyParticipatedOpinionPolls = getMyPollList(
+	'/rest/poll/v1/system/response/my'
+);
