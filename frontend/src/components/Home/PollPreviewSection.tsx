@@ -101,7 +101,7 @@ export default function PollPreviewSection({
 	CardComponent = PollPreviewCard,
 }: PollPreviewSectionProps) {
 	return (
-		<section className="w-full max-w-5xl px-4 py-8 md:py-10">
+		<section className="w-full max-w-5xl mx-auto px-4 py-8 md:py-10">
 			<header className="mb-4">
 				<div className="flex items-baseline justify-between gap-4">
 					<h2 className="text-lg font-semibold md:text-xl">{title}</h2>
@@ -122,7 +122,7 @@ export default function PollPreviewSection({
 				)}
 			</header>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className="grid gap-4">
 				{polls.map((poll) => (
 					<CardComponent
 						key={poll.id}

@@ -151,7 +151,7 @@ export default function PollCarouselSection({
 	}, [emblaApi, autoplay]);
 
 	return (
-		<section className="w-full max-w-5xl py-4 md:py-10">
+		<section className="w-full max-w-5xl mx-auto py-4 md:py-6">
 			{title && (
 				<header className="px-4 pb-4">
 					<div className="flex items-baseline justify-between gap-4">
@@ -176,7 +176,7 @@ export default function PollCarouselSection({
 				</header>
 			)}
 
-			<div className="block md:hidden ">
+			<div className="block ">
 				<div className="overflow-hidden" ref={emblaRef}>
 					<div className="flex">
 						{polls.map((poll) => (
@@ -191,7 +191,7 @@ export default function PollCarouselSection({
 				</div>
 
 				{/* 하단 페이지네이션 */}
-				<div className="mt-1 flex items-center justify-center">
+				<div className="mt-2 flex items-center justify-center">
 					<div className="flex items-center gap-2">
 						{scrollSnaps.map((_, index) => {
 							const isActive = index === selectedIndex;
