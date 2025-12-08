@@ -6,7 +6,7 @@ export default function CategorySelector() {
 	const router = useRouter();
 
 	return (
-		<section className="w-full max-w-5xl px-4 pt-5">
+		<section className="w-full max-w-5xl mx-auto px-4 pt-5">
 			<div className="flex items-center justify-center gap-3">
 				<Button
 					variant="outline"
