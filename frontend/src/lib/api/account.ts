@@ -10,6 +10,7 @@ import {
 	ChangePasswordResponse,
 	DeleteAccountResponse,
 } from '../types/account';
+import { PublicPollResponse } from '../types/poll';
 
 export const login = (data: LoginData) =>
 	apiPost<LoginResponse>('/rest/account/v1/signin', data);
