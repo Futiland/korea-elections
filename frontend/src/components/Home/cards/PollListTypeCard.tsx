@@ -64,13 +64,13 @@ export default function PollListTypeCard({
 					type="button"
 					size="sm"
 					variant="default"
-					className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-semibold text-sky-700 hover:border-sky-300 hover:bg-sky-100 hover:text-blue-800 "
+					className="inline-flex items-center gap-1 rounded-full border bg-blue-700 px-3 py-1 text-[11px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm "
 					onClick={(event) => {
 						event.stopPropagation();
 						onClickPoll?.(pollData?.id.toString());
 					}}
 				>
-					<span>상세 보기</span>
+					<span>투표하기</span>
 					<span className="translate-x-0 text-[11px] opacity-80 transition-transform group-hover:translate-x-0.5">
 						→
 					</span>

@@ -5,6 +5,7 @@ import PollPreviewSection from '@/components/Home/PollPreviewSection';
 import router from 'next/router';
 import PollCarouselSection from '@/components/Home/PollCarouselSection';
 import ClosingSoonCarouselCard from '@/components/Home/cards/ClosingSoonCarouselCard';
+import CategorySelector from '@/components/Home/CategorySelector';
 
 export default function Home() {
 	return (
@@ -17,8 +18,11 @@ export default function Home() {
 			</Head>
 
 			<main className="flex min-h-screen flex-col items-center bg-slate-50 pb-16">
-				{/* 추후 히어로 영역 / 배너 등을 이 위에 추가할 수 있어요 */}
+				{/* 카테고리 선택 */}
+				<CategorySelector />
+
 				<PollCarouselSection
+					autoplay={true}
 					onClickMore={() => {
 						router.push('/everyone-poll');
 					}}

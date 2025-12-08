@@ -14,6 +14,7 @@ interface PollCarouselSectionProps {
 	onClickMore?: () => void;
 	onClickPoll?: (pollId: string) => void;
 	CardComponent?: ComponentType<PollCardProps>;
+	autoplay?: boolean | { delay?: number };
 }
 
 const DEFAULT_POLLS: PublicPollData[] = [
@@ -102,6 +103,7 @@ export default function PollCarouselSection({
 	onClickMore,
 	onClickPoll,
 	CardComponent = PollCarouselCard,
+	autoplay,
 }: PollCarouselSectionProps) {
 	const [emblaRef, emblaApi] = useEmblaCarousel({
 		loop: true,
@@ -130,10 +132,28 @@ export default function PollCarouselSection({
 		};
 	}, [emblaApi, onSelect, polls]);
 
+	// 오토 플레이 구현
+	useEffect(() => {
+		if (!autoplay || !emblaApi) return;
+
+		const delay =
+			typeof autoplay === 'object' && autoplay.delay ? autoplay.delay : 3000; // 기본 3초
+
+		const autoplayInterval = setInterval(() => {
+			if (emblaApi) {
+				emblaApi.scrollNext();
+			}
+		}, delay);
+
+		return () => {
+			clearInterval(autoplayInterval);
+		};
+	}, [emblaApi, autoplay]);
+
 	return (
-		<section className="w-full max-w-5xl pl-4 py-4 md:py-10">
+		<section className="w-full max-w-5xl py-4 md:py-10">
 			{title && (
-				<header>
+				<header className="px-4 pb-4">
 					<div className="flex items-baseline justify-between gap-4">
 						<h2 className="text-lg font-semibold md:text-xl">{title}</h2>
 						{moreLabel && (
@@ -158,11 +178,11 @@ export default function PollCarouselSection({
 
 			<div className="block md:hidden ">
 				<div className="overflow-hidden" ref={emblaRef}>
-					<div className="flex py-4">
+					<div className="flex">
 						{polls.map((poll) => (
 							<div
 								key={poll.id}
-								className="min-w-0 flex-[0_0_95%] pr-3 sm:flex-[0_0_80%]"
+								className="min-w-0 flex-[0_0_90%] sm:flex-[0_0_80%] py-1 pl-4"
 							>
 								<CardComponent pollData={poll} onClickPoll={onClickPoll} />
 							</div>

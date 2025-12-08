@@ -19,16 +19,16 @@ export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>제 21대 대통령 선거 투표</title>
+				<title>모두의 투표</title>
 				<meta property="og:type" content="website" />
 				<meta property="og:site_name" content="KEP" />
 				<meta property="og:title" content="모두의 투표" />
 				<meta
 					property="og:description"
-					content="KEP는 본인 인증을 통해 실제 선거와 유사한 투표 데이터를 확인할 수
+					content="KEP는 간단한 본인 인증을 통해 투명하고 신뢰할 수 있는 데이터를 확인할 수
 						있는 시민 참여형 서비스입니다."
 				/>
-				<meta property="og:image" content="img/meta-image.png" />
+				<meta property="og:image" content="/img/everyone-poll.png" />
 				<meta property="og:image:width" content="1200" />
 				<meta property="og:image:height" content="630" />
 				<meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
