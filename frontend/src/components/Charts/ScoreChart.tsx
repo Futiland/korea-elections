@@ -66,13 +66,12 @@ export default function ScoreChart({
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-					{/* <p className="font-semibold text-gray-800">{label}점</p> */}
-					<p className="text-blue-600">
-						<span className="font-bold">{data.count.toLocaleString()}명</span>
+				<div className="bg-white py-2 px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
+					<p className="text-blue-600 font-bold">
+						{data.count.toLocaleString()}명
 					</p>
-					<p className="text-gray-600">
-						<span className="font-bold">{Math.round(data.percentage)}%</span>
+					<p className="text-gray-600 font-bold">
+						({Math.round(data.percentage)}%)
 					</p>
 				</div>
 			);
@@ -85,7 +84,8 @@ export default function ScoreChart({
 			<div className="flex items-center justify-between mb-4">
 				<h3 className="text-lg font-semibold">투표 결과</h3>
 				<span className="text-sm text-gray-500">
-					총 응답: {totalResponses.toLocaleString()}명
+					총 응답: {totalResponses.toLocaleString()}명 • 평균:{' '}
+					{Math.round(data?.averageScore ?? 0)}점
 				</span>
 			</div>
 			<ResponsiveContainer width="100%" height={height}>
@@ -118,7 +118,7 @@ export default function ScoreChart({
 						}}
 					/>
 					<Tooltip content={<CustomTooltip />} />
-					<Bar dataKey="count" radius={[4, 4, 0, 0]}>
+					<Bar dataKey="count" radius={[8, 8, 0, 0]}>
 						{chartData.map((entry, index) => (
 							<Cell
 								key={`cell-${index}`}

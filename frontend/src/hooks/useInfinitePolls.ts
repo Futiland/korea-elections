@@ -27,6 +27,7 @@ export function useInfinitePolls({
 		},
 		initialPageParam: undefined,
 		refetchOnWindowFocus: true,
+		retry: 2,
 	});
 
 	const observerTarget = useRef<HTMLDivElement>(null);

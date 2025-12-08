@@ -23,7 +23,7 @@ export default function PollCarouselCard({
 
 	return (
 		<Card
-			className="gap-2 group h-full cursor-pointer border-blue-100/80 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-white transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50/80 hover:shadow-md py-3"
+			className="gap-2 group h-full cursor-pointer border-blue-100/80 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-white transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50/80 hover:shadow-md"
 			// onClick={() => onClickPoll?.(poll.id)}
 		>
 			<CardHeader className="pt-2">

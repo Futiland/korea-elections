@@ -23,7 +23,10 @@ export default function MultipleChoiceChart({
 	height = 300,
 }: MultipleChoiceChartProps) {
 	// 데이터를 투표 수 기준으로 내림차순 정렬
-	// const sortedData = [...data].sort((a, b) => b.count - a.count);
+	const sortedData = useMemo(
+		() => [...data].sort((a, b) => b.voteCount - a.voteCount),
+		[data]
+	);
 
 	const color = '#2b7fff'; // blue
 
@@ -39,7 +42,7 @@ export default function MultipleChoiceChart({
 
 	const axisTicks = useMemo(() => {
 		const maxVoteCount =
-			data.reduce((max, cur) => Math.max(max, cur.voteCount), 0) || 0;
+			sortedData.reduce((max, cur) => Math.max(max, cur.voteCount), 0) || 0;
 		const step = getTickStep(maxVoteCount);
 		const upperBound = Math.ceil(maxVoteCount / step) * step || step;
 
@@ -53,21 +56,19 @@ export default function MultipleChoiceChart({
 		}
 
 		return ticks;
-	}, [data]);
+	}, [sortedData]);
 
 	const CustomTooltip = ({ active, payload, label }: any) => {
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+				<div className="bg-white py-2 px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
 					<p className="font-semibold text-gray-800">{label}</p>
-					<p className="text-blue-600">
-						<span className="font-bold">
-							{data.voteCount.toLocaleString()}명
-						</span>
+					<p className="text-blue-600 font-bold">
+						{data.voteCount.toLocaleString()}명
 					</p>
-					<p className="text-gray-600">
-						<span className="font-bold">{Math.round(data.percentage)}%</span>
+					<p className="text-gray-600 font-bold">
+						({Math.round(data.percentage)}%)
 					</p>
 				</div>
 			);
@@ -85,7 +86,7 @@ export default function MultipleChoiceChart({
 			</div>
 			<ResponsiveContainer width="100%" height={height}>
 				<BarChart
-					data={data}
+					data={sortedData}
 					layout="vertical"
 					margin={{
 						top: 20,
@@ -112,15 +113,13 @@ export default function MultipleChoiceChart({
 						min-width={60}
 					/>
 					<Tooltip content={<CustomTooltip />} />
-					{/* <Bar dataKey="count" fill="#3B82F6">
-						{sortedData.map((entry, index) => (
-							<Cell
-								key={`cell-${index}`}
-								fill={colors[index % colors.length]}
-							/>
-						))}
-					</Bar> */}
-					<Bar dataKey="voteCount" fill={color} />
+
+					<Bar
+						dataKey="voteCount"
+						fill={color}
+						radius={[0, 8, 8, 0]}
+						barSize={28}
+					/>
 				</BarChart>
 			</ResponsiveContainer>
 		</div>

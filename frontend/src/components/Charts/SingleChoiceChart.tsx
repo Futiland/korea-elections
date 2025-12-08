@@ -14,44 +14,29 @@ export default function SingleChoiceChart({
 	height = 300,
 }: SingleChoiceChartProps) {
 	const colors = [
-		'#3b82f6', // blue
-		'#ef4444', // red
-		'#22c55e', // green
-		'#ca8a04', // yellow
-		'#9333ea', // purple
-		'#db2777', // pink
-		'#0891b2', // cyan
-		'#ea580c', // orange
-		'#65a30d', // lime
-		'#4f46e5', // indigo
+		'#3B82F6', // blue
+		'#EF4444', // red
+		'#10B981', // green
+		'#F59E0B', // yellow
+		'#8B5CF6', // purple
+		'#EC4899', // pink
+		'#06B6D4', // cyan
+		'#84CC16', // lime
+		'#F97316', // orange
+		'#6366F1', // indigo
 	];
-
-	// const colors = [
-	// 	'#3B82F6', // blue
-	// 	'#EF4444', // red
-	// 	'#10B981', // green
-	// 	'#F59E0B', // yellow
-	// 	'#8B5CF6', // purple
-	// 	'#EC4899', // pink
-	// 	'#06B6D4', // cyan
-	// 	'#84CC16', // lime
-	// 	'#F97316', // orange
-	// 	'#6366F1', // indigo
-	// ];
 
 	const CustomTooltip = ({ active, payload }: any) => {
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+				<div className="bg-white py-2 px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
 					<p className="font-semibold text-gray-800">{data.optionText}</p>
-					<p className="text-blue-600">
-						<span className="font-bold">
-							{data.voteCount.toLocaleString()}명
-						</span>
+					<p className="text-blue-600 font-bold">
+						{data.voteCount.toLocaleString()}명
 					</p>
-					<p className="text-gray-600">
-						<span className="font-bold">{Math.round(data.percentage)}%</span>
+					<p className="text-gray-600 font-bold">
+						({Math.round(data.percentage)}%)
 					</p>
 				</div>
 			);
@@ -74,12 +59,12 @@ export default function SingleChoiceChart({
 							/>
 							<span className="text-gray-700">{entry.value}</span>
 						</div>
-						<div className="text-right">
+						<div className="text-right ml-1">
 							<span className="font-semibold text-gray-800">
 								{entry.payload.voteCount.toLocaleString()}명
 							</span>
-							<span className="text-gray-500 ml-2">
-								({entry.payload.percentage.toFixed(1)}%)
+							<span className="text-gray-500 ml-1">
+								({Math.round(entry.payload.percentage)}%)
 							</span>
 						</div>
 					</div>
@@ -112,7 +97,7 @@ export default function SingleChoiceChart({
 				fontSize={12}
 				fontWeight={600}
 			>
-				{`${(percent * 100).toFixed(1)}%`}
+				{`${Math.round(percent * 100)}%`}
 			</text>
 		);
 	};
@@ -125,8 +110,8 @@ export default function SingleChoiceChart({
 					총 응답: {totalResponses.toLocaleString()}명
 				</span>
 			</div>
-			<div className="flex gap-6">
-				<div className="flex-1">
+			<div className="flex gap-3">
+				<div className="w-[160px] flex-1">
 					<ResponsiveContainer width="100%" height={height}>
 						<PieChart>
 							<Pie
@@ -150,7 +135,7 @@ export default function SingleChoiceChart({
 						</PieChart>
 					</ResponsiveContainer>
 				</div>
-				<div className="w-56">
+				<div className="">
 					{/* 차트 외부 사이드 패널로 범례 표시 */}
 					<CustomLegend
 						payload={data.map((d, i) => ({
