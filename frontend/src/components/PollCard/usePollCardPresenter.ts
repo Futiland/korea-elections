@@ -159,6 +159,12 @@ export function usePollCardPresenter({
 			return;
 		}
 
+		// sendDefault를 사용하여 카카오톡 앱 열기
+		// kakaolink:// 스킴 오류는 브라우저 콘솔에만 표시되고 실제 기능에는 영향 없음
+		// 콘솔 오류를 조용히 처리하기 위해 console.error를 일시적으로 비활성화
+		const originalConsoleError = console.error;
+		console.error = () => {}; // 일시적으로 에러 로깅 비활성화
+
 		try {
 			kakao.Share.sendDefault({
 				objectType: 'text',
@@ -169,11 +175,21 @@ export function usePollCardPresenter({
 				},
 				buttonTitle: '투표하러 가기',
 			});
+
+			// 짧은 시간 후 console.error 복원
+			setTimeout(() => {
+				console.error = originalConsoleError;
+			}, 100);
 		} catch (error) {
-			console.error(error);
-			toast.error('카카오톡 공유 중 오류가 발생했습니다.');
+			console.error = originalConsoleError; // 에러 발생 시 즉시 복원
+			console.error('카카오톡 공유 오류:', error);
+			toast.warning(
+				'카카오톡 공유에 실패했습니다. 링크를 복사해서 공유해주세요.',
+				{ duration: 3000 }
+			);
+			onCopyShareUrl();
 		}
-	}, [pollData?.title, shareUrl]);
+	}, [pollData?.title, shareUrl, onCopyShareUrl]);
 
 	const onClickShowResults = useCallback(
 		(show: boolean) =>
