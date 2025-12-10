@@ -131,11 +131,11 @@ class PollResponseQueryController(
                         example = """{
                             "content": [
                                 {
-                                    "pollId": 1,
-                                    "pollTitle": "2024년 대통령 지지율 조사",
-                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "id": 1,
+                                    "title": "2024년 대통령 지지율 조사",
+                                    "description": "현 대통령의 지지율을 조사합니다.",
                                     "responseType": "SINGLE_CHOICE",
-                                    "pollStatus": "IN_PROGRESS",
+                                    "status": "IN_PROGRESS",
                                     "isRevotable": true,
                                     "startAt": "2024-01-01T00:00:00",
                                     "endAt": "2024-12-31T23:59:59",
@@ -210,11 +210,11 @@ class PollResponseQueryController(
                         example = """{
                             "content": [
                                 {
-                                    "pollId": 1,
-                                    "pollTitle": "2024년 대통령 지지율 조사",
-                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "id": 1,
+                                    "title": "2024년 대통령 지지율 조사",
+                                    "description": "현 대통령의 지지율을 조사합니다.",
                                     "responseType": "SINGLE_CHOICE",
-                                    "pollStatus": "IN_PROGRESS",
+                                    "status": "IN_PROGRESS",
                                     "isRevotable": true,
                                     "startAt": "2024-01-01T00:00:00",
                                     "endAt": "2024-12-31T23:59:59",
