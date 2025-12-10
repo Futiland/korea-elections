@@ -7,7 +7,9 @@ import {
 	PublicPollSubmitResponse,
 	QuestionType,
 	PollResponse,
+	MyPollResponse,
 } from '../types/poll';
+import { PageParam } from '../types/common';
 
 export const createPoll = (data: CreatePollData) =>
 	apiPost<CreatePollResponse>('/rest/poll/v1/public', data);
@@ -46,3 +48,15 @@ export const getPublicPollResult = (pollId: number) =>
 
 export const getPoll = (pollId: number) =>
 	apiGet<PollResponse>(`/rest/poll/v1/${pollId}`);
+
+// 내가 만든 투표 목록
+export const getMyPolls = (params: PageParam) =>
+	apiGet<MyPollResponse>('/rest/poll/v1/my', params);
+
+// 내가 참여한 모두의 투표
+export const getMyParticipatedPublicPolls = (params: PageParam) =>
+	apiGet<MyPollResponse>('/rest/poll/v1/public/response/my', params);
+
+// 내가 참여한 여론 조사
+export const getMyParticipatedOpinionPolls = (params: PageParam) =>
+	apiGet<MyPollResponse>('/rest/poll/v1/system/response/my', params);

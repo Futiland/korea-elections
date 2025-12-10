@@ -14,32 +14,32 @@ export default function StatusBadge({
 			case 'IN_PROGRESS':
 				return {
 					text: '진행중',
-					className: 'bg-green-100 text-green-700',
+					className: 'bg-sky-50 text-sky-700 border border-sky-200',
 				};
 			case 'EXPIRED':
 				return {
 					text: '종료',
-					className: 'bg-gray-100 text-gray-700',
+					className: 'bg-slate-100 text-slate-600 border border-slate-200',
 				};
 			case 'DELETED':
 				return {
 					text: '삭제된투표',
-					className: 'bg-gray-100 text-gray-700',
+					className: 'bg-slate-100 text-slate-600 border border-slate-200',
 				};
 			case 'CANCELLED':
 				return {
 					text: '투표중단',
-					className: 'bg-red-100 text-red-700',
+					className: 'bg-red-50 text-red-600 border border-red-200',
 				};
 			case 'DRAFT':
 				return {
 					text: '투표예정',
-					className: 'bg-blue-100 text-blue-700',
+					className: 'bg-blue-50 text-blue-700 border border-blue-200',
 				};
 			default:
 				return {
 					text: '진행중',
-					className: 'bg-green-100 text-green-700',
+					className: 'bg-sky-50 text-sky-700 border border-sky-200',
 				};
 		}
 	};
@@ -48,7 +48,7 @@ export default function StatusBadge({
 
 	return (
 		<span
-			className={`inline-block text-xs font-semibold px-2 py-1 rounded ${config.className} ${className}`}
+			className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
 		>
 			{config.text}
 		</span>
