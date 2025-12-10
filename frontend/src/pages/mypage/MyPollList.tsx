@@ -1,20 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import PollListItem from './PollListItem';
-import { PollStatus } from '@/lib/types/poll';
+import { MyPollData, PollStatus } from '@/lib/types/poll';
 
 export interface MyPollListProps {
 	title: string;
-	// items: {
-	//   title: string;
-	//   description: string;
-	//   status: 'progress' | 'stopped' | 'ended';
-	//   participantCount: number;
-	//   endDate: string;
-	// }[];
+	items: MyPollData[];
 }
 
-export default function MyPollList({ title }: MyPollListProps) {
+export default function MyPollList({ title, items }: MyPollListProps) {
 	// TODO: 리스트 없을 때 빈 상태 표시
 	return (
 		<div className="py-2">
@@ -27,24 +21,9 @@ export default function MyPollList({ title }: MyPollListProps) {
 			</div>
 
 			<div className="space-y-3">
-				<PollListItem
-					title="샘플 투표 제목 1"
-					description="이것은 샘플 투표 설명입니다. 투표에 대한 자세한 내용을 여기에 표시합니다."
-					status="IN_PROGRESS"
-					participantCount={25}
-					endDate="2024-12-31"
-					startDate="2024-12-01"
-					onViewDetails={() => console.log('상세보기 클릭')}
-				/>
-				<PollListItem
-					title="샘플 투표 제목 2"
-					description="또 다른 샘플 투표 설명입니다."
-					status="EXPIRED"
-					participantCount={42}
-					endDate="2024-12-25"
-					startDate="2024-12-01"
-					onViewDetails={() => console.log('상세보기 클릭')}
-				/>
+				{items.map((item) => (
+					<PollListItem key={item.pollId} item={item} />
+				))}
 			</div>
 		</div>
 	);

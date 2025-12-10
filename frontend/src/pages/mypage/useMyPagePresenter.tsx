@@ -6,12 +6,13 @@ import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 import { toast } from 'sonner';
 import { useCallback } from 'react';
 import type { UserInfo } from '@/lib/types/account';
-import { MyPollResponse } from '@/lib/types/poll';
+import { MyPollData, MyPollResponse } from '@/lib/types/poll';
 import {
 	getMyParticipatedOpinionPolls,
 	getMyParticipatedPublicPolls,
 	getMyPolls,
 } from '@/lib/api/poll';
+import { PageParam } from '@/lib/types/common';
 
 export interface MyPageViewProps {
 	user: UserInfo | undefined;
@@ -22,6 +23,23 @@ export interface MyPageViewProps {
 	isDeleting: boolean;
 	onLogout: () => void;
 	onDeleteAccount: () => void;
+	myPolls: { content: MyPollData[]; totalCount: number; totalPages: number };
+	myParticipatedPublicPolls: {
+		content: MyPollData[];
+		totalCount: number;
+		totalPages: number;
+	};
+	myParticipatedOpinionPolls: {
+		content: MyPollData[];
+		totalCount: number;
+		totalPages: number;
+	};
+	isFetchingMyPolls: boolean;
+	isFetchingMyParticipatedPublicPolls: boolean;
+	isFetchingMyParticipatedOpinionPolls: boolean;
+	isErrorMyPolls: boolean;
+	isErrorMyParticipatedPublicPolls: boolean;
+	isErrorMyParticipatedOpinionPolls: boolean;
 }
 
 export function useMyPagePresenter(): MyPageViewProps {
@@ -47,7 +65,7 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isError: isErrorMyPolls,
 	} = useQuery<MyPollResponse>({
 		queryKey: ['myPolls'],
-		queryFn: () => getMyPolls(10),
+		queryFn: () => getMyPolls({ size: 2, page: 1 }),
 		enabled: isLoggedIn && isReady,
 		retry: 2,
 	});
@@ -58,7 +76,7 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isError: isErrorMyParticipatedPublicPolls,
 	} = useQuery<MyPollResponse>({
 		queryKey: ['myParticipatedPublicPolls'],
-		queryFn: () => getMyParticipatedPublicPolls(10),
+		queryFn: () => getMyParticipatedPublicPolls({ size: 2, page: 1 }),
 		enabled: isLoggedIn && isReady,
 		retry: 2,
 	});
@@ -69,7 +87,7 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isError: isErrorMyParticipatedOpinionPolls,
 	} = useQuery<MyPollResponse>({
 		queryKey: ['myParticipatedOpinionPolls'],
-		queryFn: () => getMyParticipatedOpinionPolls(10),
+		queryFn: () => getMyParticipatedOpinionPolls({ size: 2, page: 1 }),
 		enabled: isLoggedIn && isReady,
 		retry: 2,
 	});
@@ -131,5 +149,23 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isDeleting: deleteMutation.isPending,
 		onLogout: logoutHandler,
 		onDeleteAccount: handleDelete,
+		myPolls: myPolls?.data ?? { content: [], totalCount: 0, totalPages: 0 },
+		myParticipatedPublicPolls: myParticipatedPublicPolls?.data ?? {
+			content: [],
+			totalCount: 0,
+			totalPages: 0,
+		},
+		myParticipatedOpinionPolls: myParticipatedOpinionPolls?.data ?? {
+			content: [],
+			totalCount: 0,
+			totalPages: 0,
+		},
+		isFetchingMyPolls,
+		isFetchingMyParticipatedPublicPolls,
+		isFetchingMyParticipatedOpinionPolls,
+		isErrorMyPolls,
+		isErrorMyParticipatedPublicPolls,
+		isErrorMyParticipatedOpinionPolls,
 	};
 }
+1;

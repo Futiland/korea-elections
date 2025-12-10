@@ -111,11 +111,24 @@ export type PublicPollResultResponse = {
 	scoreResult: ScoreResultDate;
 };
 
+export type MyPollData = {
+	pollId: number;
+	pollTitle: string;
+	pollDescription: string;
+	responseType: QuestionType;
+	pollStatus: PollStatus;
+	isRevotable: boolean;
+	startAt: Date;
+	endAt: Date;
+	participatedAt: Date;
+	responseId: number;
+};
+
 export type MyPollResponse = {
 	code: string;
 	message: string;
 	data: {
-		content: PublicPollData[];
+		content: MyPollData[];
 		totalCount: number;
 		totalPages: number;
 	};

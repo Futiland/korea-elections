@@ -22,6 +22,15 @@ export default function MyPageView({
 	isReady,
 	onLogout,
 	onDeleteAccount,
+	myPolls,
+	myParticipatedPublicPolls,
+	myParticipatedOpinionPolls,
+	isFetchingMyPolls,
+	isFetchingMyParticipatedPublicPolls,
+	isFetchingMyParticipatedOpinionPolls,
+	isErrorMyPolls,
+	isErrorMyParticipatedPublicPolls,
+	isErrorMyParticipatedOpinionPolls,
 }: MyPageViewProps) {
 	const router = useRouter();
 
@@ -122,9 +131,21 @@ export default function MyPageView({
 						</CardHeader>
 					</Card>
 
-					<MyPollList title="내가 만든 모두의 투표" />
-					<MyPollList title="참여한 모두의 투표" />
-					<MyPollList title="참여한 입법 투표" />
+					{/* <MyPollList title="내가 만든 모두의 투표" /> */}
+
+					{myParticipatedPublicPolls.content.length > 0 && (
+						<MyPollList
+							title="참여한 모두의 투표"
+							items={myParticipatedPublicPolls.content}
+						/>
+					)}
+
+					{myParticipatedOpinionPolls.content.length > 0 && (
+						<MyPollList
+							title="참여한 입법 투표"
+							items={myParticipatedOpinionPolls.content}
+						/>
+					)}
 				</div>
 
 				<div className="w-full flex items-center justify-center py-10">
