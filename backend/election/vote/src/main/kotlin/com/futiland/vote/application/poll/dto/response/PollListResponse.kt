@@ -1,7 +1,6 @@
 package com.futiland.vote.application.poll.dto.response
 
 import com.futiland.vote.domain.poll.entity.Poll
-import com.futiland.vote.domain.poll.entity.PollOption
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.entity.ResponseType
 import io.swagger.v3.oas.annotations.media.Schema
