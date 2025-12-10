@@ -1,18 +1,18 @@
+import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getUserInfo, deleteAccount } from '@/lib/api/account';
+import { toast } from 'sonner';
+
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
-import { toast } from 'sonner';
-import { useCallback } from 'react';
-import type { UserInfo } from '@/lib/types/account';
-import { MyPollData, MyPollResponse } from '@/lib/types/poll';
+import { getUserInfo, deleteAccount } from '@/lib/api/account';
 import {
-	getMyParticipatedOpinionPolls,
-	getMyParticipatedPublicPolls,
 	getMyPolls,
+	getMyParticipatedPublicPolls,
+	getMyParticipatedOpinionPolls,
 } from '@/lib/api/poll';
-import { PageParam } from '@/lib/types/common';
+import type { UserInfo } from '@/lib/types/account';
+import type { MyPollData, MyPollResponse } from '@/lib/types/poll';
 
 export interface MyPageViewProps {
 	user: UserInfo | undefined;
@@ -168,4 +168,3 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isErrorMyParticipatedOpinionPolls,
 	};
 }
-1;

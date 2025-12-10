@@ -12,7 +12,7 @@ import {
 import { UserRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import MyPollList from './MyPollList';
-import type { MyPageViewProps } from './useMyPagePresenter.tsx';
+import type { MyPageViewProps } from '@/components/My/useMyPagePresenter';
 
 export default function MyPageView({
 	user,
@@ -133,6 +133,7 @@ export default function MyPageView({
 
 					{/* <MyPollList title="내가 만든 모두의 투표" /> */}
 
+					{isFetchingMyParticipatedPublicPolls && <Spinner />}
 					{myParticipatedPublicPolls.content.length > 0 && (
 						<MyPollList
 							title="참여한 모두의 투표"
@@ -140,6 +141,7 @@ export default function MyPageView({
 						/>
 					)}
 
+					{isFetchingMyParticipatedOpinionPolls && <Spinner />}
 					{myParticipatedOpinionPolls.content.length > 0 && (
 						<MyPollList
 							title="참여한 입법 투표"
