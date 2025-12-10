@@ -124,7 +124,7 @@ export function usePollCardPresenter({
 
 	const sharePath = useMemo(() => {
 		if (!pollData?.id) return '';
-		return `korea-election/everyone-poll/${pollData.id}`;
+		return `everyone-poll/${pollData.id}`;
 	}, [pollData?.id]);
 
 	const shareUrl = useMemo(() => {
