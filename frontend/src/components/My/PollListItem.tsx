@@ -15,9 +15,7 @@ export default function PollListItem({ item }: PollListItemProps) {
 		<Card
 			className="group flex h-full cursor-pointer flex-col gap-2 border-blue-100/80 bg-blue-50/80 p-4 transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"
 			onClick={
-				item.pollDescription
-					? () => router.push(`/everyone-poll/${item.pollId}`)
-					: undefined
+				item.id ? () => router.push(`/everyone-poll/${item.id}`) : undefined
 			}
 		>
 			<header className="flex items-center justify-between gap-1">
@@ -32,22 +30,22 @@ export default function PollListItem({ item }: PollListItemProps) {
 						</span>
 					</span>
 				</div>
-				<StatusBadge status={item.pollStatus} />
+				<StatusBadge status={item.status} />
 			</header>
 
 			<section className="">
 				<p className="line-clamp-2 text-sm font-semibold tracking-tight text-slate-900 md:text-base">
-					{item.pollTitle}
+					{item.title}
 				</p>
 				<p className="line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
-					{item.pollDescription}
+					{item.description || ''}
 				</p>
 			</section>
 
 			<div className="flex items-center justify-between text-[11px] text-slate-500 md:text-xs">
 				<span className="rounded-full bg-blue-100/60 px-2 py-1 font-medium text-blue-700">
 					{/* TODO: 참여자 수 표시 */}
-					참여자 100명
+					참여자 {item.responseCount}명
 				</span>
 			</div>
 		</Card>

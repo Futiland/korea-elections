@@ -22,7 +22,7 @@ export default function MyPollList({ title, items }: MyPollListProps) {
 
 			<div className="space-y-3">
 				{items.map((item) => (
-					<PollListItem key={item.pollId} item={item} />
+					<PollListItem key={item.id} item={item} />
 				))}
 			</div>
 		</div>
