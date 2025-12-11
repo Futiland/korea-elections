@@ -143,7 +143,7 @@ export default function ElectionList() {
 	if (isCandidateListFetching)
 		return (
 			<div className="text-center py-10 min-h-screen">
-				<Spinner />
+				<Spinner className="w-10 h-10 text-blue-500" />
 			</div>
 		);
 

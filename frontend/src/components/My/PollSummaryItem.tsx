@@ -6,11 +6,11 @@ import router from 'next/router';
 import { formatDateTimeLocal } from '@/lib/date';
 import { Card } from '@/components/ui/card';
 
-interface PollListItemProps {
+interface PollSummaryItemProps {
 	item: MyPollData;
 }
 
-export default function PollListItem({ item }: PollListItemProps) {
+export default function PollSummaryItem({ item }: PollSummaryItemProps) {
 	return (
 		<Card
 			className="group flex h-full cursor-pointer flex-col gap-2 border-blue-100/80 bg-blue-50/80 p-4 transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"

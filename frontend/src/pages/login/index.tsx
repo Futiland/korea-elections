@@ -81,7 +81,7 @@ export default function LoginPage() {
 	if (!isReady) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
-				<Spinner />
+				<Spinner className="w-10 h-10 text-blue-500" />
 			</div>
 		);
 	}

@@ -34,7 +34,7 @@ export default function EveryonePollDetailPage() {
 	if (isLoading) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-slate-50">
-				<Spinner />
+				<Spinner className="w-10 h-10 text-blue-500" />
 			</div>
 		);
 	}
