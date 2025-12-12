@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { UserRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import MyPollList from './MyPollList';
+import MyPollSummary from './MyPollSummary';
 import type { MyPageViewProps } from '@/components/My/useMyPagePresenter';
 
 export default function MyPageView({
@@ -37,7 +37,7 @@ export default function MyPageView({
 	if (isLoading || !isReady) {
 		return (
 			<div className="flex items-center justify-center text-center py-10 min-h-screen">
-				<Spinner />
+				<Spinner className="w-10 h-10 text-blue-500" />
 			</div>
 		);
 	}
@@ -107,7 +107,7 @@ export default function MyPageView({
 									</div>
 								</div>
 								<Button
-									className="bg-blue-100 text-blue-900 hover:bg-slate-200 text-xs h-6 rounded-full px-3"
+									className="bg-blue-50 text-blue-900 hover:bg-slate-200 text-xs h-6 rounded-full px-3"
 									onClick={onLogout}
 								>
 									로그아웃
@@ -131,21 +131,30 @@ export default function MyPageView({
 						</CardHeader>
 					</Card>
 
-					{/* <MyPollList title="내가 만든 모두의 투표" /> */}
-
-					{isFetchingMyParticipatedPublicPolls && <Spinner />}
-					{myParticipatedPublicPolls.content.length > 0 && (
-						<MyPollList
-							title="참여한 모두의 투표"
-							items={myParticipatedPublicPolls.content}
+					{myPolls.content.length > 0 && (
+						<MyPollSummary
+							title="내가 만든 모두의 투표"
+							items={myPolls.content}
+							moreUrl="/mypage/my-polls"
+							isLoading={isFetchingMyPolls}
 						/>
 					)}
 
-					{isFetchingMyParticipatedOpinionPolls && <Spinner />}
+					{myParticipatedPublicPolls.content.length > 0 && (
+						<MyPollSummary
+							title="참여한 모두의 투표"
+							items={myParticipatedPublicPolls.content}
+							moreUrl="/mypage/joined-polls"
+							isLoading={isFetchingMyParticipatedPublicPolls}
+						/>
+					)}
+
 					{myParticipatedOpinionPolls.content.length > 0 && (
-						<MyPollList
+						<MyPollSummary
 							title="참여한 입법 투표"
 							items={myParticipatedOpinionPolls.content}
+							moreUrl="/mypage/joined-legislation"
+							isLoading={isFetchingMyParticipatedOpinionPolls}
 						/>
 					)}
 				</div>

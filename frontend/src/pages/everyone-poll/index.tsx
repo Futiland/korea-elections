@@ -71,7 +71,7 @@ export default function EveryonePoll() {
 					<div className="space-y-6">
 						{isLoading ? (
 							<div className="flex justify-center py-12">
-								<Spinner />
+								<Spinner className="w-10 h-10 text-blue-500" />
 							</div>
 						) : isError ? (
 							<div className="text-center py-12">
