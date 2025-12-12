@@ -74,15 +74,18 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "403",
-                description = "권한 없음 (투표에 참여하지 않은 사용자)"
+                description = "권한 없음 (투표에 참여하지 않은 사용자)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "여론조사를 찾을 수 없음"
+                description = "여론조사를 찾을 수 없음",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -128,11 +131,11 @@ class PollResponseQueryController(
                         example = """{
                             "content": [
                                 {
-                                    "pollId": 1,
-                                    "pollTitle": "2024년 대통령 지지율 조사",
-                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "id": 1,
+                                    "title": "2024년 대통령 지지율 조사",
+                                    "description": "현 대통령의 지지율을 조사합니다.",
                                     "responseType": "SINGLE_CHOICE",
-                                    "pollStatus": "IN_PROGRESS",
+                                    "status": "IN_PROGRESS",
                                     "isRevotable": true,
                                     "startAt": "2024-01-01T00:00:00",
                                     "endAt": "2024-12-31T23:59:59",
@@ -148,11 +151,13 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (잘못된 size, page 값 등)"
+                description = "잘못된 요청 (잘못된 size, page 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -205,11 +210,11 @@ class PollResponseQueryController(
                         example = """{
                             "content": [
                                 {
-                                    "pollId": 1,
-                                    "pollTitle": "2024년 대통령 지지율 조사",
-                                    "pollDescription": "현 대통령의 지지율을 조사합니다.",
+                                    "id": 1,
+                                    "title": "2024년 대통령 지지율 조사",
+                                    "description": "현 대통령의 지지율을 조사합니다.",
                                     "responseType": "SINGLE_CHOICE",
-                                    "pollStatus": "IN_PROGRESS",
+                                    "status": "IN_PROGRESS",
                                     "isRevotable": true,
                                     "startAt": "2024-01-01T00:00:00",
                                     "endAt": "2024-12-31T23:59:59",
@@ -225,11 +230,13 @@ class PollResponseQueryController(
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (잘못된 size, page 값 등)"
+                description = "잘못된 요청 (잘못된 size, page 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )

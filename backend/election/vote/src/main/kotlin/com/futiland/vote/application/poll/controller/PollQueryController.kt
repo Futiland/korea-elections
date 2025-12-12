@@ -4,7 +4,7 @@ import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.application.poll.dto.response.PollListResponse
-import com.futiland.vote.domain.poll.service.PollQueryUseCase
+import com.futiland.vote.application.poll.service.PollQueryFacadeUseCase
 import com.futiland.vote.util.SliceContent
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/poll/v1")
 class PollQueryController(
-    private val pollQueryUseCase: PollQueryUseCase,
+    private val pollQueryFacadeUseCase: PollQueryFacadeUseCase,
 ) {
     @Operation(
         summary = "공개 여론조사 목록 조회",
@@ -54,13 +54,14 @@ class PollQueryController(
                 content = [Content(
                     schema = Schema(
                         type = "object",
-                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "optionText": "옵션1", "optionOrder": 1}], "isVoted": true, "creatorInfo": {"accountId": 1, "name": "홍길동"}}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
                     )
                 )]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청 (잘못된 size 값 등)"
+                description = "잘못된 요청 (잘못된 size 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -74,7 +75,7 @@ class PollQueryController(
         @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
         val accountId = userDetails?.user?.accountId
-        val response = pollQueryUseCase.getPublicPollList(accountId, size, nextCursor)
+        val response = pollQueryFacadeUseCase.getPublicPollList(accountId, size, nextCursor)
         return HttpApiResponse.of(response)
     }
 
@@ -100,7 +101,8 @@ class PollQueryController(
             ),
             ApiResponse(
                 responseCode = "404",
-                description = "존재하지 않는 여론조사"
+                description = "존재하지 않는 여론조사",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -109,7 +111,7 @@ class PollQueryController(
         @Parameter(description = "조회할 여론조사 ID", example = "1")
         @PathVariable pollId: Long,
     ): HttpApiResponse<PollDetailResponse> {
-        val response = pollQueryUseCase.getPollDetail(pollId)
+        val response = pollQueryFacadeUseCase.getPollDetail(pollId)
         return HttpApiResponse.of(response)
     }
 
@@ -140,17 +142,19 @@ class PollQueryController(
                 content = [Content(
                     schema = Schema(
                         type = "object",
-                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "text": "옵션1", "sequence": 1}], "isVoted": true}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                        example = """{"content": [{"id": 1, "title": "여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "optionText": "옵션1", "optionOrder": 1}], "isVoted": true, "creatorInfo": {"accountId": 1, "name": "홍길동"}}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
                     )
                 )]
             ),
             ApiResponse(
                 responseCode = "400",
-                description = "잘못된 요청"
+                description = "잘못된 요청 (잘못된 size 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패 (로그인 필요)"
+                description = "인증 실패 (로그인 필요)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             )
         ]
     )
@@ -163,7 +167,7 @@ class PollQueryController(
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
-        val response = pollQueryUseCase.getMyPolls(userDetails.user.accountId, size, nextCursor)
+        val response = pollQueryFacadeUseCase.getMyPolls(userDetails.user.accountId, size, nextCursor)
         return HttpApiResponse.of(response)
     }
 

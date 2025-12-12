@@ -20,6 +20,10 @@ class FakePollResponseRepository : PollResponseRepository {
         return savedResponse
     }
 
+    override fun saveAll(pollResponses: List<PollResponse>): List<PollResponse> {
+        return pollResponses.map { save(it) }
+    }
+
     override fun findById(id: Long): PollResponse? {
         return responses[id]
     }
@@ -36,6 +40,41 @@ class FakePollResponseRepository : PollResponseRepository {
 
     override fun countByPollId(pollId: Long): Long {
         return responses.values.count { it.pollId == pollId && it.deletedAt == null }.toLong()
+    }
+
+    override fun countByOptionId(optionId: Long): Long {
+        return responses.values.count { it.optionId == optionId && it.deletedAt == null }.toLong()
+    }
+
+    override fun findAllByPollIdAndAccountId(pollId: Long, accountId: Long): List<PollResponse> {
+        return responses.values.filter {
+            it.pollId == pollId && it.accountId == accountId && it.deletedAt == null
+        }
+    }
+
+    override fun findParticipatedPollsByAccountId(accountId: Long, lastId: Long?, size: Int): List<PollResponse> {
+        val filtered = responses.values
+            .filter { it.accountId == accountId && it.deletedAt == null }
+            .sortedByDescending { it.id }
+
+        val startIndex = if (lastId == null) {
+            0
+        } else {
+            filtered.indexOfFirst { it.id < lastId }.takeIf { it >= 0 } ?: filtered.size
+        }
+
+        return filtered.drop(startIndex).take(size)
+    }
+
+    override fun countByAccountId(accountId: Long): Long {
+        return responses.values.count { it.accountId == accountId && it.deletedAt == null }.toLong()
+    }
+
+    override fun findVotedPollIds(accountId: Long, pollIds: List<Long>): Set<Long> {
+        return responses.values
+            .filter { it.accountId == accountId && it.pollId in pollIds && it.deletedAt == null }
+            .map { it.pollId }
+            .toSet()
     }
 
     fun clear() {

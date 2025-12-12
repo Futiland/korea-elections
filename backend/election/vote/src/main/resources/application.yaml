@@ -2,8 +2,8 @@ server:
   port: 8080
 
 spring:
-  profiles:
-    active: ${SPRING_PROFILE:dev} # 기본값 dev, 환경변수로 변경 가능
+  config:
+    import: optional:file:.env.${spring.profiles.active:dev}[.properties]
   jackson:
     time-zone: Asia/Seoul
   datasource:

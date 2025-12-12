@@ -1,18 +1,21 @@
 package com.futiland.vote.domain.poll.service
 
+import com.futiland.vote.application.account.repository.FakeAccountRepository
 import com.futiland.vote.application.poll.dto.request.PublicPollCreateRequest
 import com.futiland.vote.application.poll.dto.request.PublicPollDraftCreateRequest
 import com.futiland.vote.application.poll.dto.request.PollOptionRequest
 import com.futiland.vote.application.poll.dto.request.PollUpdateRequest
 import com.futiland.vote.application.poll.repository.FakePollOptionRepository
 import com.futiland.vote.application.poll.repository.FakePollRepository
-import com.futiland.vote.domain.poll.entity.PollType
-import com.futiland.vote.domain.poll.entity.QuestionType
+import com.futiland.vote.domain.account.entity.Account
+import com.futiland.vote.domain.account.entity.Gender
+import com.futiland.vote.domain.poll.entity.ResponseType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class PollCommandServiceTest {
@@ -20,14 +23,29 @@ class PollCommandServiceTest {
     lateinit var pollCommandUseCase: PollCommandUseCase
     lateinit var pollRepository: FakePollRepository
     lateinit var pollOptionRepository: FakePollOptionRepository
+    lateinit var accountRepository: FakeAccountRepository
 
     @BeforeEach
     fun setUp() {
         pollRepository = FakePollRepository()
         pollOptionRepository = FakePollOptionRepository()
+        accountRepository = FakeAccountRepository()
+
+        // 테스트용 계정 생성
+        val testAccount = Account.create(
+            name = "테스트유저",
+            phoneNumber = "01012345678",
+            password = "password",
+            gender = Gender.MALE,
+            birthDate = LocalDate.of(1990, 1, 1),
+            ci = "test-ci"
+        )
+        accountRepository.save(testAccount)
+
         pollCommandUseCase = PollCommandService(
             pollRepository = pollRepository,
-            pollOptionRepository = pollOptionRepository
+            pollOptionRepository = pollOptionRepository,
+            accountRepository = accountRepository
         )
     }
 
@@ -39,9 +57,8 @@ class PollCommandServiceTest {
             val request = PublicPollCreateRequest(
                 title = "좋아하는 과일은?",
                 description = "가장 좋아하는 과일을 선택하세요",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(
                     PollOptionRequest("사과", 1),
@@ -51,12 +68,12 @@ class PollCommandServiceTest {
             )
 
             // Act
-            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 100L)
+            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 1L)
 
             // Assert
             assertThat(response.id).isGreaterThan(0)
             assertThat(response.title).isEqualTo("좋아하는 과일은?")
-            assertThat(response.questionType).isEqualTo(QuestionType.SINGLE_CHOICE)
+            assertThat(response.responseType).isEqualTo(ResponseType.SINGLE_CHOICE)
             assertThat(response.options).hasSize(3)
             assertThat(response.options[0].optionText).isEqualTo("사과")
         }
@@ -65,13 +82,10 @@ class PollCommandServiceTest {
         fun `다중 선택 여론조사 생성 성공`() {
             // Arrange
             val request = PublicPollCreateRequest(
-                title = "관심 분야는? (2-3개 선택)",
+                title = "관심 분야는?",
                 description = "관심 있는 분야를 선택하세요",
-                questionType = QuestionType.MULTIPLE_CHOICE,
-                allowMultipleResponses = false,
-                minSelections = 2,
-                maxSelections = 3,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.MULTIPLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(
                     PollOptionRequest("경제", 1),
@@ -82,12 +96,10 @@ class PollCommandServiceTest {
             )
 
             // Act
-            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 100L)
+            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 1L)
 
             // Assert
-            assertThat(response.questionType).isEqualTo(QuestionType.MULTIPLE_CHOICE)
-            assertThat(response.minSelections).isEqualTo(2)
-            assertThat(response.maxSelections).isEqualTo(3)
+            assertThat(response.responseType).isEqualTo(ResponseType.MULTIPLE_CHOICE)
             assertThat(response.options).hasSize(4)
         }
 
@@ -97,22 +109,17 @@ class PollCommandServiceTest {
             val request = PublicPollCreateRequest(
                 title = "정부 평가 점수는?",
                 description = "0~10점으로 평가하세요",
-                questionType = QuestionType.SCORE,
-                allowMultipleResponses = false,
-                minScore = 0,
-                maxScore = 10,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SCORE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = null
             )
 
             // Act
-            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 100L)
+            val response = pollCommandUseCase.createPublicPoll(request, creatorAccountId = 1L)
 
             // Assert
-            assertThat(response.questionType).isEqualTo(QuestionType.SCORE)
-            assertThat(response.minScore).isEqualTo(0)
-            assertThat(response.maxScore).isEqualTo(10)
+            assertThat(response.responseType).isEqualTo(ResponseType.SCORE)
             assertThat(response.options).isEmpty()
         }
 
@@ -122,8 +129,8 @@ class PollCommandServiceTest {
             val request = PublicPollDraftCreateRequest(
                 title = "좋아하는 색은?",
                 description = "작성 중",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 options = listOf(
                     PollOptionRequest("빨강", 1),
                     PollOptionRequest("파랑", 2)
@@ -131,7 +138,7 @@ class PollCommandServiceTest {
             )
 
             // Act
-            val response = pollCommandUseCase.createPublicPollDraft(request, creatorAccountId = 100L)
+            val response = pollCommandUseCase.createPublicPollDraft(request, creatorAccountId = 1L)
 
             // Assert
             assertThat(response.status.name).isEqualTo("DRAFT")
@@ -148,11 +155,11 @@ class PollCommandServiceTest {
             val createRequest = PublicPollDraftCreateRequest(
                 title = "원래 제목",
                 description = "원래 설명",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 options = listOf(PollOptionRequest("옵션1", 1))
             )
-            val created = pollCommandUseCase.createPublicPollDraft(createRequest, 100L)
+            val created = pollCommandUseCase.createPublicPollDraft(createRequest, 1L)
 
             val updateRequest = PollUpdateRequest(
                 title = "수정된 제목",
@@ -176,13 +183,12 @@ class PollCommandServiceTest {
             val createRequest = PublicPollCreateRequest(
                 title = "진행중인 투표",
                 description = "설명",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(PollOptionRequest("옵션1", 1))
             )
-            val created = pollCommandUseCase.createPublicPoll(createRequest, 100L)
+            val created = pollCommandUseCase.createPublicPoll(createRequest, 1L)
 
             val updateRequest = PollUpdateRequest(title = "수정 시도")
 
@@ -201,16 +207,15 @@ class PollCommandServiceTest {
             val createRequest = PublicPollCreateRequest(
                 title = "삭제될 투표",
                 description = "설명",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(PollOptionRequest("옵션1", 1))
             )
-            val created = pollCommandUseCase.createPublicPoll(createRequest, 100L)
+            val created = pollCommandUseCase.createPublicPoll(createRequest, 1L)
 
             // Act
-            pollCommandUseCase.deletePoll(created.id, accountId = 100L)
+            pollCommandUseCase.deletePoll(created.id, accountId = 1L)
 
             // Assert
             val poll = pollRepository.findById(created.id)
@@ -223,13 +228,12 @@ class PollCommandServiceTest {
             val createRequest = PublicPollCreateRequest(
                 title = "삭제될 투표",
                 description = "설명",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(PollOptionRequest("옵션1", 1))
             )
-            val created = pollCommandUseCase.createPublicPoll(createRequest, 100L)
+            val created = pollCommandUseCase.createPublicPoll(createRequest, 1L)
 
             // Act & Assert
             assertThrows<IllegalArgumentException> {
@@ -246,16 +250,15 @@ class PollCommandServiceTest {
             val createRequest = PublicPollCreateRequest(
                 title = "취소될 투표",
                 description = "설명",
-                questionType = QuestionType.SINGLE_CHOICE,
-                allowMultipleResponses = false,
-                startAt = LocalDateTime.now(),
+                responseType = ResponseType.SINGLE_CHOICE,
+                isRevotable = false,
                 endAt = LocalDateTime.now().plusDays(7),
                 options = listOf(PollOptionRequest("옵션1", 1))
             )
-            val created = pollCommandUseCase.createPublicPoll(createRequest, 100L)
+            val created = pollCommandUseCase.createPublicPoll(createRequest, 1L)
 
             // Act
-            pollCommandUseCase.cancelPoll(created.id, accountId = 100L)
+            pollCommandUseCase.cancelPoll(created.id, accountId = 1L)
 
             // Assert
             val poll = pollRepository.findById(created.id)

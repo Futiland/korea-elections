@@ -9,15 +9,15 @@ import java.time.LocalDateTime
 @Schema(description = "내가 참여한 여론조사 응답")
 data class ParticipatedPollResponse(
     @Schema(description = "여론조사 ID", example = "1")
-    val pollId: Long,
+    val id: Long,
     @Schema(description = "여론조사 제목", example = "2024년 대통령 지지율 조사")
-    val pollTitle: String,
+    val title: String,
     @Schema(description = "여론조사 설명", example = "현 대통령의 지지율을 조사합니다.")
-    val pollDescription: String,
+    val description: String,
     @Schema(description = "응답 유형", example = "SINGLE_CHOICE")
     val responseType: ResponseType,
     @Schema(description = "여론조사 상태", example = "IN_PROGRESS")
-    val pollStatus: PollStatus,
+    val status: PollStatus,
     @Schema(description = "재투표 가능 여부", example = "true")
     val isRevotable: Boolean,
     @Schema(description = "시작 일시", example = "2024-01-01T00:00:00")
@@ -36,11 +36,11 @@ data class ParticipatedPollResponse(
             responseId: Long
         ): ParticipatedPollResponse {
             return ParticipatedPollResponse(
-                pollId = poll.id,
-                pollTitle = poll.title,
-                pollDescription = poll.description,
+                id = poll.id,
+                title = poll.title,
+                description = poll.description,
                 responseType = poll.responseType,
-                pollStatus = poll.status,
+                status = poll.status,
                 isRevotable = poll.isRevotable,
                 startAt = poll.startAt,
                 endAt = poll.endAt,

@@ -1,7 +1,6 @@
 package com.futiland.vote.application.poll.dto.response
 
 import com.futiland.vote.domain.poll.entity.Poll
-import com.futiland.vote.domain.poll.entity.PollOption
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.entity.ResponseType
 import io.swagger.v3.oas.annotations.media.Schema
@@ -33,9 +32,11 @@ data class PollListResponse(
     val options: List<PollOptionResponse>,
     @Schema(description = "현재 사용자의 투표 여부 (비로그인 시 false)", example = "true")
     val isVoted: Boolean,
+    @Schema(description = "작성자 정보")
+    val creatorInfo: CreatorInfoResponse,
 ) {
     companion object {
-        fun from(poll: Poll, responseCount: Long, options: List<PollOptionResponse>, isVoted: Boolean): PollListResponse {
+        fun from(poll: Poll, responseCount: Long, options: List<PollOptionResponse>, isVoted: Boolean, creatorInfo: CreatorInfoResponse): PollListResponse {
             return PollListResponse(
                 id = poll.id,
                 title = poll.title,
@@ -48,7 +49,8 @@ data class PollListResponse(
                 createdAt = poll.createdAt,
                 responseCount = responseCount,
                 options = options,
-                isVoted = isVoted
+                isVoted = isVoted,
+                creatorInfo = creatorInfo
             )
         }
     }
