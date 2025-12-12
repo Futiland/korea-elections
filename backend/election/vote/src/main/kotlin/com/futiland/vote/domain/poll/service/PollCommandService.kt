@@ -51,7 +51,7 @@ class PollCommandService(
 
         val account = accountRepository.getById(creatorAccountId)
         val creatorInfo = CreatorInfoResponse(account.id, account.name)
-        return PollDetailResponse.from(savedPoll, options, creatorInfo)
+        return PollDetailResponse.from(savedPoll, options, responseCount = 0, isVoted = false, creatorInfo)
     }
 
     @Transactional
@@ -85,7 +85,7 @@ class PollCommandService(
 
         val account = accountRepository.getById(creatorAccountId)
         val creatorInfo = CreatorInfoResponse(account.id, account.name)
-        return PollDetailResponse.from(savedPoll, options, creatorInfo)
+        return PollDetailResponse.from(savedPoll, options, responseCount = 0, isVoted = false, creatorInfo)
     }
 
     @Transactional
@@ -101,7 +101,7 @@ class PollCommandService(
         val options = pollOptionRepository.findAllByPollId(pollId)
         val account = accountRepository.getById(savedPoll.creatorAccountId)
         val creatorInfo = CreatorInfoResponse(account.id, account.name)
-        return PollDetailResponse.from(savedPoll, options, creatorInfo)
+        return PollDetailResponse.from(savedPoll, options, responseCount = 0, isVoted = false, creatorInfo)
     }
 
     @Transactional

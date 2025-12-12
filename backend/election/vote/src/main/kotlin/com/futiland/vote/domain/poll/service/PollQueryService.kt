@@ -21,12 +21,18 @@ class PollQueryService(
     private val accountRepository: AccountRepository,
 ) : PollQueryUseCase {
 
-    override fun getPollDetail(pollId: Long): PollDetailResponse {
+    override fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse {
         val poll = pollRepository.getById(pollId)
         val options = pollOptionRepository.findAllByPollId(pollId)
         val account = accountRepository.getById(poll.creatorAccountId)
         val creatorInfo = CreatorInfoResponse(account.id, account.name)
-        return PollDetailResponse.from(poll, options, creatorInfo)
+
+        val responseCount = pollResponseRepository.countByPollId(pollId)
+        val isVoted = accountId?.let {
+            pollResponseRepository.findByPollIdAndAccountId(pollId, it) != null
+        } ?: false
+
+        return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
     }
 
     override fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse> {

@@ -8,7 +8,7 @@ import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 
 interface PollQueryUseCase {
-    fun getPollDetail(pollId: Long): PollDetailResponse
+    fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse
     fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse>
 
     /**
