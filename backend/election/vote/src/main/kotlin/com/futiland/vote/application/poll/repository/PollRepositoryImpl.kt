@@ -6,8 +6,10 @@ import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.util.SliceContent
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class PollRepositoryImpl(
@@ -74,6 +76,10 @@ class PollRepositoryImpl(
 
         return SliceContent(polls, nextCursor)
     }
+
+    override fun expireOverduePolls(now: LocalDateTime): Int {
+        return repository.expireOverduePolls(now)
+    }
 }
 
 interface JpaPollRepository : JpaRepository<Poll, Long> {
@@ -119,4 +125,15 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         """
     )
     fun getMyPollsFromLastId(creatorAccountId: Long, lastId: Long, pageable: PageRequest): List<Poll>
+
+    @Modifying
+    @Query(
+        """
+        UPDATE Poll p
+        SET p.status = 'EXPIRED', p.updatedAt = :now
+        WHERE p.status = 'IN_PROGRESS'
+        AND p.endAt < :now
+        """
+    )
+    fun expireOverduePolls(now: LocalDateTime): Int
 }

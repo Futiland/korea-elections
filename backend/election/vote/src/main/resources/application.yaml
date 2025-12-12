@@ -26,6 +26,10 @@ access_token:
 account:
   re-signup-waiting-days: 30 # 탈퇴 후 재가입 대기 기간 (일)
 
+scheduler:
+  poll:
+    expiration-check-interval: 300000 # 만료 체크 주기 (ms) - 기본 5분
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}
 
