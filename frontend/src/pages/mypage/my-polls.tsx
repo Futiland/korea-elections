@@ -32,6 +32,7 @@ export default function MyCreatedPollsPage() {
 		queryKey: ['myPolls', page, PAGE_SIZE],
 		queryFn: () => getMyPolls({ size: PAGE_SIZE, page }),
 		enabled: isLoggedIn && isReady,
+		refetchOnWindowFocus: false,
 		retry: 2,
 	});
 

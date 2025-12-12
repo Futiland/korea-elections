@@ -36,7 +36,7 @@ export default function MyPollListView({
 				</header>
 
 				{isLoading ? (
-					<div className="flex items-center justify-center py-10">
+					<div className="flex items-center justify-center py-10 min-h-screen ">
 						<Spinner className="w-10 h-10 text-blue-500" />
 					</div>
 				) : isError ? (
@@ -48,7 +48,7 @@ export default function MyPollListView({
 						표시할 투표가 없습니다.
 					</div>
 				) : (
-					<div className="space-y-3">
+					<div className="mb-10">
 						{items.map((item) => (
 							<MyPollListItem key={item.id} item={item} />
 						))}

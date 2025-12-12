@@ -48,7 +48,7 @@ export default function StatusBadge({
 
 	return (
 		<span
-			className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
+			className={`min-w-[64px] inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
 		>
 			{config.text}
 		</span>

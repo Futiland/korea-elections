@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { UserRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import MyPollList from './MyPollList';
+import MyPollSummary from './MyPollSummary';
 import type { MyPageViewProps } from '@/components/My/useMyPagePresenter';
 
 export default function MyPageView({
@@ -132,7 +132,7 @@ export default function MyPageView({
 					</Card>
 
 					{myPolls.content.length > 0 && (
-						<MyPollList
+						<MyPollSummary
 							title="내가 만든 모두의 투표"
 							items={myPolls.content}
 							moreUrl="/mypage/my-polls"
@@ -141,7 +141,7 @@ export default function MyPageView({
 					)}
 
 					{myParticipatedPublicPolls.content.length > 0 && (
-						<MyPollList
+						<MyPollSummary
 							title="참여한 모두의 투표"
 							items={myParticipatedPublicPolls.content}
 							moreUrl="/mypage/joined-polls"
@@ -150,7 +150,7 @@ export default function MyPageView({
 					)}
 
 					{myParticipatedOpinionPolls.content.length > 0 && (
-						<MyPollList
+						<MyPollSummary
 							title="참여한 입법 투표"
 							items={myParticipatedOpinionPolls.content}
 							moreUrl="/mypage/joined-legislation"

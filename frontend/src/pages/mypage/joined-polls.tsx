@@ -36,6 +36,7 @@ export default function JoinedPublicPollsPage() {
 				page,
 			}),
 		enabled: isLoggedIn && isReady,
+		refetchOnWindowFocus: false,
 		retry: 2,
 	});
 
