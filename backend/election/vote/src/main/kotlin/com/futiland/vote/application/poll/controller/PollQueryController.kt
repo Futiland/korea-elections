@@ -110,8 +110,11 @@ class PollQueryController(
     fun getPollDetail(
         @Parameter(description = "조회할 여론조사 ID", example = "1")
         @PathVariable pollId: Long,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<PollDetailResponse> {
-        val response = pollQueryFacadeUseCase.getPollDetail(pollId)
+        val accountId = userDetails?.user?.accountId
+        val response = pollQueryFacadeUseCase.getPollDetail(pollId, accountId)
         return HttpApiResponse.of(response)
     }
 

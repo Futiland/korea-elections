@@ -13,11 +13,19 @@ data class PollDetailResponse(
     val startAt: LocalDateTime?,
     val endAt: LocalDateTime?,
     val createdAt: LocalDateTime,
+    val responseCount: Long,
     val options: List<PollOptionResponse>,
+    val isVoted: Boolean,
     val creatorInfo: CreatorInfoResponse,
 ) {
     companion object {
-        fun from(poll: Poll, options: List<PollOption>, creatorInfo: CreatorInfoResponse): PollDetailResponse {
+        fun from(
+            poll: Poll,
+            options: List<PollOption>,
+            responseCount: Long,
+            isVoted: Boolean,
+            creatorInfo: CreatorInfoResponse
+        ): PollDetailResponse {
             return PollDetailResponse(
                 id = poll.id,
                 title = poll.title,
@@ -28,7 +36,9 @@ data class PollDetailResponse(
                 startAt = poll.startAt,
                 endAt = poll.endAt,
                 createdAt = poll.createdAt,
+                responseCount = responseCount,
                 options = options.map { PollOptionResponse.from(it) },
+                isVoted = isVoted,
                 creatorInfo = creatorInfo
             )
         }

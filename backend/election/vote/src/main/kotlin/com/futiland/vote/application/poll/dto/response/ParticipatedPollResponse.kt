@@ -26,6 +26,8 @@ data class ParticipatedPollResponse(
     val endAt: LocalDateTime?,
     @Schema(description = "참여한 시각", example = "2024-06-15T14:30:00")
     val participatedAt: LocalDateTime,
+    @Schema(description = "응답 수", example = "1234")
+    val responseCount: Long,
     @Schema(description = "PollResponse ID (페이지 조회용)", example = "100")
     val responseId: Long,
 ) {
@@ -33,6 +35,7 @@ data class ParticipatedPollResponse(
         fun from(
             poll: Poll,
             participatedAt: LocalDateTime,
+            responseCount: Long,
             responseId: Long
         ): ParticipatedPollResponse {
             return ParticipatedPollResponse(
@@ -45,6 +48,7 @@ data class ParticipatedPollResponse(
                 startAt = poll.startAt,
                 endAt = poll.endAt,
                 participatedAt = participatedAt,
+                responseCount = responseCount,
                 responseId = responseId
             )
         }

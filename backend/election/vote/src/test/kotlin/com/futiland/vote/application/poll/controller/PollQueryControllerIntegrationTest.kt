@@ -228,7 +228,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -245,7 +245,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -261,7 +261,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -273,7 +273,7 @@ class PollQueryControllerIntegrationTest {
         fun `존재하지 않는 여론조사 조회 실패`() {
             // Act & Assert
             assertThrows<Exception> {
-                pollQueryController.getPollDetail(pollId = 999999L)
+                pollQueryController.getPollDetail(pollId = 999999L, userDetails = null)
             }
         }
     }
