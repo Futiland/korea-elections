@@ -111,6 +111,11 @@ class PollQueryService(
         val polls = pollRepository.findAllByIdIn(pollIds)
         val pollMap = polls.associateBy { it.id }
 
+        // 각 poll의 응답 수 조회 (N+1 문제 해결)
+        val responseCountMap = pollIds.associateWith { pollId ->
+            pollResponseRepository.countByPollId(pollId)
+        }
+
         // pollType으로 필터링하고 ParticipatedPollResponse 생성
         val allParticipatedPolls = pollResponses.mapNotNull { pollResponse ->
             val poll = pollMap[pollResponse.pollId] ?: return@mapNotNull null
@@ -119,6 +124,7 @@ class PollQueryService(
             ParticipatedPollResponse.from(
                 poll = poll,
                 participatedAt = pollResponse.createdAt,
+                responseCount = responseCountMap[poll.id] ?: 0,
                 responseId = pollResponse.id
             )
         }
