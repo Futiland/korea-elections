@@ -4,6 +4,7 @@ import com.futiland.vote.domain.poll.entity.Poll
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.util.SliceContent
+import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
 class FakePollRepository : PollRepository {
@@ -73,6 +74,18 @@ class FakePollRepository : PollRepository {
         val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
 
         return SliceContent(content, cursor)
+    }
+
+    override fun expireOverduePolls(now: LocalDateTime): Int {
+        val pollsToExpire = polls.values.filter {
+            it.status == PollStatus.IN_PROGRESS && it.endAt != null && it.endAt!! < now
+        }
+
+        pollsToExpire.forEach { poll ->
+            poll.expire()
+        }
+
+        return pollsToExpire.size
     }
 
     fun clear() {
