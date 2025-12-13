@@ -3,8 +3,10 @@ package com.futiland.vote.application.poll.repository
 import com.futiland.vote.domain.poll.entity.Poll
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.repository.PollRepository
+import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import java.time.LocalDateTime
+import kotlin.math.min
 import java.util.concurrent.atomic.AtomicLong
 
 class FakePollRepository : PollRepository {
@@ -51,29 +53,25 @@ class FakePollRepository : PollRepository {
         return SliceContent(content, cursor)
     }
 
-    override fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll> {
-        return polls.values.filter { it.creatorAccountId == creatorAccountId }
-    }
-
     override fun findAllByIdIn(ids: List<Long>): List<Poll> {
-        return polls.values.filter { it.id in ids }
+        return polls.values.filter { it.id in ids && it.status != PollStatus.DELETED }
     }
 
-    override fun findMyPolls(creatorAccountId: Long, size: Int, lastId: Long?): SliceContent<Poll> {
+    override fun findMyPollsWithPage(creatorAccountId: Long, page: Int, size: Int): PageContent<Poll> {
         val filteredPolls = polls.values
-            .filter { it.creatorAccountId == creatorAccountId }
+            .filter { it.creatorAccountId == creatorAccountId && it.status != PollStatus.DELETED }
             .sortedByDescending { it.id }
 
-        val startIndex = if (lastId == null) {
-            0
+        val totalCount = filteredPolls.size.toLong()
+        val startIndex = (page - 1) * size
+        val endIndex = min(startIndex + size, filteredPolls.size)
+        val content = if (startIndex < filteredPolls.size) {
+            filteredPolls.subList(startIndex, endIndex)
         } else {
-            filteredPolls.indexOfFirst { it.id < lastId }.takeIf { it >= 0 } ?: filteredPolls.size
+            emptyList()
         }
 
-        val content = filteredPolls.drop(startIndex).take(size)
-        val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
-
-        return SliceContent(content, cursor)
+        return PageContent.of(content, totalCount, size)
     }
 
     override fun expireOverduePolls(now: LocalDateTime): Int {

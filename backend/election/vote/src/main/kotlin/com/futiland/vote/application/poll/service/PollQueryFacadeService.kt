@@ -8,6 +8,7 @@ import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
+import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import org.springframework.stereotype.Service
 
@@ -62,9 +63,9 @@ class PollQueryFacadeService(
         return SliceContent(pollListResponses, pollsSlice.nextCursor)
     }
 
-    override fun getMyPolls(accountId: Long, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findMyPolls(accountId, size, nextCursor?.toLongOrNull())
-        val polls = pollsSlice.content
+    override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
+        val pollsPage = pollRepository.findMyPollsWithPage(accountId, page, size)
+        val polls = pollsPage.content
 
         val pollIds = polls.map { it.id }
 
@@ -87,6 +88,6 @@ class PollQueryFacadeService(
             PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
         }
 
-        return SliceContent(pollListResponses, pollsSlice.nextCursor)
+        return PageContent.of(pollListResponses, pollsPage.totalCount, size)
     }
 }

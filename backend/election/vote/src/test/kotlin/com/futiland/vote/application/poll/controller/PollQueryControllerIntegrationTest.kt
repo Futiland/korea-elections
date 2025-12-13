@@ -291,8 +291,8 @@ class PollQueryControllerIntegrationTest {
 
             // Act
             val response = pollQueryController.getMyPolls(
+                page = 1,
                 size = 10,
-                nextCursor = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -322,8 +322,8 @@ class PollQueryControllerIntegrationTest {
 
             // Act
             val response = pollQueryController.getMyPolls(
+                page = 1,
                 size = 10,
-                nextCursor = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -345,8 +345,8 @@ class PollQueryControllerIntegrationTest {
 
             // Act
             val response = pollQueryController.getMyPolls(
+                page = 1,
                 size = 10,
-                nextCursor = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -366,8 +366,8 @@ class PollQueryControllerIntegrationTest {
 
             // Act
             val response = pollQueryController.getMyPolls(
+                page = 1,
                 size = 2,
-                nextCursor = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -377,7 +377,7 @@ class PollQueryControllerIntegrationTest {
         }
 
         @Test
-        fun `커서 기반 페이지네이션으로 내 여론조사 다음 페이지 조회 성공`() {
+        fun `페이지 기반 페이지네이션으로 내 여론조사 다음 페이지 조회 성공`() {
             // Arrange
             repeat(5) { index ->
                 val poll = createTestPoll(title = "페이지네이션 테스트 $index", creatorAccountId = testAccount.id)
@@ -386,28 +386,27 @@ class PollQueryControllerIntegrationTest {
 
             // Act - 첫 페이지 조회
             val firstPageResponse = pollQueryController.getMyPolls(
+                page = 1,
                 size = 2,
-                nextCursor = null,
                 userDetails = createUserDetails(testAccount.id)
             )
-
-            val nextCursor = firstPageResponse.data?.nextCursor
 
             // Assert - 첫 페이지
             assertThat(firstPageResponse.data).isNotNull
             assertThat(firstPageResponse.data?.content?.size).isLessThanOrEqualTo(2)
+            assertThat(firstPageResponse.data?.totalCount).isEqualTo(5)
+            assertThat(firstPageResponse.data?.totalPages).isEqualTo(3)
 
-            // Act - 두 번째 페이지 조회 (nextCursor가 있는 경우)
-            if (nextCursor != null) {
-                val secondPageResponse = pollQueryController.getMyPolls(
-                    size = 2,
-                    nextCursor = nextCursor,
-                    userDetails = createUserDetails(testAccount.id)
-                )
+            // Act - 두 번째 페이지 조회
+            val secondPageResponse = pollQueryController.getMyPolls(
+                page = 2,
+                size = 2,
+                userDetails = createUserDetails(testAccount.id)
+            )
 
-                // Assert - 두 번째 페이지
-                assertThat(secondPageResponse.data).isNotNull
-            }
+            // Assert - 두 번째 페이지
+            assertThat(secondPageResponse.data).isNotNull
+            assertThat(secondPageResponse.data?.content?.size).isLessThanOrEqualTo(2)
         }
 
         @Test
@@ -426,14 +425,16 @@ class PollQueryControllerIntegrationTest {
 
             // Act
             val response = pollQueryController.getMyPolls(
+                page = 1,
                 size = 10,
-                nextCursor = null,
                 userDetails = createUserDetails(newAccount.id)
             )
 
             // Assert
             assertThat(response.data).isNotNull
             assertThat(response.data?.content).isEmpty()
+            assertThat(response.data?.totalCount).isEqualTo(0)
+            assertThat(response.data?.totalPages).isEqualTo(0)
         }
     }
 }
