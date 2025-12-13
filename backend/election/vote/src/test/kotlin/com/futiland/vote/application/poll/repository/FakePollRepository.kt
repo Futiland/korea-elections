@@ -53,17 +53,13 @@ class FakePollRepository : PollRepository {
         return SliceContent(content, cursor)
     }
 
-    override fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll> {
-        return polls.values.filter { it.creatorAccountId == creatorAccountId }
-    }
-
     override fun findAllByIdIn(ids: List<Long>): List<Poll> {
-        return polls.values.filter { it.id in ids }
+        return polls.values.filter { it.id in ids && it.status != PollStatus.DELETED }
     }
 
     override fun findMyPollsWithPage(creatorAccountId: Long, page: Int, size: Int): PageContent<Poll> {
         val filteredPolls = polls.values
-            .filter { it.creatorAccountId == creatorAccountId }
+            .filter { it.creatorAccountId == creatorAccountId && it.status != PollStatus.DELETED }
             .sortedByDescending { it.id }
 
         val totalCount = filteredPolls.size.toLong()

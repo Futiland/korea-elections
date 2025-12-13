@@ -10,7 +10,10 @@ interface PollRepository {
     fun getById(id: Long): Poll
     fun findById(id: Long): Poll?
     fun findAllPublicDisplayable(size: Int, nextCursor: String?): SliceContent<Poll>
-    fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll>
+
+    /**
+     * ID 목록으로 여론조사 조회 (삭제된 것 제외)
+     */
     fun findAllByIdIn(ids: List<Long>): List<Poll>
 
     /**
