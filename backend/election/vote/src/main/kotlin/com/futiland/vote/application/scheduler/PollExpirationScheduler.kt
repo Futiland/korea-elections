@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
+// TODO : 스케쥴러 서버만 따로 추출해서 사용할 수 있도록 할것. 현재는 작은 서버이기 때문에 이렇게 동작하지만 스케일 아웃 하는 순간 성능이 좋지 않게됨.
+
 @Component
 class PollExpirationScheduler(
     private val pollRepository: PollRepository
