@@ -44,6 +44,11 @@ class FakePollOptionRepository : PollOptionRepository {
             .sortedBy { it.optionOrder }
     }
 
+    override fun findAllByPollIdAndIdIn(pollId: Long, optionIds: List<Long>): List<PollOption> {
+        return options.values
+            .filter { it.pollId == pollId && it.id in optionIds && it.deletedAt == null }
+    }
+
     fun clear() {
         options.clear()
         idGenerator.set(1)

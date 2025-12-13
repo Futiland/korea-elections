@@ -1,6 +1,8 @@
 package com.futiland.vote.domain.poll.service
 
 import com.futiland.vote.application.account.repository.FakeAccountRepository
+import com.futiland.vote.application.common.httpresponse.CodeEnum
+import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.application.poll.dto.request.PublicPollCreateRequest
 import com.futiland.vote.application.poll.dto.request.PollOptionRequest
 import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
@@ -53,7 +55,8 @@ class PollResponseCommandServiceTest {
 
         pollResponseCommandUseCase = PollResponseCommandService(
             pollRepository = pollRepository,
-            pollResponseRepository = pollResponseRepository
+            pollResponseRepository = pollResponseRepository,
+            pollOptionRepository = pollOptionRepository
         )
     }
 
@@ -321,9 +324,11 @@ class PollResponseCommandServiceTest {
             )
 
             // Act & Assert
-            assertThrows<IllegalArgumentException> {
+            val exception = assertThrows<ApplicationException> {
                 pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
             }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
+            assertThat(exception.message).contains("점수는 0~10 사이여야 합니다")
         }
 
         @Test
@@ -346,9 +351,11 @@ class PollResponseCommandServiceTest {
             )
 
             // Act & Assert
-            assertThrows<IllegalArgumentException> {
+            val exception = assertThrows<ApplicationException> {
                 pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
             }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
+            assertThat(exception.message).contains("점수는 0~10 사이여야 합니다")
         }
     }
 
@@ -424,6 +431,153 @@ class PollResponseCommandServiceTest {
             assertThrows<Exception> {
                 pollResponseCommandUseCase.updateResponse(poll.id, 200L, updateRequest)
             }
+        }
+    }
+
+    @Nested
+    inner class `존재하지 않는 옵션 선택` {
+
+        @Test
+        fun `단일 선택 - 존재하지 않는 optionId로 응답 시 실패`() {
+            // Arrange
+            val poll = pollCommandUseCase.createPublicPoll(
+                PublicPollCreateRequest(
+                    title = "좋아하는 과일은?",
+                    description = "하나만 선택",
+                    responseType = ResponseType.SINGLE_CHOICE,
+                    isRevotable = false,
+                    endAt = LocalDateTime.now().plusDays(7),
+                    options = listOf(
+                        PollOptionRequest("사과", 1),
+                        PollOptionRequest("바나나", 2)
+                    )
+                ),
+                creatorAccountId = 1L
+            )
+
+            val nonExistentOptionId = 99999L
+            val request = PollResponseSubmitRequest.SingleChoice(
+                optionId = nonExistentOptionId
+            )
+
+            // Act & Assert
+            val exception = assertThrows<ApplicationException> {
+                pollResponseCommandUseCase.submitResponse(
+                    pollId = poll.id,
+                    accountId = 200L,
+                    request = request
+                )
+            }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
+            assertThat(exception.message).contains("존재하지 않는 옵션")
+        }
+
+        @Test
+        fun `다중 선택 - 일부 optionId가 존재하지 않을 때 실패`() {
+            // Arrange
+            val poll = pollCommandUseCase.createPublicPoll(
+                PublicPollCreateRequest(
+                    title = "관심 분야는?",
+                    description = "여러 개 선택",
+                    responseType = ResponseType.MULTIPLE_CHOICE,
+                    isRevotable = false,
+                    endAt = LocalDateTime.now().plusDays(7),
+                    options = listOf(
+                        PollOptionRequest("경제", 1),
+                        PollOptionRequest("외교", 2)
+                    )
+                ),
+                creatorAccountId = 1L
+            )
+
+            val nonExistentOptionId = 99999L
+            val request = PollResponseSubmitRequest.MultipleChoice(
+                optionIds = listOf(poll.options[0].id, nonExistentOptionId)
+            )
+
+            // Act & Assert
+            val exception = assertThrows<ApplicationException> {
+                pollResponseCommandUseCase.submitResponse(
+                    pollId = poll.id,
+                    accountId = 200L,
+                    request = request
+                )
+            }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
+            assertThat(exception.message).contains("존재하지 않는 옵션")
+        }
+
+        @Test
+        fun `다중 선택 - 모든 optionId가 존재하지 않을 때 실패`() {
+            // Arrange
+            val poll = pollCommandUseCase.createPublicPoll(
+                PublicPollCreateRequest(
+                    title = "관심 분야는?",
+                    description = "여러 개 선택",
+                    responseType = ResponseType.MULTIPLE_CHOICE,
+                    isRevotable = false,
+                    endAt = LocalDateTime.now().plusDays(7),
+                    options = listOf(
+                        PollOptionRequest("경제", 1),
+                        PollOptionRequest("외교", 2)
+                    )
+                ),
+                creatorAccountId = 1L
+            )
+
+            val request = PollResponseSubmitRequest.MultipleChoice(
+                optionIds = listOf(99998L, 99999L)
+            )
+
+            // Act & Assert
+            val exception = assertThrows<ApplicationException> {
+                pollResponseCommandUseCase.submitResponse(
+                    pollId = poll.id,
+                    accountId = 200L,
+                    request = request
+                )
+            }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
+        }
+
+        @Test
+        fun `응답 수정 - 존재하지 않는 optionId로 수정 시 실패`() {
+            // Arrange
+            val poll = pollCommandUseCase.createPublicPoll(
+                PublicPollCreateRequest(
+                    title = "좋아하는 과일은?",
+                    description = "수정 가능",
+                    responseType = ResponseType.SINGLE_CHOICE,
+                    isRevotable = true,
+                    endAt = LocalDateTime.now().plusDays(7),
+                    options = listOf(
+                        PollOptionRequest("사과", 1),
+                        PollOptionRequest("바나나", 2)
+                    )
+                ),
+                creatorAccountId = 1L
+            )
+
+            // 먼저 유효한 응답 제출
+            val validRequest = PollResponseSubmitRequest.SingleChoice(
+                optionId = poll.options[0].id
+            )
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, validRequest)
+
+            // 존재하지 않는 optionId로 수정 시도
+            val invalidRequest = PollResponseSubmitRequest.SingleChoice(
+                optionId = 99999L
+            )
+
+            // Act & Assert
+            val exception = assertThrows<ApplicationException> {
+                pollResponseCommandUseCase.updateResponse(
+                    pollId = poll.id,
+                    accountId = 200L,
+                    request = invalidRequest
+                )
+            }
+            assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
         }
     }
 }

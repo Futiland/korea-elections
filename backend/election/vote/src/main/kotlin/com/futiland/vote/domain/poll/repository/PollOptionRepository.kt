@@ -8,5 +8,6 @@ interface PollOptionRepository {
     fun findById(id: Long): PollOption?
     fun findAllByPollId(pollId: Long): List<PollOption>
     fun findAllByPollIdIn(pollIds: List<Long>): List<PollOption>
+    fun findAllByPollIdAndIdIn(pollId: Long, optionIds: List<Long>): List<PollOption>
     fun deleteAllByPollId(pollId: Long)
 }
