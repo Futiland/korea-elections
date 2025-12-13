@@ -6,6 +6,7 @@ import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
 import com.futiland.vote.domain.poll.entity.PollResponse
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.entity.deleteAll
+import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import org.springframework.stereotype.Service
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 class PollResponseCommandService(
     private val pollRepository: PollRepository,
     private val pollResponseRepository: PollResponseRepository,
+    private val pollOptionRepository: PollOptionRepository,
 ) : PollResponseCommandUseCase {
 
     @Transactional
@@ -43,6 +45,7 @@ class PollResponseCommandService(
         }
 
         // 응답 유효성 검증
+        validateRequestedOptions(pollId, request)
         poll.validateResponse(request)
 
         // 응답 저장
@@ -113,6 +116,7 @@ class PollResponseCommandService(
         }
 
         // 응답 유효성 검증
+        validateRequestedOptions(pollId, request)
         poll.validateResponse(request)
 
         // 기존 응답 모두 삭제 (soft delete)
@@ -167,5 +171,38 @@ class PollResponseCommandService(
 
         pollResponse.delete()
         pollResponseRepository.save(pollResponse)
+    }
+
+    private fun validateRequestedOptions(pollId: Long, request: PollResponseSubmitRequest) {
+        when (request) {
+            is PollResponseSubmitRequest.SingleChoice -> {
+                val foundOptions = pollOptionRepository.findAllByPollIdAndIdIn(pollId, listOf(request.optionId))
+                if (foundOptions.isEmpty()) {
+                    throw ApplicationException(
+                        code = CodeEnum.FRS_003,
+                        message = "존재하지 않는 옵션입니다: ${request.optionId}"
+                    )
+                }
+            }
+            is PollResponseSubmitRequest.MultipleChoice -> {
+                val foundOptions = pollOptionRepository.findAllByPollIdAndIdIn(pollId, request.optionIds)
+                if (foundOptions.size != request.optionIds.size) {
+                    val foundIds = foundOptions.map { it.id }.toSet()
+                    val invalidIds = request.optionIds.filter { it !in foundIds }
+                    throw ApplicationException(
+                        code = CodeEnum.FRS_003,
+                        message = "존재하지 않는 옵션입니다: $invalidIds"
+                    )
+                }
+            }
+            is PollResponseSubmitRequest.Score -> {
+                if (request.scoreValue !in 0..10) {
+                    throw ApplicationException(
+                        code = CodeEnum.FRS_003,
+                        message = "점수는 0~10 사이여야 합니다: ${request.scoreValue}"
+                    )
+                }
+            }
+        }
     }
 }

@@ -29,6 +29,10 @@ class PollOptionRepositoryImpl(
         return repository.findAllByPollIdInAndDeletedAtIsNullOrderByOptionOrder(pollIds)
     }
 
+    override fun findAllByPollIdAndIdIn(pollId: Long, optionIds: List<Long>): List<PollOption> {
+        return repository.findAllByPollIdAndIdInAndDeletedAtIsNull(pollId, optionIds)
+    }
+
     override fun deleteAllByPollId(pollId: Long) {
         repository.deleteAllByPollId(pollId)
     }
@@ -37,5 +41,6 @@ class PollOptionRepositoryImpl(
 interface JpaPollOptionRepository : JpaRepository<PollOption, Long> {
     fun findAllByPollIdAndDeletedAtIsNullOrderByOptionOrder(pollId: Long): List<PollOption>
     fun findAllByPollIdInAndDeletedAtIsNullOrderByOptionOrder(pollIds: List<Long>): List<PollOption>
+    fun findAllByPollIdAndIdInAndDeletedAtIsNull(pollId: Long, optionIds: List<Long>): List<PollOption>
     fun deleteAllByPollId(pollId: Long)
 }
