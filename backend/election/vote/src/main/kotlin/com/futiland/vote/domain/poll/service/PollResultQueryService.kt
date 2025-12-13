@@ -12,6 +12,10 @@ import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import org.springframework.stereotype.Service
 
+// TODO: Poll 엔티티에 minScore, maxScore 필드 추가 후 DB 마이그레이션하여 투표별 점수 범위 지정 가능하도록 변경
+private const val MIN_SCORE = 0
+private const val MAX_SCORE = 10
+
 @Service
 class PollResultQueryService(
     private val pollRepository: PollRepository,
@@ -61,12 +65,14 @@ class PollResultQueryService(
                     0.0
                 }
 
-                val scoreDistribution = scores.groupingBy { it }.eachCount().mapValues { it.value.toLong() }
+                val scoreDistribution = (MIN_SCORE..MAX_SCORE).associateWith { score ->
+                    scores.count { it == score }.toLong()
+                }
 
                 val scoreResult = ScoreResultResponse(
                     averageScore = averageScore,
-                    minScore = 0,
-                    maxScore = 10,
+                    minScore = MIN_SCORE,
+                    maxScore = MAX_SCORE,
                     scoreDistribution = scoreDistribution
                 )
 
