@@ -126,6 +126,14 @@ class Poll(
         updatedAt = LocalDateTime.now()
     }
 
+    fun expire() {
+        require(status == PollStatus.IN_PROGRESS) {
+            "진행중인 여론조사만 만료할 수 있습니다"
+        }
+        status = PollStatus.EXPIRED
+        updatedAt = LocalDateTime.now()
+    }
+
     fun update(
         title: String?,
         description: String?,
