@@ -3,6 +3,7 @@ package com.futiland.vote.application.poll.repository
 import com.futiland.vote.domain.poll.entity.Poll
 import com.futiland.vote.domain.poll.entity.PollStatus
 import com.futiland.vote.domain.poll.repository.PollRepository
+import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.repository.JpaRepository
@@ -61,20 +62,11 @@ class PollRepositoryImpl(
         return repository.findAllByIdIn(ids)
     }
 
-    override fun findMyPolls(creatorAccountId: Long, size: Int, lastId: Long?): SliceContent<Poll> {
-        val pageable = PageRequest.ofSize(size + 1)
-
-        val content = if (lastId == null) {
-            repository.getMyPollsFromLatest(creatorAccountId, pageable)
-        } else {
-            repository.getMyPollsFromLastId(creatorAccountId, lastId, pageable)
-        }
-
-        val hasNext = content.size > size
-        val polls = if (hasNext) content.dropLast(1) else content
-        val nextCursor = if (hasNext) polls.lastOrNull()?.id?.toString() else null
-
-        return SliceContent(polls, nextCursor)
+    override fun findMyPollsWithPage(creatorAccountId: Long, page: Int, size: Int): PageContent<Poll> {
+        val pageable = PageRequest.of(page - 1, size)
+        val content = repository.getMyPollsWithPage(creatorAccountId, pageable)
+        val totalCount = repository.countByCreatorAccountIdExcludeDeleted(creatorAccountId)
+        return PageContent.of(content, totalCount, size)
     }
 
     override fun expireOverduePolls(now: LocalDateTime): Int {
@@ -85,6 +77,25 @@ class PollRepositoryImpl(
 interface JpaPollRepository : JpaRepository<Poll, Long> {
     fun findAllByCreatorAccountId(creatorAccountId: Long): List<Poll>
     fun findAllByIdIn(ids: List<Long>): List<Poll>
+
+    @Query(
+        """
+        SELECT COUNT(p) FROM Poll p
+        WHERE p.creatorAccountId = :creatorAccountId
+        AND p.status != 'DELETED'
+        """
+    )
+    fun countByCreatorAccountIdExcludeDeleted(creatorAccountId: Long): Long
+
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.creatorAccountId = :creatorAccountId
+        AND p.status != 'DELETED'
+        ORDER BY p.id DESC
+        """
+    )
+    fun getMyPollsWithPage(creatorAccountId: Long, pageable: PageRequest): List<Poll>
 
     @Query(
         """

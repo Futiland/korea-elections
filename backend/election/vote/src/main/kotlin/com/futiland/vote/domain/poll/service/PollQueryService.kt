@@ -67,9 +67,9 @@ class PollQueryService(
         return SliceContent(pollListResponses, pollsSlice.nextCursor)
     }
 
-    override fun getMyPolls(accountId: Long, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findMyPolls(accountId, size, nextCursor?.toLongOrNull())
-        val polls = pollsSlice.content
+    override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
+        val pollsPage = pollRepository.findMyPollsWithPage(accountId, page, size)
+        val polls = pollsPage.content
 
         // 모든 poll의 ID 추출
         val pollIds = polls.map { it.id }
@@ -95,7 +95,7 @@ class PollQueryService(
             PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
         }
 
-        return SliceContent(pollListResponses, pollsSlice.nextCursor)
+        return PageContent.of(pollListResponses, pollsPage.totalCount, size)
     }
 
     override fun getParticipatedPolls(accountId: Long, page: Int, size: Int, pollType: com.futiland.vote.domain.poll.entity.PollType): PageContent<ParticipatedPollResponse> {

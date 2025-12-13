@@ -12,9 +12,9 @@ interface PollQueryUseCase {
     fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse>
 
     /**
-     * 내가 만든 여론조사 목록 조회 (No Offset 방식)
+     * 내가 만든 여론조사 목록 조회 (페이지 기반 방식)
      */
-    fun getMyPolls(accountId: Long, size: Int, nextCursor: String?): SliceContent<PollListResponse>
+    fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse>
 
     /**
      * 내가 참여한 투표 목록 조회 (No Offset 페이지네이션 + 전체 개수)
