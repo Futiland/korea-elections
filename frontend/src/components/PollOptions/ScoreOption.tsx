@@ -8,13 +8,15 @@ interface ScoreOptionProps {
 	isVoted: boolean;
 }
 
+const INITIAL_SCORE = 0;
+
 export default function ScoreOption({
 	maxScore = 10,
-	selectedScore: initialScore = 1,
+	selectedScore: initialScore = INITIAL_SCORE,
 	onChange,
 	isVoted,
 }: ScoreOptionProps) {
-	const [selectedScore, setSelectedScore] = useState(initialScore);
+	const [selectedScore, setSelectedScore] = useState(INITIAL_SCORE);
 
 	const handleValueChange = (values: number[]) => {
 		const newScore = values[0];

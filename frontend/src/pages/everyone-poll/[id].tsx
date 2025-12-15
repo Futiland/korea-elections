@@ -25,6 +25,7 @@ export default function EveryonePollDetailPage() {
 		queryFn: () => getPoll(pollId),
 		enabled,
 		retry: 1,
+		refetchOnWindowFocus: false,
 	});
 
 	if (!enabled) {
@@ -54,32 +55,31 @@ export default function EveryonePollDetailPage() {
 			</Head>
 
 			<main className="min-h-screen bg-slate-50 pb-24">
-				<section className="mx-auto max-w-2xl py-8 px-4">
+				<section className="mx-auto max-w-2xl py-8 px-4 space-y-4">
 					<PollCard pollData={poll.data} />
-				</section>
-
-				<div className="flex justify-center pointer-events-none">
-					<div className="mx-auto px-4 justify-center flex w-full max-w-sm items-center gap-2">
-						<Button
-							type="button"
-							variant="outline"
-							size="icon"
-							className="h-10 w-10 rounded-full"
-							onClick={() => router.push('/')}
-							aria-label="홈으로 이동"
-						>
-							<Home className="size-5" />
-						</Button>
-						<Button
-							type="button"
-							size="default"
-							className="w-34 h-10 rounded-full border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold text-sm"
-							onClick={() => router.push('/everyone-poll')}
-						>
-							다른 투표 보기
-						</Button>
+					<div className="flex justify-center">
+						<div className="mx-auto px-4 justify-center flex w-full max-w-sm items-center gap-2">
+							<Button
+								type="button"
+								variant="outline"
+								size="icon"
+								className="h-10 w-10 rounded-full"
+								onClick={() => router.push('/')}
+								aria-label="홈으로 이동"
+							>
+								<Home className="size-5" />
+							</Button>
+							<Button
+								type="button"
+								size="default"
+								className="w-34 h-10 rounded-full border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold text-sm"
+								onClick={() => router.push('/everyone-poll')}
+							>
+								다른 투표 보기
+							</Button>
+						</div>
 					</div>
-				</div>
+				</section>
 			</main>
 		</>
 	);

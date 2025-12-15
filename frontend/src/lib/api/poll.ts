@@ -26,17 +26,28 @@ export const submitPublicPoll = (
 	optionIds: number[] | number,
 	responseType: QuestionType
 ) => {
-	const payload: {
-		responseType: QuestionType;
-		scoreValue?: number;
-		optionIds?: number[] | number;
-	} = { responseType };
-	// responseType에 따른 payload 설정
-	if (responseType === 'SCORE') {
-		payload.scoreValue = optionIds as number;
-	} else {
-		payload.optionIds = optionIds;
-	}
+	const basePayload = { responseType };
+
+	const payload = (() => {
+		switch (responseType) {
+			case 'SCORE':
+				return {
+					...basePayload,
+					scoreValue: optionIds as number,
+				};
+			case 'SINGLE_CHOICE':
+				return {
+					...basePayload,
+					optionId: optionIds as number,
+				};
+			case 'MULTIPLE_CHOICE':
+				return {
+					...basePayload,
+					optionIds: optionIds as number[],
+				};
+		}
+	})();
+
 	return apiPost<PublicPollSubmitResponse>(
 		`/rest/poll/v1/${pollId}/response`,
 		payload

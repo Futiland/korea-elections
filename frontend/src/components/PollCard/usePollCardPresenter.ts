@@ -85,6 +85,12 @@ export function usePollCardPresenter({
 		onSuccess: () => {
 			toast.success('투표가 완료되었습니다.');
 			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
+			// 개별 poll 쿼리도 갱신하여 결과를 볼 수 있게 함
+			if (pollData?.id) {
+				queryClient.invalidateQueries({
+					queryKey: ['publicPoll', pollData.id],
+				});
+			}
 		},
 		onError: (data: PublicPollSubmitResponse) => {
 			toast.error(data.message);

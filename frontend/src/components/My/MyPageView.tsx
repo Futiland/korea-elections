@@ -115,17 +115,29 @@ export default function MyPageView({
 							</CardTitle>
 							<Separator className="bg-slate-400 my-5" />
 							<CardDescription className="flex items-center justify-between gap-4">
-								<div className="w-1/3 flex flex-col justify-center items-center gap-1	">
+								<div
+									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
+									onClick={() => router.push('/mypage/my-polls')}
+									aria-label="내가 만든 투표"
+								>
 									<p className="text-white text-3xl font-bold">5</p>
-									<span className="text-slate-100 text-xs">만든 투표</span>
+									<span className="text-slate-100 text-xs">내가 만든 투표</span>
 								</div>
-								<div className="w-1/3 flex flex-col justify-center items-center gap-1">
+								<div
+									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
+									onClick={() => router.push('/mypage/joined-polls')}
+									aria-label="참여한 투표"
+								>
 									<p className="text-white text-3xl font-bold">32</p>
 									<span className="text-slate-100 text-xs">참여한 투표</span>
 								</div>
-								<div className="w-1/3 flex flex-col justify-center items-center gap-1">
+								<div
+									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
+									onClick={() => router.push('/mypage/joined-opinion-polls')}
+									aria-label="참여한 여론 조사"
+								>
 									<p className="text-white text-3xl font-bold">2</p>
-									<span className="text-slate-100 text-xs">입법 투표</span>
+									<span className="text-slate-100 text-xs">여론 조사</span>
 								</div>
 							</CardDescription>
 						</CardHeader>
