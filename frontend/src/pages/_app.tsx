@@ -7,15 +7,35 @@ import {
 } from '@tanstack/react-query';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import DefaultLaypout from '@/components/layout/DefaultLaypout';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/ErrorBoundary';
 import { Toaster } from '@/components/ui/sonner';
 import { AlertDialogProvider } from '@/components/providers/AlertDialogProvider';
 import Head from 'next/head';
+import MaintenancePage from './maintenance';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
+	const router = useRouter();
+	const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
+
+	useEffect(() => {
+		if (
+			isMaintenanceMode &&
+			router.isReady &&
+			router.pathname !== '/maintenance'
+		) {
+			router.replace('/maintenance');
+		}
+	}, [isMaintenanceMode, router.isReady, router.pathname, router]);
+
+	// 점검 모드가 활성화되어 있으면 점검 페이지만 표시
+	if (isMaintenanceMode && router.pathname !== '/maintenance') {
+		return <MaintenancePage />;
+	}
+
 	return (
 		<>
 			<Head>
