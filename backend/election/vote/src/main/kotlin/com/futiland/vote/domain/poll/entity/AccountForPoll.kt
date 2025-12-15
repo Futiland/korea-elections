@@ -1,5 +1,6 @@
 package com.futiland.vote.domain.poll.entity
 
+import com.futiland.vote.application.common.EncryptConverter
 import jakarta.persistence.*
 import org.hibernate.annotations.Immutable
 
@@ -14,5 +15,6 @@ class AccountForPoll(
     @Id
     val id: Long,
 
+    @Convert(converter = EncryptConverter::class)
     val name: String,
 )
