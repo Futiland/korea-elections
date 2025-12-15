@@ -1,9 +1,12 @@
 package com.futiland.vote.application.poll.repository
 
 import com.futiland.vote.domain.poll.entity.Poll
+import com.futiland.vote.domain.poll.entity.PollSortType
 import com.futiland.vote.domain.poll.entity.PollStatus
+import com.futiland.vote.domain.poll.entity.PollStatusFilter
 import com.futiland.vote.domain.poll.entity.PollType
 import com.futiland.vote.domain.poll.repository.PollRepository
+import com.futiland.vote.domain.poll.repository.PollResponseRepository
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import org.springframework.data.domain.PageRequest
@@ -15,7 +18,8 @@ import java.time.LocalDateTime
 
 @Repository
 class PollRepositoryImpl(
-    private val repository: JpaPollRepository
+    private val repository: JpaPollRepository,
+    private val pollResponseRepository: PollResponseRepository
 ) : PollRepository {
     override fun save(poll: Poll): Poll {
         return repository.save(poll)
@@ -31,56 +35,122 @@ class PollRepositoryImpl(
         return repository.findById(id).orElse(null)
     }
 
-    override fun findAllPublicDisplayable(size: Int, nextCursor: String?): SliceContent<Poll> {
-        // 공개 표시 가능한 여론조사: IN_PROGRESS, EXPIRED 상태 + PUBLIC 타입만
-        val pageable = PageRequest.ofSize(size)
-        val displayableStatuses = listOf(PollStatus.IN_PROGRESS, PollStatus.EXPIRED)
-
-        val content = if (nextCursor == null) {
-            repository.getPollsFromLatestByType(
-                status = displayableStatuses,
-                pollType = PollType.PUBLIC,
-                pageable = pageable
-            )
-        } else {
-            repository.getPollsFromLastIdByType(
-                pollId = nextCursor.toLong(),
-                status = displayableStatuses,
-                pollType = PollType.PUBLIC,
-                pageable = pageable
-            )
-        }
-        val id: String? = if (content.isEmpty() || content.size < size)
-            null
-        else
-            content[content.size - 1].id.toString()
-        return SliceContent(content, id)
+    override fun findAllPublicDisplayable(
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        return findAllDisplayableByType(
+            pollType = PollType.PUBLIC,
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sortType,
+            statusFilter = statusFilter
+        )
     }
 
-    override fun findAllSystemDisplayable(size: Int, nextCursor: String?): SliceContent<Poll> {
-        // 시스템 여론조사: IN_PROGRESS, EXPIRED 상태 + SYSTEM 타입만
-        val pageable = PageRequest.ofSize(size)
-        val displayableStatuses = listOf(PollStatus.IN_PROGRESS, PollStatus.EXPIRED)
+    override fun findAllSystemDisplayable(
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        return findAllDisplayableByType(
+            pollType = PollType.SYSTEM,
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sortType,
+            statusFilter = statusFilter
+        )
+    }
 
-        val content = if (nextCursor == null) {
-            repository.getPollsFromLatestByType(
-                status = displayableStatuses,
-                pollType = PollType.SYSTEM,
-                pageable = pageable
-            )
-        } else {
-            repository.getPollsFromLastIdByType(
-                pollId = nextCursor.toLong(),
-                status = displayableStatuses,
-                pollType = PollType.SYSTEM,
-                pageable = pageable
-            )
+    /**
+     * 공통 조회 로직: 타입별 여론조사 목록 조회 (정렬/필터 지원)
+     */
+    private fun findAllDisplayableByType(
+        pollType: PollType,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        val pageable = PageRequest.ofSize(size)
+        val statuses = statusFilter.statuses
+
+        val content = when (sortType) {
+            PollSortType.LATEST -> {
+                if (nextCursor == null) {
+                    repository.getPollsFromLatestByType(
+                        status = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                } else {
+                    repository.getPollsFromLastIdByType(
+                        pollId = nextCursor.toLong(),
+                        status = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                }
+            }
+            PollSortType.POPULAR -> {
+                // TODO: 추후 Poll 엔티티에 responseCount 필드 추가하여 최적화
+                //       현재는 서브쿼리로 매번 COUNT 계산
+                val parsedCursor = nextCursor?.let { parsePopularCursor(it) }
+                if (parsedCursor == null) {
+                    // 첫 페이지 또는 잘못된 커서 형식인 경우
+                    repository.getPollsByPopularityByType(
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                } else {
+                    val (cursorCount, cursorId) = parsedCursor
+                    repository.getPollsByPopularityFromCursorByType(
+                        cursorCount = cursorCount,
+                        cursorId = cursorId,
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                }
+            }
         }
-        val id: String? = if (content.isEmpty() || content.size < size)
+
+        val cursor = buildNextCursor(content, size, sortType)
+        return SliceContent(content, cursor)
+    }
+
+    /**
+     * 인기순 커서 파싱: "{responseCount}_{pollId}" -> Pair(responseCount, pollId)
+     * 잘못된 형식의 커서가 전달되면 null 반환 (첫 페이지로 처리)
+     */
+    private fun parsePopularCursor(cursor: String): Pair<Long, Long>? {
+        val parts = cursor.split("_")
+        if (parts.size != 2) return null
+        return try {
+            Pair(parts[0].toLong(), parts[1].toLong())
+        } catch (e: NumberFormatException) {
             null
-        else
-            content[content.size - 1].id.toString()
-        return SliceContent(content, id)
+        }
+    }
+
+    /**
+     * 다음 페이지 커서 생성
+     */
+    private fun buildNextCursor(content: List<Poll>, size: Int, sortType: PollSortType): String? {
+        if (content.isEmpty() || content.size < size) return null
+
+        val lastPoll = content.last()
+        return when (sortType) {
+            PollSortType.LATEST -> lastPoll.id.toString()
+            PollSortType.POPULAR -> {
+                val lastResponseCount = pollResponseRepository.countByPollId(lastPoll.id)
+                "${lastResponseCount}_${lastPoll.id}"
+            }
+        }
     }
 
     override fun findAllByIdIn(ids: List<Long>): List<Poll> {
@@ -185,4 +255,49 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         """
     )
     fun expireOverduePolls(now: LocalDateTime, inProgressStatus: PollStatus, expiredStatus: PollStatus): Int
+
+    /**
+     * 인기순 조회 - 첫 페이지 (참여 수 많은 순)
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses AND p.pollType = :pollType
+        ORDER BY (
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+        ) DESC, p.id DESC
+        """
+    )
+    fun getPollsByPopularityByType(
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
+
+    /**
+     * 인기순 조회 - 커서 기반 다음 페이지
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses AND p.pollType = :pollType
+        AND (
+            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) < :cursorCount
+            OR (
+                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) = :cursorCount
+                AND p.id < :cursorId
+            )
+        )
+        ORDER BY (
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+        ) DESC, p.id DESC
+        """
+    )
+    fun getPollsByPopularityFromCursorByType(
+        cursorCount: Long,
+        cursorId: Long,
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
 }

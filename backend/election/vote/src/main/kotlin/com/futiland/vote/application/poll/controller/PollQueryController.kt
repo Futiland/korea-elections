@@ -5,6 +5,8 @@ import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.application.poll.dto.response.PollListResponse
 import com.futiland.vote.application.poll.service.PollQueryFacadeUseCase
+import com.futiland.vote.domain.poll.entity.PollSortType
+import com.futiland.vote.domain.poll.entity.PollStatusFilter
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import io.swagger.v3.oas.annotations.Operation
@@ -39,8 +41,14 @@ class PollQueryController(
             - 응답의 nextCursor 값을 다음 요청의 nextCursor 파라미터로 전달하면 다음 페이지를 조회할 수 있습니다
             - hasNext가 false이면 마지막 페이지입니다
 
-            **정렬:**
-            - 생성 일시 기준 최신순으로 정렬됩니다
+            **정렬 (sort):**
+            - LATEST: 생성 일시 기준 최신순 (기본값)
+            - POPULAR: 참여 수 많은 순 (인기순)
+
+            **상태 필터 (status):**
+            - ALL: 진행중 + 기간만료 (기본값)
+            - IN_PROGRESS: 진행중만
+            - EXPIRED: 기간만료만
 
             **투표 여부 (isVoted):**
             - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
@@ -72,11 +80,21 @@ class PollQueryController(
         @RequestParam(defaultValue = "10") size: Int,
         @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "eyJpZCI6MTIzfQ==")
         @RequestParam nextCursor: String? = null,
+        @Parameter(description = "정렬 옵션 (LATEST: 최신순, POPULAR: 인기순)", example = "LATEST")
+        @RequestParam(defaultValue = "LATEST") sort: PollSortType = PollSortType.LATEST,
+        @Parameter(description = "상태 필터 (ALL: 전체, IN_PROGRESS: 진행중, EXPIRED: 기간만료)", example = "ALL")
+        @RequestParam(defaultValue = "ALL") status: PollStatusFilter = PollStatusFilter.ALL,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
         val accountId = userDetails?.user?.accountId
-        val response = pollQueryFacadeUseCase.getPublicPollList(accountId, size, nextCursor)
+        val response = pollQueryFacadeUseCase.getPublicPollList(
+            accountId = accountId,
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sort,
+            statusFilter = status
+        )
         return HttpApiResponse.of(response)
     }
 
@@ -97,8 +115,14 @@ class PollQueryController(
             - 응답의 nextCursor 값을 다음 요청의 nextCursor 파라미터로 전달하면 다음 페이지를 조회할 수 있습니다
             - hasNext가 false이면 마지막 페이지입니다
 
-            **정렬:**
-            - 생성 일시 기준 최신순으로 정렬됩니다
+            **정렬 (sort):**
+            - LATEST: 생성 일시 기준 최신순 (기본값)
+            - POPULAR: 참여 수 많은 순 (인기순)
+
+            **상태 필터 (status):**
+            - ALL: 진행중 + 기간만료 (기본값)
+            - IN_PROGRESS: 진행중만
+            - EXPIRED: 기간만료만
 
             **투표 여부 (isVoted):**
             - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
@@ -130,11 +154,21 @@ class PollQueryController(
         @RequestParam(defaultValue = "10") size: Int,
         @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "eyJpZCI6MTIzfQ==")
         @RequestParam nextCursor: String? = null,
+        @Parameter(description = "정렬 옵션 (LATEST: 최신순, POPULAR: 인기순)", example = "LATEST")
+        @RequestParam(defaultValue = "LATEST") sort: PollSortType = PollSortType.LATEST,
+        @Parameter(description = "상태 필터 (ALL: 전체, IN_PROGRESS: 진행중, EXPIRED: 기간만료)", example = "ALL")
+        @RequestParam(defaultValue = "ALL") status: PollStatusFilter = PollStatusFilter.ALL,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
         val accountId = userDetails?.user?.accountId
-        val response = pollQueryFacadeUseCase.getSystemPollList(accountId, size, nextCursor)
+        val response = pollQueryFacadeUseCase.getSystemPollList(
+            accountId = accountId,
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sort,
+            statusFilter = status
+        )
         return HttpApiResponse.of(response)
     }
 

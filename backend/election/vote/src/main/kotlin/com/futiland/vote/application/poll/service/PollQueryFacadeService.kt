@@ -6,6 +6,8 @@ import com.futiland.vote.application.poll.dto.response.PollListResponse
 import com.futiland.vote.application.poll.dto.response.PollOptionResponse
 import com.futiland.vote.domain.account.repository.AccountRepository
 import com.futiland.vote.domain.poll.entity.Poll
+import com.futiland.vote.domain.poll.entity.PollSortType
+import com.futiland.vote.domain.poll.entity.PollStatusFilter
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.domain.poll.repository.PollResponseRepository
@@ -35,13 +37,25 @@ class PollQueryFacadeService(
         return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
     }
 
-    override fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findAllPublicDisplayable(size, nextCursor)
+    override fun getPublicPollList(
+        accountId: Long?,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<PollListResponse> {
+        val pollsSlice = pollRepository.findAllPublicDisplayable(size, nextCursor, sortType, statusFilter)
         return toPollListResponses(pollsSlice, accountId)
     }
 
-    override fun getSystemPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findAllSystemDisplayable(size, nextCursor)
+    override fun getSystemPollList(
+        accountId: Long?,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<PollListResponse> {
+        val pollsSlice = pollRepository.findAllSystemDisplayable(size, nextCursor, sortType, statusFilter)
         return toPollListResponses(pollsSlice, accountId)
     }
 
