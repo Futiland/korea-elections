@@ -1,13 +1,17 @@
 package com.futiland.vote.domain.account.service
 
+import com.futiland.vote.application.account.dto.response.AccountStatsResponse
 import com.futiland.vote.application.account.dto.response.ProfileResponse
 import com.futiland.vote.application.account.dto.response.StopperResponse
 import com.futiland.vote.application.common.httpresponse.CodeEnum
 import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.domain.account.entity.AccountStatus
+import com.futiland.vote.domain.account.entity.PollTypeForAccount
 import com.futiland.vote.domain.account.entity.ServiceTarget
 import com.futiland.vote.domain.account.entity.Stopper
 import com.futiland.vote.domain.account.repository.AccountRepository
+import com.futiland.vote.domain.account.repository.PollForAccountRepository
+import com.futiland.vote.domain.account.repository.PollResponseForAccountRepository
 import com.futiland.vote.domain.account.repository.StopperRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -18,6 +22,8 @@ import java.time.temporal.ChronoUnit
 class AccountQueryService(
     private val accountRepository: AccountRepository,
     private val stopperRepository: StopperRepository,
+    private val pollForAccountRepository: PollForAccountRepository,
+    private val pollResponseForAccountRepository: PollResponseForAccountRepository,
     @Value("\${account.re-signup-waiting-days}")
     private val reSignupWaitingDays: Int
 ) : AccountQueryUseCase {
@@ -80,5 +86,13 @@ class AccountQueryService(
         val reSignupAvailableDate = deletedAt.plusDays(reSignupWaitingDays.toLong())
         val now = LocalDateTime.now()
         return ChronoUnit.DAYS.between(now, reSignupAvailableDate)
+    }
+
+    override fun getAccountStats(accountId: Long): AccountStatsResponse {
+        return AccountStatsResponse(
+            createdPollCount = pollForAccountRepository.countByCreatorAccountId(accountId),
+            participatedPublicPollCount = pollResponseForAccountRepository.countParticipatedPollsByPollType(accountId, PollTypeForAccount.PUBLIC),
+            participatedSystemPollCount = pollResponseForAccountRepository.countParticipatedPollsByPollType(accountId, PollTypeForAccount.SYSTEM)
+        )
     }
 }

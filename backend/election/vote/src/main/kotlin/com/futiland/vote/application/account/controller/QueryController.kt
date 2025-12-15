@@ -1,5 +1,6 @@
 package com.futiland.vote.application.account.controller
 
+import com.futiland.vote.application.account.dto.response.AccountStatsResponse
 import com.futiland.vote.application.account.dto.response.ProfileResponse
 import com.futiland.vote.application.account.dto.response.StopperResponse
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
@@ -26,6 +27,14 @@ class QueryController(
     @GetMapping("/stopper")
     fun getSignupStopper(): HttpApiResponse<StopperResponse> {
         val response = accountQueryUseCase.getSignupStopper()
+        return HttpApiResponse.of(response)
+    }
+
+    @GetMapping("/info/stats")
+    fun getAccountStats(
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    ): HttpApiResponse<AccountStatsResponse> {
+        val response = accountQueryUseCase.getAccountStats(userDetails.user.accountId)
         return HttpApiResponse.of(response)
     }
 }
