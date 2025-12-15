@@ -64,6 +64,8 @@ export default function MyCreatedPollsPage() {
 				isLoading={isLoading || isFetching || !isReady}
 				isError={isError}
 				onPageChange={handlePageChange}
+				emptyMessage="내가 만든 모두의 투표가 없습니다."
+				emptyDescription="하단에 + 버튼을 눌러 새로운 투표를 만들 수 있어요!"
 			/>
 		</>
 	);

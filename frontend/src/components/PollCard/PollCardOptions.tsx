@@ -27,7 +27,7 @@ export default function PollCardOptions({
 	const handleSingleChoiceChange = (value: string) => {
 		setSelectedSingleChoice(value);
 
-		onChange([Number(value)]);
+		onChange(Number(value));
 	};
 
 	const handleMultipleChoiceChange = (values: string[]) => {

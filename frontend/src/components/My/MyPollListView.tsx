@@ -3,6 +3,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { MyPollData } from '@/lib/types/poll';
 import Pagination from '../Pagination';
 import MyPollListItem from './MyPollListItem';
+import { Empty } from '@/components/EmptyCase';
+import { VoteIcon } from 'lucide-react';
 
 interface MyPollListViewProps {
 	title: string;
@@ -13,6 +15,11 @@ interface MyPollListViewProps {
 	isLoading: boolean;
 	isError: boolean;
 	onPageChange: (page: number) => void;
+	emptyMessage: string;
+	action?: ReactNode;
+	buttonUrl?: string;
+	buttonText?: string;
+	emptyDescription?: string;
 }
 
 export default function MyPollListView({
@@ -24,6 +31,11 @@ export default function MyPollListView({
 	isLoading,
 	isError,
 	onPageChange,
+	emptyMessage,
+	action,
+	buttonUrl,
+	buttonText,
+	emptyDescription,
 }: MyPollListViewProps) {
 	return (
 		<div className="min-h-screen px-4 py-6">
@@ -44,9 +56,20 @@ export default function MyPollListView({
 						목록을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
 					</div>
 				) : items.length === 0 ? (
-					<div className="rounded-lg border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">
-						표시할 투표가 없습니다.
-					</div>
+					<Empty
+						title={emptyMessage}
+						buttonUrl={buttonUrl}
+						buttonText={buttonText}
+						description={emptyDescription}
+						icon={
+							<div className="flex items-center justify-center rounded-full bg-blue-50 text-blue-500 p-2">
+								<VoteIcon
+									className="w-10 h-10 text-slate-600"
+									color="#193cb8"
+								/>
+							</div>
+						}
+					/>
 				) : (
 					<div className="mb-10">
 						{items.map((item) => (

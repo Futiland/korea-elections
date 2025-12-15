@@ -68,6 +68,8 @@ export default function JoinedPublicPollsPage() {
 				isLoading={isLoading || isFetching || !isReady}
 				isError={isError}
 				onPageChange={handlePageChange}
+				emptyMessage="참여한 모두의 투표가 없습니다."
+				buttonUrl="/public-poll"
 			/>
 		</>
 	);

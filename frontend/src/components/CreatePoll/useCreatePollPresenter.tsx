@@ -13,8 +13,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 import { createPoll } from '@/lib/api/poll';
-import { CreatePollData, QuestionType } from '@/lib/types/poll';
+import {
+	CreatePollData,
+	CreatePollResponse,
+	QuestionType,
+} from '@/lib/types/poll';
 import type { CreatePollViewProps } from './CreatePollView';
+import router from 'next/router';
 
 export type CreatePollDialogProps = {
 	isOpen: boolean;
@@ -131,13 +136,14 @@ export function useCreatePollPresenter({
 
 	const createPollMutation = useMutation({
 		mutationFn: (payload: CreatePollData) => createPoll(payload),
-		onSuccess: () => {
+		onSuccess: (data: CreatePollResponse) => {
 			// everyone-poll 페이지의 리스트만 리패치
 			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
 			toast.success('투표 생성이 완료되었습니다.');
 			hideDialog();
 			setIsOpen(false);
 			reset(defaultValues);
+			router.push(`/everyone-poll/${data.data.id}`);
 		},
 		onError: () => {
 			toast.error('투표 생성에 실패했습니다.');

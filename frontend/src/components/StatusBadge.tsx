@@ -14,7 +14,7 @@ export default function StatusBadge({
 			case 'IN_PROGRESS':
 				return {
 					text: '진행중',
-					className: 'bg-sky-50 text-sky-700 border border-sky-200',
+					className: 'bg-green-50 text-green-700 border border-green-200',
 				};
 			case 'EXPIRED':
 				return {
@@ -34,12 +34,12 @@ export default function StatusBadge({
 			case 'DRAFT':
 				return {
 					text: '투표예정',
-					className: 'bg-blue-50 text-blue-700 border border-blue-200',
+					className: 'bg-sky-50 text-sky-700 border border-sky-200',
 				};
 			default:
 				return {
 					text: '진행중',
-					className: 'bg-sky-50 text-sky-700 border border-sky-200',
+					className: 'bg-green-50 text-green-700 border border-green-200',
 				};
 		}
 	};
@@ -48,7 +48,7 @@ export default function StatusBadge({
 
 	return (
 		<span
-			className={`min-w-[64px] inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
+			className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
 		>
 			{config.text}
 		</span>

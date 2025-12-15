@@ -81,7 +81,13 @@ export default function PollCardView({
 
 					{/* 투표 제목 */}
 					<CardHeader className="px-0 py-0">
-						<CardTitle className="text-lg">{pollData?.title}</CardTitle>
+						<CardTitle className="text-lg">
+							{pollData?.title}
+							<span className="text-xs text-slate-400 ml-2">
+								{pollData?.responseType === 'MULTIPLE_CHOICE' &&
+									'(복수 선택 가능)'}
+							</span>
+						</CardTitle>
 					</CardHeader>
 
 					{/* 상세 내용 */}
