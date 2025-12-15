@@ -24,4 +24,40 @@ interface PollQueryFacadeUseCase {
         statusFilter: PollStatusFilter = PollStatusFilter.ALL
     ): SliceContent<PollListResponse>
     fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse>
+
+    /**
+     * 공개 여론조사 키워드 검색
+     */
+    fun searchPublicPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
+
+    /**
+     * 시스템 여론조사 키워드 검색
+     */
+    fun searchSystemPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
+
+    /**
+     * 전체 여론조사 키워드 검색 (PUBLIC + SYSTEM)
+     */
+    fun searchAllPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
 }

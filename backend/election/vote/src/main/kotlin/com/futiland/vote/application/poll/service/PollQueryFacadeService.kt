@@ -1,40 +1,27 @@
 package com.futiland.vote.application.poll.service
 
-import com.futiland.vote.application.poll.dto.response.CreatorInfoResponse
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.application.poll.dto.response.PollListResponse
-import com.futiland.vote.application.poll.dto.response.PollOptionResponse
-import com.futiland.vote.domain.account.repository.AccountRepository
-import com.futiland.vote.domain.poll.entity.Poll
 import com.futiland.vote.domain.poll.entity.PollSortType
 import com.futiland.vote.domain.poll.entity.PollStatusFilter
-import com.futiland.vote.domain.poll.repository.PollOptionRepository
-import com.futiland.vote.domain.poll.repository.PollRepository
-import com.futiland.vote.domain.poll.repository.PollResponseRepository
+import com.futiland.vote.domain.poll.service.PollQueryUseCase
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 import org.springframework.stereotype.Service
 
+/**
+ * Poll 조회 Facade Service
+ *
+ * 여러 도메인의 UseCase를 조합하여 Poll 조회 기능을 제공합니다.
+ * Facade 패턴에 따라 UseCase만 주입받아 사용합니다.
+ */
 @Service
 class PollQueryFacadeService(
-    private val pollRepository: PollRepository,
-    private val pollOptionRepository: PollOptionRepository,
-    private val pollResponseRepository: PollResponseRepository,
-    private val accountRepository: AccountRepository,
+    private val pollQueryUseCase: PollQueryUseCase,
 ) : PollQueryFacadeUseCase {
 
     override fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse {
-        val poll = pollRepository.getById(pollId)
-        val options = pollOptionRepository.findAllByPollId(pollId)
-        val account = accountRepository.getById(poll.creatorAccountId)
-        val creatorInfo = CreatorInfoResponse(account.id, account.name)
-
-        val responseCount = pollResponseRepository.countByPollId(pollId)
-        val isVoted = accountId?.let {
-            pollResponseRepository.findByPollIdAndAccountId(pollId, it) != null
-        } ?: false
-
-        return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
+        return pollQueryUseCase.getPollDetail(pollId, accountId)
     }
 
     override fun getPublicPollList(
@@ -44,8 +31,14 @@ class PollQueryFacadeService(
         sortType: PollSortType,
         statusFilter: PollStatusFilter
     ): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findAllPublicDisplayable(size, nextCursor, sortType, statusFilter)
-        return toPollListResponses(pollsSlice, accountId)
+        return pollQueryUseCase.searchPublicPolls(
+            accountId = accountId,
+            keyword = "",
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sortType,
+            statusFilter = statusFilter
+        )
     }
 
     override fun getSystemPollList(
@@ -55,63 +48,50 @@ class PollQueryFacadeService(
         sortType: PollSortType,
         statusFilter: PollStatusFilter
     ): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.findAllSystemDisplayable(size, nextCursor, sortType, statusFilter)
-        return toPollListResponses(pollsSlice, accountId)
-    }
-
-    private fun toPollListResponses(pollsSlice: SliceContent<Poll>, accountId: Long?): SliceContent<PollListResponse> {
-        val polls = pollsSlice.content
-
-        val pollIds = polls.map { it.id }
-
-        // N+1 방지: 한 번에 모든 poll의 option 조회
-        val allOptions = pollOptionRepository.findAllByPollIdIn(pollIds)
-        val optionsByPollId = allOptions.groupBy { it.pollId }
-
-        // 투표 여부 조회 (비로그인이면 빈 Set)
-        val votedPollIds = accountId?.let {
-            pollResponseRepository.findVotedPollIds(it, pollIds)
-        } ?: emptySet()
-
-        // N+1 방지: 한 번에 모든 작성자 정보 조회
-        val creatorIds = polls.map { it.creatorAccountId }.distinct()
-        val accountMap = accountRepository.getByIds(creatorIds)
-
-        val pollListResponses = polls.map { poll ->
-            val responseCount = pollResponseRepository.countByPollId(poll.id)
-            val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
-            val account = accountMap[poll.creatorAccountId]!!
-            val creatorInfo = CreatorInfoResponse(account.id, account.name)
-            PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
-        }
-        return SliceContent(pollListResponses, pollsSlice.nextCursor)
+        return pollQueryUseCase.searchSystemPolls(
+            accountId = accountId,
+            keyword = "",
+            size = size,
+            nextCursor = nextCursor,
+            sortType = sortType,
+            statusFilter = statusFilter
+        )
     }
 
     override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
-        val pollsPage = pollRepository.findMyPollsWithPage(accountId, page, size)
-        val polls = pollsPage.content
+        return pollQueryUseCase.getMyPolls(accountId, page, size)
+    }
 
-        val pollIds = polls.map { it.id }
+    override fun searchPublicPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<PollListResponse> {
+        return pollQueryUseCase.searchPublicPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+    }
 
-        // N+1 방지: 한 번에 모든 poll의 option 조회
-        val allOptions = pollOptionRepository.findAllByPollIdIn(pollIds)
-        val optionsByPollId = allOptions.groupBy { it.pollId }
+    override fun searchSystemPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<PollListResponse> {
+        return pollQueryUseCase.searchSystemPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+    }
 
-        // 투표 여부 조회
-        val votedPollIds = pollResponseRepository.findVotedPollIds(accountId, pollIds)
-
-        // N+1 방지: 한 번에 모든 작성자 정보 조회
-        val creatorIds = polls.map { it.creatorAccountId }.distinct()
-        val accountMap = accountRepository.getByIds(creatorIds)
-
-        val pollListResponses = polls.map { poll ->
-            val responseCount = pollResponseRepository.countByPollId(poll.id)
-            val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
-            val account = accountMap[poll.creatorAccountId]!!
-            val creatorInfo = CreatorInfoResponse(account.id, account.name)
-            PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
-        }
-
-        return PageContent.of(pollListResponses, pollsPage.totalCount, size)
+    override fun searchAllPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<PollListResponse> {
+        return pollQueryUseCase.searchAllPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
     }
 }

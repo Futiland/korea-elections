@@ -3,6 +3,8 @@ package com.futiland.vote.domain.poll.service
 import com.futiland.vote.application.poll.dto.response.ParticipatedPollResponse
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.application.poll.dto.response.PollListResponse
+import com.futiland.vote.domain.poll.entity.PollSortType
+import com.futiland.vote.domain.poll.entity.PollStatusFilter
 import com.futiland.vote.domain.poll.entity.PollType
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
@@ -25,4 +27,40 @@ interface PollQueryUseCase {
      * @param pollType 투표 유형 (SYSTEM 또는 PUBLIC)
      */
     fun getParticipatedPolls(accountId: Long, page: Int, size: Int, pollType: PollType): PageContent<ParticipatedPollResponse>
+
+    /**
+     * 공개 여론조사 키워드 검색
+     */
+    fun searchPublicPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
+
+    /**
+     * 시스템 여론조사 키워드 검색
+     */
+    fun searchSystemPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
+
+    /**
+     * 전체 여론조사 키워드 검색 (PUBLIC + SYSTEM)
+     */
+    fun searchAllPolls(
+        accountId: Long?,
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<PollListResponse>
 }

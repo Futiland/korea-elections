@@ -5,6 +5,7 @@ import com.futiland.vote.application.account.dto.response.ProfileResponse
 import com.futiland.vote.application.account.dto.response.StopperResponse
 import com.futiland.vote.application.common.httpresponse.CodeEnum
 import com.futiland.vote.application.exception.ApplicationException
+import com.futiland.vote.application.poll.dto.response.CreatorInfoResponse
 import com.futiland.vote.domain.account.entity.AccountStatus
 import com.futiland.vote.domain.account.entity.PollTypeForAccount
 import com.futiland.vote.domain.account.entity.ServiceTarget
@@ -94,5 +95,18 @@ class AccountQueryService(
             participatedPublicPollCount = pollResponseForAccountRepository.countParticipatedPollsByPollType(accountId, PollTypeForAccount.PUBLIC),
             participatedSystemPollCount = pollResponseForAccountRepository.countParticipatedPollsByPollType(accountId, PollTypeForAccount.SYSTEM)
         )
+    }
+
+    override fun getCreatorInfoByIds(accountIds: List<Long>): Map<Long, CreatorInfoResponse> {
+        if (accountIds.isEmpty()) return emptyMap()
+        val accounts = accountRepository.getByIds(accountIds)
+        return accounts.mapValues { (_, account) ->
+            CreatorInfoResponse(account.id, account.name)
+        }
+    }
+
+    override fun getCreatorInfoById(accountId: Long): CreatorInfoResponse {
+        val account = accountRepository.getById(accountId)
+        return CreatorInfoResponse(account.id, account.name)
     }
 }

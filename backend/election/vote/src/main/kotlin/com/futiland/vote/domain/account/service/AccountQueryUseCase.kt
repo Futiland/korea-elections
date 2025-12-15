@@ -3,6 +3,7 @@ package com.futiland.vote.domain.account.service
 import com.futiland.vote.application.account.dto.response.AccountStatsResponse
 import com.futiland.vote.application.account.dto.response.ProfileResponse
 import com.futiland.vote.application.account.dto.response.StopperResponse
+import com.futiland.vote.application.poll.dto.response.CreatorInfoResponse
 import com.futiland.vote.domain.account.entity.ServiceTarget
 
 interface AccountQueryUseCase {
@@ -31,4 +32,16 @@ interface AccountQueryUseCase {
      * 계정 통계 조회 (내가 만든 투표 수, 참여한 PUBLIC/SYSTEM 투표 수)
      */
     fun getAccountStats(accountId: Long): AccountStatsResponse
+
+    /**
+     * 여러 계정의 작성자 정보 조회 (N+1 방지용)
+     * @param accountIds 계정 ID 목록
+     * @return accountId를 키로 하는 CreatorInfoResponse Map
+     */
+    fun getCreatorInfoByIds(accountIds: List<Long>): Map<Long, CreatorInfoResponse>
+
+    /**
+     * 단일 계정의 작성자 정보 조회
+     */
+    fun getCreatorInfoById(accountId: Long): CreatorInfoResponse
 }

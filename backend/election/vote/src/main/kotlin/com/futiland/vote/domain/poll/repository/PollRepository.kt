@@ -39,4 +39,37 @@ interface PollRepository {
      * @return 업데이트된 건수
      */
     fun expireOverduePolls(now: LocalDateTime): Int
+
+    /**
+     * 공개 여론조사 키워드 검색
+     */
+    fun searchPublicPolls(
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<Poll>
+
+    /**
+     * 시스템 여론조사 키워드 검색
+     */
+    fun searchSystemPolls(
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<Poll>
+
+    /**
+     * 전체 여론조사 키워드 검색 (PUBLIC + SYSTEM)
+     */
+    fun searchAllPolls(
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType = PollSortType.LATEST,
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+    ): SliceContent<Poll>
 }
