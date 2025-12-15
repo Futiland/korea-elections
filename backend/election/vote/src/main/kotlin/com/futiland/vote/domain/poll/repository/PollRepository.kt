@@ -10,6 +10,7 @@ interface PollRepository {
     fun getById(id: Long): Poll
     fun findById(id: Long): Poll?
     fun findAllPublicDisplayable(size: Int, nextCursor: String?): SliceContent<Poll>
+    fun findAllSystemDisplayable(size: Int, nextCursor: String?): SliceContent<Poll>
 
     /**
      * ID 목록으로 여론조사 조회 (삭제된 것 제외)

@@ -80,6 +80,64 @@ class PollQueryController(
         return HttpApiResponse.of(response)
     }
 
+    // TODO : PUBLIC, SYSTEM으로 parameter에서 type 나누는식으로 추후 변경해야함. 보일러플레이트코드가됨
+    @Operation(
+        summary = "시스템 여론조사 목록 조회",
+        description = """
+            시스템 전용 여론조사 목록을 커서 기반 페이징으로 조회합니다.
+
+            **조회 대상:**
+            - SYSTEM 타입의 여론조사만 조회
+            - IN_PROGRESS (진행중) 상태의 여론조사
+            - EXPIRED (기간만료) 상태의 여론조사
+            - DRAFT, CANCELLED 상태는 조회되지 않습니다
+
+            **커서 기반 페이징:**
+            - 첫 페이지 조회 시 nextCursor를 생략하면 최신 여론조사부터 반환됩니다
+            - 응답의 nextCursor 값을 다음 요청의 nextCursor 파라미터로 전달하면 다음 페이지를 조회할 수 있습니다
+            - hasNext가 false이면 마지막 페이지입니다
+
+            **정렬:**
+            - 생성 일시 기준 최신순으로 정렬됩니다
+
+            **투표 여부 (isVoted):**
+            - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
+            - 비로그인: 항상 false
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "시스템 여론조사 목록 조회 성공",
+                content = [Content(
+                    schema = Schema(
+                        type = "object",
+                        example = """{"content": [{"id": 1, "title": "시스템 여론조사 제목", "description": "설명", "responseType": "SINGLE_CHOICE", "status": "IN_PROGRESS", "isRevotable": true, "startAt": "2024-01-01T00:00:00", "endAt": "2024-12-31T23:59:59", "createdAt": "2024-01-01T00:00:00", "responseCount": 100, "options": [{"id": 1, "optionText": "옵션1", "optionOrder": 1}], "isVoted": true, "creatorInfo": {"accountId": 1, "name": "관리자"}}], "nextCursor": "eyJpZCI6MTIzfQ=="}"""
+                    )
+                )]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청 (잘못된 size 값 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
+            )
+        ]
+    )
+    @GetMapping("/system")
+    fun getSystemPollList(
+        @Parameter(description = "한 페이지에 조회할 항목 수", example = "10")
+        @RequestParam(defaultValue = "10") size: Int,
+        @Parameter(description = "다음 페이지를 위한 커서 (첫 페이지는 null)", example = "eyJpZCI6MTIzfQ==")
+        @RequestParam nextCursor: String? = null,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
+    ): HttpApiResponse<SliceContent<PollListResponse>> {
+        val accountId = userDetails?.user?.accountId
+        val response = pollQueryFacadeUseCase.getSystemPollList(accountId, size, nextCursor)
+        return HttpApiResponse.of(response)
+    }
+
     @Operation(
         summary = "여론조사 상세 조회",
         description = """
