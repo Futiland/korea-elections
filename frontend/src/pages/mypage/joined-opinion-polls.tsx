@@ -71,7 +71,7 @@ export default function JoinedOpinionPollsPage() {
 				isError={isError}
 				onPageChange={handlePageChange}
 				emptyMessage="참여한 여론조사 투표가 없습니다."
-				buttonUrl="/opinion-poll"
+				buttonUrl="/opinion-polls"
 			/>
 		</>
 	);

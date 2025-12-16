@@ -10,7 +10,7 @@ export type FilterOption = {
 };
 
 export const filterOptions: FilterOption[] = [
-	{ id: 'LATEST', label: '최신순', sort: 'LATEST', status: 'IN_PROGRESS' },
+	{ id: 'LATEST', label: '최신순', sort: 'LATEST' },
 	{ id: 'POPULAR', label: '인기순', sort: 'POPULAR', status: 'IN_PROGRESS' },
 	{ id: 'ENDING_SOON', label: '마감 임박순', sort: 'ENDING_SOON' },
 	{ id: 'EXPIRED', label: '종료된 투표', status: 'EXPIRED' },

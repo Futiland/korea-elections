@@ -48,7 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
 					content="KEP는 간단한 본인 인증을 통해 투명하고 신뢰할 수 있는 데이터를 확인할 수
 						있는 시민 참여형 서비스입니다."
 				/>
-				<meta property="og:image" content="/img/everyone-poll.png" />
+				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta property="og:image:width" content="1200" />
 				<meta property="og:image:height" content="630" />
 				<meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />

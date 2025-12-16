@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PollCard from '@/components/PollCard';
 import PollSearchAndFilter from '@/components/PollSearchAndFilter';
 import Head from 'next/head';
@@ -7,18 +6,19 @@ import { Spinner } from '@/components/ui/spinner';
 import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { getPublicPolls } from '@/lib/api/poll';
-import { filterOptions, type FilterOption } from '@/components/PollFilter';
+import { usePollListFilters } from '@/hooks/usePollListFilters';
 
 const PAGE_SIZE = 10;
 
-export default function EveryonePoll() {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
-		filterOptions[0]
-	);
-
-	const sort = selectedFilter.sort;
-	const status = selectedFilter.status;
+export default function EveryonePolls() {
+	const {
+		searchTerm,
+		selectedFilter,
+		sort,
+		status,
+		handleFilterChange,
+		handleSearchChange,
+	} = usePollListFilters({ pathname: '/everyone-polls' });
 
 	const {
 		polls,
@@ -37,13 +37,7 @@ export default function EveryonePoll() {
 			status ?? 'ALL',
 		],
 		fetcher: (size, nextCursor) =>
-			getPublicPolls(
-				size,
-				nextCursor,
-				searchTerm || undefined,
-				status ?? 'ALL',
-				sort ?? 'LATEST'
-			),
+			getPublicPolls(size, nextCursor, searchTerm || undefined, status, sort),
 	});
 
 	return (
@@ -59,10 +53,10 @@ export default function EveryonePoll() {
 					property="og:description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
 				/>
-				<meta property="og:image" content="/img/everyone-poll.png" />
+				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta
 					property="og:url"
-					content={`${process.env.NEXT_PUBLIC_BASE_URL}/everyone-poll`}
+					content={`${process.env.NEXT_PUBLIC_BASE_URL}/everyone-polls`}
 				/>
 				<meta property="og:locale" content="ko_KR" />
 				<meta property="og:type" content="website" />
@@ -85,8 +79,8 @@ export default function EveryonePoll() {
 						<PollSearchAndFilter
 							searchTerm={searchTerm}
 							selectedFilter={selectedFilter}
-							onSearchChange={setSearchTerm}
-							onFilterChange={setSelectedFilter}
+							onSearchChange={handleSearchChange}
+							onFilterChange={handleFilterChange}
 							className="mb-8"
 						/>
 					)}
@@ -134,18 +128,23 @@ export default function EveryonePoll() {
 	);
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
 	const queryClient = new QueryClient();
 
+	// URL 쿼리 파라미터에서 search, sort, status 읽기
+	const search = (context.query.search as string) || '';
+	const sort = (context.query.sort as string) || 'LATEST';
+	const status = (context.query.status as string) || 'ALL';
+
 	await queryClient.prefetchInfiniteQuery({
-		queryKey: ['publicPolls', PAGE_SIZE, '', 'LATEST', 'ALL'],
+		queryKey: ['publicPolls', PAGE_SIZE, search, sort, status],
 		queryFn: ({ pageParam = '' }) =>
 			getPublicPolls(
 				PAGE_SIZE,
 				pageParam as string,
-				undefined,
-				'ALL',
-				'LATEST'
+				search || undefined,
+				status,
+				sort
 			),
 		initialPageParam: '',
 	});

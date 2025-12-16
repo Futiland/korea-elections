@@ -21,7 +21,7 @@ export default function MyPollListItem({
 	const handleDetailClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (item.id) {
-			router.push(`/everyone-poll/${item.id}`);
+			router.push(`/everyone-polls/${item.id}`);
 		}
 	};
 

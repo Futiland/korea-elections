@@ -18,7 +18,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 
 	const isLoginPage = router.pathname === '/login';
 	const isSignUpPage = router.pathname === '/signup';
-	const isOpinionPollPage = router.pathname === '/opinion-poll';
+	const isOpinionPollPage = router.pathname === '/opinion-polls';
 	const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
 
 	const visibleHeader = !isLoginPage;

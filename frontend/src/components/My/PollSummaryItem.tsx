@@ -15,7 +15,7 @@ export default function PollSummaryItem({ item }: PollSummaryItemProps) {
 		<Card
 			className="group flex h-full cursor-pointer flex-col gap-2 border-blue-100/80  p-4 transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"
 			onClick={
-				item.id ? () => router.push(`/everyone-poll/${item.id}`) : undefined
+				item.id ? () => router.push(`/everyone-polls/${item.id}`) : undefined
 			}
 		>
 			<header className="flex items-center justify-between gap-1">
