@@ -4,6 +4,7 @@ import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.application.poll.dto.response.PollListResponse
 import com.futiland.vote.domain.poll.entity.PollSortType
 import com.futiland.vote.domain.poll.entity.PollStatusFilter
+import com.futiland.vote.domain.poll.entity.PollType
 import com.futiland.vote.domain.poll.service.PollQueryUseCase
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
@@ -24,45 +25,40 @@ class PollQueryFacadeService(
         return pollQueryUseCase.getPollDetail(pollId, accountId)
     }
 
-    override fun getPublicPollList(
+    override fun getPollListByType(
+        pollType: PollType,
         accountId: Long?,
         size: Int,
         nextCursor: String?,
         sortType: PollSortType,
         statusFilter: PollStatusFilter
     ): SliceContent<PollListResponse> {
-        return pollQueryUseCase.searchPublicPolls(
-            accountId = accountId,
-            keyword = "",
-            size = size,
-            nextCursor = nextCursor,
-            sortType = sortType,
-            statusFilter = statusFilter
-        )
-    }
-
-    override fun getSystemPollList(
-        accountId: Long?,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<PollListResponse> {
-        return pollQueryUseCase.searchSystemPolls(
-            accountId = accountId,
-            keyword = "",
-            size = size,
-            nextCursor = nextCursor,
-            sortType = sortType,
-            statusFilter = statusFilter
-        )
+        return when (pollType) {
+            PollType.PUBLIC -> pollQueryUseCase.searchPublicPolls(
+                accountId = accountId,
+                keyword = "",
+                size = size,
+                nextCursor = nextCursor,
+                sortType = sortType,
+                statusFilter = statusFilter
+            )
+            PollType.SYSTEM -> pollQueryUseCase.searchSystemPolls(
+                accountId = accountId,
+                keyword = "",
+                size = size,
+                nextCursor = nextCursor,
+                sortType = sortType,
+                statusFilter = statusFilter
+            )
+        }
     }
 
     override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
         return pollQueryUseCase.getMyPolls(accountId, page, size)
     }
 
-    override fun searchPublicPolls(
+    override fun searchPollsByType(
+        pollType: PollType?,
         accountId: Long?,
         keyword: String,
         size: Int,
@@ -70,28 +66,10 @@ class PollQueryFacadeService(
         sortType: PollSortType,
         statusFilter: PollStatusFilter
     ): SliceContent<PollListResponse> {
-        return pollQueryUseCase.searchPublicPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
-    }
-
-    override fun searchSystemPolls(
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<PollListResponse> {
-        return pollQueryUseCase.searchSystemPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
-    }
-
-    override fun searchAllPolls(
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<PollListResponse> {
-        return pollQueryUseCase.searchAllPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+        return when (pollType) {
+            PollType.PUBLIC -> pollQueryUseCase.searchPublicPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+            PollType.SYSTEM -> pollQueryUseCase.searchSystemPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+            null -> pollQueryUseCase.searchAllPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
+        }
     }
 }
