@@ -5,6 +5,7 @@ import { filterOptions, type FilterOption } from '@/components/PollFilter';
 import { Spinner } from '@/components/ui/spinner';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { getOpinionPolls } from '@/lib/api/poll';
+import PollSearchAndFilter from '@/components/PollSearchAndFilter';
 
 const PAGE_SIZE = 10;
 
@@ -75,6 +76,18 @@ export default function OpinionPoll() {
 						</h1>
 						<p className="text-slate-600">여러분의 소중한 의견을 들려주세요.</p>
 					</div>
+
+					{/* 검색 및 필터 */}
+					{polls.length > 0 && (
+						<PollSearchAndFilter
+							searchTerm={searchTerm}
+							selectedFilter={selectedFilter}
+							onSearchChange={setSearchTerm}
+							onFilterChange={setSelectedFilter}
+							className="mb-8"
+							isFilterVisible={false}
+						/>
+					)}
 
 					{/* 투표 카드 리스트 */}
 					<div className="space-y-6">
