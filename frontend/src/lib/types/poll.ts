@@ -7,6 +7,8 @@ export type PollStatus =
 	| 'DELETED'
 	| 'CANCELLED';
 
+export type PollSort = 'LATEST' | 'POPULAR' | 'ENDING_SOON';
+
 export type CreatePollData = {
 	title: string;
 	description: string;
