@@ -18,11 +18,12 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 
 	const isLoginPage = router.pathname === '/login';
 	const isSignUpPage = router.pathname === '/signup';
+	const isOpinionPollPage = router.pathname === '/opinion-poll';
 	const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
 
 	const visibleHeader = !isLoginPage;
 	const visibleCreatePollButton =
-		!isLoginPage && !isSignUpPage && !isMaintenanceMode;
+		!isLoginPage && !isSignUpPage && !isMaintenanceMode && !isOpinionPollPage;
 	// const visibleBottomMenuBar = !isLoginPage && !isSignUpPage;
 
 	const handleCreatePollClick = () =>

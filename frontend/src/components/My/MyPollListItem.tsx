@@ -34,17 +34,19 @@ export default function MyPollListItem({
 		>
 			<div className="flex-1 space-y-1">
 				<div className="flex items-center gap-2">
+					{/* 배지: 고정 위치, 제목 줄바꿈과 독립 */}
 					<StatusBadge status={item.status} />
-					<p className="text-sm font-semibold text-slate-900">
-						{item.title}
 
-						{/* 모바일: 타이틀 옆 표시 */}
-						{item.isRevotable && (
-							<span className="inline-flex sm:hidden ml-2 rounded-full bg-yellow-50 px-2.5 py-1 text-[11px] font-semibold text-yellow-700">
-								재투표 가능
-							</span>
-						)}
-					</p>
+					<div className="flex-1 space-y-1">
+						<p className="text-sm font-semibold text-slate-900">
+							{item.title}
+							{item.isRevotable && (
+								<span className="inline-flex sm:hidden ml-2 rounded-full bg-yellow-50 px-2.5 py-1 text-[11px] font-semibold text-yellow-700 align-middle">
+									재투표 가능
+								</span>
+							)}
+						</p>
+					</div>
 				</div>
 				<p className="line-clamp-2 text-xs leading-relaxed text-slate-600">
 					{item.description || ''}

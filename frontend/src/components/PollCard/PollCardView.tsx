@@ -57,10 +57,10 @@ export default function PollCardView({
 					</div>
 
 					<div className="flex items-center justify-between mb-2">
-						<div className="flex items-center gap-3">
+						<div className="flex items-center gap-1 md:gap-3">
 							<StatusBadge status={pollData?.status ?? 'IN_PROGRESS'} />
 
-							<span className="text-xs text-slate-500">
+							<span className="text-xs text-slate-700">
 								{pollData?.startAt && pollData?.endAt
 									? `${formatDateTimeLocal(
 											pollData.startAt,
@@ -73,7 +73,7 @@ export default function PollCardView({
 							</span>
 						</div>
 						{pollData?.creatorInfo && (
-							<p className="text-xs text-slate-500">
+							<p className="text-xs text-slate-500 min-w-[34px]">
 								{pollData.creatorInfo.name}
 							</p>
 						)}

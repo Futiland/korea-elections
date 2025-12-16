@@ -105,7 +105,9 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 											type="text"
 											placeholder="투표의 제목을 작성해주세요."
 											maxLength={50}
-											className="text-sm"
+											// 모바일에서 입력 시 확대(줌) 방지를 위해 본문 텍스트는 text-base(16px),
+											// placeholder는 살짝 작게 보이도록 설정
+											className="text-base md:text-sm placeholder:text-sm"
 											{...register('title')}
 										/>
 										<div className="flex justify-between text-xs">
@@ -123,7 +125,8 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 										<textarea
 											placeholder="투표의 상세 내용을 작성해주세요."
 											maxLength={300}
-											className="min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+											// 본문은 text-base(16px), placeholder만 한 단계 작게
+											className="min-h-24 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base md:text-sm placeholder:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
 											{...register('description')}
 										/>
 										<div className="flex justify-between text-xs">
@@ -151,7 +154,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 												<Input
 													type="datetime-local"
 													value={formatDateTimeLocal(field.value)}
-													className="text-sm"
+													className="text-base md:text-sm placeholder:text-sm"
 													onChange={(e) =>
 														field.onChange(parseDateTimeLocal(e.target.value))
 													}
@@ -230,7 +233,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 																	type="text"
 																	placeholder={`옵션 ${idx + 1}`}
 																	maxLength={50}
-																	className="text-sm"
+																	className="text-base md:text-sm placeholder:text-sm"
 																	{...registerOption(idx)}
 																/>
 																{errors.options &&
