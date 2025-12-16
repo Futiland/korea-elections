@@ -55,6 +55,7 @@ class PollQueryController(
             **정렬 (sort):**
             - LATEST: 생성 일시 기준 최신순 (기본값)
             - POPULAR: 참여 수 많은 순 (인기순)
+            - ENDING_SOON: 마감 임박순 (마감일이 현재 기준 가까운 순, 이미 마감된 것 제외)
 
             **상태 필터 (status):**
             - ALL: 진행중 + 기간만료 (기본값)

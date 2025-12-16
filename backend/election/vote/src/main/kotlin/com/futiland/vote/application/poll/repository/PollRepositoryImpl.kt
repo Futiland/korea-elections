@@ -117,6 +117,28 @@ class PollRepositoryImpl(
                     )
                 }
             }
+            PollSortType.ENDING_SOON -> {
+                val now = LocalDateTime.now()
+                val parsedCursor = nextCursor?.let { parseEndingSoonCursor(it) }
+                if (parsedCursor == null) {
+                    repository.getPollsByEndingSoonByType(
+                        now = now,
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                } else {
+                    val (cursorEndAt, cursorId) = parsedCursor
+                    repository.getPollsByEndingSoonFromCursorByType(
+                        now = now,
+                        cursorEndAt = cursorEndAt,
+                        cursorId = cursorId,
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                }
+            }
         }
 
         val cursor = buildNextCursor(content, size, sortType)
@@ -138,6 +160,20 @@ class PollRepositoryImpl(
     }
 
     /**
+     * 마감 임박순 커서 파싱: "{endAt}_{pollId}" -> Pair(endAt, pollId)
+     * 잘못된 형식의 커서가 전달되면 null 반환 (첫 페이지로 처리)
+     */
+    private fun parseEndingSoonCursor(cursor: String): Pair<LocalDateTime, Long>? {
+        val parts = cursor.split("_")
+        if (parts.size != 2) return null
+        return try {
+            Pair(LocalDateTime.parse(parts[0]), parts[1].toLong())
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
      * 다음 페이지 커서 생성
      */
     private fun buildNextCursor(content: List<Poll>, size: Int, sortType: PollSortType): String? {
@@ -149,6 +185,10 @@ class PollRepositoryImpl(
             PollSortType.POPULAR -> {
                 val lastResponseCount = pollResponseRepository.countByPollId(lastPoll.id)
                 "${lastResponseCount}_${lastPoll.id}"
+            }
+            PollSortType.ENDING_SOON -> {
+                val endAt = lastPoll.endAt ?: return null
+                "${endAt}_${lastPoll.id}"
             }
         }
     }
@@ -250,6 +290,30 @@ class PollRepositoryImpl(
                     repository.searchPollsPopularFromCursorByType(
                         keyword = keyword,
                         cursorCount = cursorCount,
+                        cursorId = cursorId,
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                }
+            }
+            PollSortType.ENDING_SOON -> {
+                val now = LocalDateTime.now()
+                val parsedCursor = nextCursor?.let { parseEndingSoonCursor(it) }
+                if (parsedCursor == null) {
+                    repository.searchPollsEndingSoonByType(
+                        keyword = keyword,
+                        now = now,
+                        statuses = statuses,
+                        pollType = pollType,
+                        pageable = pageable
+                    )
+                } else {
+                    val (cursorEndAt, cursorId) = parsedCursor
+                    repository.searchPollsEndingSoonFromCursorByType(
+                        keyword = keyword,
+                        now = now,
+                        cursorEndAt = cursorEndAt,
                         cursorId = cursorId,
                         statuses = statuses,
                         pollType = pollType,
@@ -482,6 +546,100 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
     fun searchPollsPopularFromCursorByType(
         keyword: String,
         cursorCount: Long,
+        cursorId: Long,
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
+
+    // ===== 마감 임박순 조회 쿼리 =====
+
+    /**
+     * 마감 임박순 조회 - 첫 페이지 (endAt이 현재보다 크고, 가장 가까운 순)
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses AND p.pollType = :pollType
+        AND p.endAt IS NOT NULL AND p.endAt > :now
+        ORDER BY p.endAt ASC, p.id ASC
+        """
+    )
+    fun getPollsByEndingSoonByType(
+        now: LocalDateTime,
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
+
+    /**
+     * 마감 임박순 조회 - 커서 기반 다음 페이지
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses AND p.pollType = :pollType
+        AND p.endAt IS NOT NULL AND p.endAt > :now
+        AND (
+            p.endAt > :cursorEndAt
+            OR (p.endAt = :cursorEndAt AND p.id > :cursorId)
+        )
+        ORDER BY p.endAt ASC, p.id ASC
+        """
+    )
+    fun getPollsByEndingSoonFromCursorByType(
+        now: LocalDateTime,
+        cursorEndAt: LocalDateTime,
+        cursorId: Long,
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
+
+    // ===== 키워드 검색 - 마감 임박순 쿼리 =====
+
+    /**
+     * 키워드 검색 - 마감 임박순 첫 페이지 (타입별)
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses
+        AND p.pollType = :pollType
+        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
+        AND p.endAt IS NOT NULL AND p.endAt > :now
+        ORDER BY p.endAt ASC, p.id ASC
+        """
+    )
+    fun searchPollsEndingSoonByType(
+        keyword: String,
+        now: LocalDateTime,
+        statuses: List<PollStatus>,
+        pollType: PollType,
+        pageable: PageRequest
+    ): List<Poll>
+
+    /**
+     * 키워드 검색 - 마감 임박순 커서 기반 다음 페이지 (타입별)
+     */
+    @Query(
+        """
+        SELECT p FROM Poll p
+        WHERE p.status IN :statuses
+        AND p.pollType = :pollType
+        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
+        AND p.endAt IS NOT NULL AND p.endAt > :now
+        AND (
+            p.endAt > :cursorEndAt
+            OR (p.endAt = :cursorEndAt AND p.id > :cursorId)
+        )
+        ORDER BY p.endAt ASC, p.id ASC
+        """
+    )
+    fun searchPollsEndingSoonFromCursorByType(
+        keyword: String,
+        now: LocalDateTime,
+        cursorEndAt: LocalDateTime,
         cursorId: Long,
         statuses: List<PollStatus>,
         pollType: PollType,
