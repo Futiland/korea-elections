@@ -81,13 +81,15 @@ export default function EveryonePoll() {
 					</div>
 
 					{/* 검색 및 필터 */}
-					<PollSearchAndFilter
-						searchTerm={searchTerm}
-						selectedFilter={selectedFilter}
-						onSearchChange={setSearchTerm}
-						onFilterChange={setSelectedFilter}
-						className="mb-8"
-					/>
+					{polls.length > 0 && (
+						<PollSearchAndFilter
+							searchTerm={searchTerm}
+							selectedFilter={selectedFilter}
+							onSearchChange={setSearchTerm}
+							onFilterChange={setSelectedFilter}
+							className="mb-8"
+						/>
+					)}
 
 					{/* 투표 카드 리스트 */}
 					<div className="space-y-6">

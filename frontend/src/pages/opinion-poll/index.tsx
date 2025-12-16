@@ -14,6 +14,9 @@ export default function OpinionPoll() {
 		filterOptions[0]
 	);
 
+	const sort = selectedFilter.sort;
+	const status = selectedFilter.status;
+
 	const {
 		polls,
 		observerTarget,
@@ -23,8 +26,21 @@ export default function OpinionPoll() {
 		hasNextPage,
 	} = useInfinitePolls({
 		pageSize: PAGE_SIZE,
-		queryKey: ['opinionPolls', PAGE_SIZE],
-		fetcher: getOpinionPolls,
+		queryKey: [
+			'opinionPolls',
+			PAGE_SIZE,
+			searchTerm,
+			sort ?? 'LATEST',
+			status ?? 'ALL',
+		],
+		fetcher: (size, nextCursor) =>
+			getOpinionPolls(
+				size,
+				nextCursor,
+				searchTerm || undefined,
+				status ?? 'ALL',
+				sort ?? 'LATEST'
+			),
 	});
 
 	return (
