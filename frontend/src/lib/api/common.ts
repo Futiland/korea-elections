@@ -31,7 +31,7 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 	const customHeaders: Record<string, string> = {
 		...(token
 			? { Authorization: `Bearer ${token}` }
-			: { Authorization: 'Bearer None' }),
+			: { Authorization: 'None' }),
 		...(headers as Record<string, string>),
 	};
 

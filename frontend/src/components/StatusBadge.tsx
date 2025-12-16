@@ -19,12 +19,12 @@ export default function StatusBadge({
 			case 'EXPIRED':
 				return {
 					text: '종료',
-					className: 'bg-slate-100 text-slate-600 border border-slate-200',
+					className: 'bg-slate-100 text-slate-600 border border-slate-300',
 				};
 			case 'DELETED':
 				return {
 					text: '삭제된투표',
-					className: 'bg-slate-100 text-slate-600 border border-slate-200',
+					className: 'bg-slate-100 text-slate-600 border border-slate-300',
 				};
 			case 'CANCELLED':
 				return {
@@ -48,7 +48,10 @@ export default function StatusBadge({
 
 	return (
 		<span
-			className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${config.className} ${className}`}
+			className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[12px]
+				sm:px-3 sm:py-1 sm:text-sm 
+				font-semibold
+				${config.className} ${className}`}
 		>
 			{config.text}
 		</span>

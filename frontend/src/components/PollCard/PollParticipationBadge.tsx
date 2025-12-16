@@ -12,7 +12,7 @@ export function PollParticipationBadge({
 	color = 'fuchsia',
 }: PollParticipationBadgeProps) {
 	const baseClasses =
-		'inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium';
+		'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs sm:text-sm font-medium';
 
 	const variants = {
 		fuchsia: {

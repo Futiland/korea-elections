@@ -9,6 +9,7 @@ import {
 	ChangePasswordData,
 	ChangePasswordResponse,
 	DeleteAccountResponse,
+	StatsResponse,
 } from '../types/account';
 import { PublicPollResponse } from '../types/poll';
 
@@ -30,3 +31,6 @@ export const changePassword = (data: ChangePasswordData) =>
 // 회원 탈퇴
 export const deleteAccount = () =>
 	apiDelete<DeleteAccountResponse>('/rest/account/v1/me');
+
+export const getStats = () =>
+	apiGet<StatsResponse>('/rest/account/v1/info/stats');

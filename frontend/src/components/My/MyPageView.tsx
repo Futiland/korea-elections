@@ -13,6 +13,7 @@ import { UserRound } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import MyPollSummary from './MyPollSummary';
 import type { MyPageViewProps } from '@/components/My/useMyPagePresenter';
+import { addCommas } from '@/lib/utils';
 
 export default function MyPageView({
 	user,
@@ -31,6 +32,9 @@ export default function MyPageView({
 	isErrorMyPolls,
 	isErrorMyParticipatedPublicPolls,
 	isErrorMyParticipatedOpinionPolls,
+	isFetchingStats,
+	isErrorStats,
+	stats,
 }: MyPageViewProps) {
 	const router = useRouter();
 
@@ -115,30 +119,48 @@ export default function MyPageView({
 							</CardTitle>
 							<Separator className="bg-slate-400 my-5" />
 							<CardDescription className="flex items-center justify-between gap-4">
-								<div
-									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
-									onClick={() => router.push('/mypage/my-polls')}
-									aria-label="내가 만든 투표"
-								>
-									<p className="text-white text-3xl font-bold">5</p>
-									<span className="text-slate-100 text-xs">내가 만든 투표</span>
-								</div>
-								<div
-									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
-									onClick={() => router.push('/mypage/joined-polls')}
-									aria-label="참여한 투표"
-								>
-									<p className="text-white text-3xl font-bold">32</p>
-									<span className="text-slate-100 text-xs">참여한 투표</span>
-								</div>
-								<div
-									className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
-									onClick={() => router.push('/mypage/joined-opinion-polls')}
-									aria-label="참여한 여론 조사"
-								>
-									<p className="text-white text-3xl font-bold">2</p>
-									<span className="text-slate-100 text-xs">여론 조사</span>
-								</div>
+								{[
+									{
+										key: 'created',
+										value: stats.createdPollCount,
+										label: '내가 만든 투표',
+										href: '/mypage/my-polls',
+										ariaLabel: '내가 만든 투표',
+									},
+									{
+										key: 'joined-public',
+										value: stats.participatedPublicPollCount,
+										label: '참여한 투표',
+										href: '/mypage/joined-polls',
+										ariaLabel: '참여한 투표',
+									},
+									{
+										key: 'joined-opinion',
+										value: stats.participatedSystemPollCount,
+										label: '여론 조사',
+										href: '/mypage/joined-opinion-polls',
+										ariaLabel: '참여한 여론 조사',
+									},
+								].map((item) => (
+									<div
+										key={item.key}
+										className="w-1/3 flex flex-col justify-center items-center gap-1 cursor-pointer"
+										onClick={() => router.push(item.href)}
+										aria-label={item.ariaLabel}
+									>
+										<p
+											className={`text-white font-bold ${
+												String(item.value).length > 4 ? 'text-2xl' : 'text-3xl'
+											}`}
+										>
+											{addCommas(item.value)}
+											{isFetchingStats && (
+												<Spinner className="w-4 h-4 text-slate-100" />
+											)}
+										</p>
+										<span className="text-slate-100 text-xs">{item.label}</span>
+									</div>
+								))}
 							</CardDescription>
 						</CardHeader>
 					</Card>

@@ -5,13 +5,13 @@ import { toast } from 'sonner';
 
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
-import { getUserInfo, deleteAccount } from '@/lib/api/account';
+import { getUserInfo, deleteAccount, getStats } from '@/lib/api/account';
 import {
 	getMyPolls,
 	getMyParticipatedPublicPolls,
 	getMyParticipatedOpinionPolls,
 } from '@/lib/api/poll';
-import type { UserInfo } from '@/lib/types/account';
+import type { StatsData, StatsResponse, UserInfo } from '@/lib/types/account';
 import type { MyPollData, MyPollResponse } from '@/lib/types/poll';
 
 export interface MyPageViewProps {
@@ -40,6 +40,9 @@ export interface MyPageViewProps {
 	isErrorMyPolls: boolean;
 	isErrorMyParticipatedPublicPolls: boolean;
 	isErrorMyParticipatedOpinionPolls: boolean;
+	isFetchingStats: boolean;
+	isErrorStats: boolean;
+	stats: StatsData;
 }
 
 export function useMyPagePresenter(): MyPageViewProps {
@@ -56,6 +59,17 @@ export function useMyPagePresenter(): MyPageViewProps {
 		queryFn: getUserInfo,
 		enabled: isLoggedIn && isReady,
 		refetchOnWindowFocus: false,
+		retry: 2,
+	});
+
+	const {
+		data: stats,
+		isFetching: isFetchingStats,
+		isError: isErrorStats,
+	} = useQuery<StatsResponse>({
+		queryKey: ['stats'],
+		queryFn: getStats,
+		enabled: isLoggedIn && isReady,
 		retry: 2,
 	});
 
@@ -166,5 +180,12 @@ export function useMyPagePresenter(): MyPageViewProps {
 		isErrorMyPolls,
 		isErrorMyParticipatedPublicPolls,
 		isErrorMyParticipatedOpinionPolls,
+		isFetchingStats,
+		isErrorStats,
+		stats: stats?.data ?? {
+			createdPollCount: 0,
+			participatedPublicPollCount: 0,
+			participatedSystemPollCount: 0,
+		},
 	};
 }

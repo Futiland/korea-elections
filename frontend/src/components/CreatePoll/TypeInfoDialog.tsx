@@ -19,7 +19,7 @@ interface TypeInfoDialogProps {
 export function TypeInfoDialog({ open, onOpenChange }: TypeInfoDialogProps) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-w-md bg-white px-5 py-6">
+			<DialogContent className="w-[calc(100%-40px)] max-w-md bg-white px-5 py-6">
 				<div className="space-y-3">
 					<div className="flex flex-col gap-1 mb-4">
 						<h3 className="text-lg font-semibold">모두의 투표 폼 타입 안내</h3>

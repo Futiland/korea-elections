@@ -73,3 +73,15 @@ export type DeleteAccountResponse = {
 	message: string;
 	data: unknown;
 };
+
+export type StatsData = {
+	createdPollCount: number;
+	participatedPublicPollCount: number;
+	participatedSystemPollCount: number;
+};
+
+export type StatsResponse = {
+	code: string;
+	message: string;
+	data: StatsData;
+};
