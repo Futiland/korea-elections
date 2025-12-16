@@ -1,14 +1,26 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getPublicPolls } from '@/lib/api/poll';
-import { PublicPollResponse } from '@/lib/types/poll';
+import type { PublicPollResponse } from '@/lib/types/poll';
 import { useEffect, useRef } from 'react';
 
 type UseInfinitePollsOptions = {
 	pageSize?: number;
+	/**
+	 * react-query에서 사용할 queryKey.
+	 * 기본값: ['publicPolls', pageSize]
+	 */
+	queryKey?: (string | number)[];
+	/**
+	 * 페이지네이션 API 호출 함수.
+	 * 기본값: getPublicPolls
+	 */
+	fetcher?: (size: number, cursor?: string) => Promise<PublicPollResponse>;
 };
 
 export function useInfinitePolls({
 	pageSize = 10,
+	queryKey,
+	fetcher = getPublicPolls,
 }: UseInfinitePollsOptions = {}) {
 	const {
 		data,
@@ -18,9 +30,9 @@ export function useInfinitePolls({
 		isLoading,
 		isError,
 	} = useInfiniteQuery({
-		queryKey: ['publicPolls', pageSize],
+		queryKey: queryKey ?? ['publicPolls', pageSize],
 		queryFn: ({ pageParam }: { pageParam?: string }) =>
-			getPublicPolls(pageSize, pageParam ?? ''),
+			fetcher(pageSize, pageParam ?? ''),
 		getNextPageParam: (lastPage: PublicPollResponse) => {
 			const nextCursor = lastPage.data.nextCursor;
 			return nextCursor && nextCursor !== '' ? nextCursor : undefined;
