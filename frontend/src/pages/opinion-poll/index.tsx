@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useState } from 'react';
 import PollCard from '@/components/PollCard';
-import { FilterOption } from '@/components/PollFilter';
+import { filterOptions, type FilterOption } from '@/components/PollFilter';
 import { Spinner } from '@/components/ui/spinner';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { getOpinionPolls } from '@/lib/api/poll';
@@ -10,7 +10,9 @@ const PAGE_SIZE = 10;
 
 export default function OpinionPoll() {
 	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedFilter, setSelectedFilter] = useState<FilterOption>('latest');
+	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
+		filterOptions[0]
+	);
 
 	const {
 		polls,

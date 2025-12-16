@@ -14,12 +14,20 @@ import { PageParam } from '../types/common';
 export const createPoll = (data: CreatePollData) =>
 	apiPost<CreatePollResponse>('/rest/poll/v1/public', data);
 
-export const getPublicPolls = (size: number, nextCursor?: string) =>
-	apiGet<PublicPollResponse>(
-		'/rest/poll/v1/public',
-		// nextCursor가 있으면 nextCursor를 포함한 객체를 반환, 없으면 size만 포함한 객체를 반환
-		nextCursor ? { size, nextCursor } : { size }
-	);
+export const getPublicPolls = (
+	size: number,
+	nextCursor?: string,
+	keyword?: string,
+	status?: string,
+	sort?: string
+) =>
+	apiGet<PublicPollResponse>('/rest/poll/v1/public', {
+		size,
+		...(nextCursor && { nextCursor }),
+		...(keyword && { keyword }),
+		...(status && { status }),
+		...(sort && { sort }),
+	});
 
 export const submitPublicPoll = (
 	pollId: number,
@@ -58,7 +66,7 @@ export const getPublicPollResult = (pollId: number) =>
 	apiGet<PublicPollResultResponse>(`/rest/poll/v1/${pollId}/result`);
 
 export const getPoll = (pollId: number) =>
-	apiGet<PollResponse>(`/rest/poll/v1/${pollId}`);
+	apiGet<PollResponse>(`/rest/poll/v1/detail/${pollId}`);
 
 // 내가 만든 투표 목록
 export const getMyPolls = (params: PageParam) =>

@@ -5,7 +5,10 @@ export type PollStatus =
 	| 'IN_PROGRESS'
 	| 'EXPIRED'
 	| 'DELETED'
-	| 'CANCELLED';
+	| 'CANCELLED'
+	| 'ALL';
+
+export type PollSort = 'LATEST' | 'POPULAR' | 'ENDING_SOON';
 
 export type CreatePollData = {
 	title: string;

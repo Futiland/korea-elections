@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import PollCard from '@/components/PollCard';
 import PollSearchAndFilter from '@/components/PollSearchAndFilter';
-import { FilterOption } from '@/components/PollFilter';
 import Head from 'next/head';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { Spinner } from '@/components/ui/spinner';
 import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { getPublicPolls } from '@/lib/api/poll';
+import { filterOptions, type FilterOption } from '@/components/PollFilter';
 
 const PAGE_SIZE = 10;
 
 export default function EveryonePoll() {
 	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedFilter, setSelectedFilter] = useState<FilterOption>('latest');
+	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
+		filterOptions[0]
+	);
+
+	const sort = selectedFilter.sort;
+	const status = selectedFilter.status;
 
 	const {
 		polls,
@@ -22,7 +27,24 @@ export default function EveryonePoll() {
 		isError,
 		isFetchingNextPage,
 		hasNextPage,
-	} = useInfinitePolls({ pageSize: PAGE_SIZE });
+	} = useInfinitePolls({
+		pageSize: PAGE_SIZE,
+		queryKey: [
+			'publicPolls',
+			PAGE_SIZE,
+			searchTerm,
+			sort ?? 'LATEST',
+			status ?? 'ALL',
+		],
+		fetcher: (size, nextCursor) =>
+			getPublicPolls(
+				size,
+				nextCursor,
+				searchTerm || undefined,
+				status ?? 'ALL',
+				sort ?? 'LATEST'
+			),
+	});
 
 	return (
 		<>
@@ -114,9 +136,15 @@ export const getServerSideProps: GetServerSideProps = async () => {
 	const queryClient = new QueryClient();
 
 	await queryClient.prefetchInfiniteQuery({
-		queryKey: ['publicPolls'],
+		queryKey: ['publicPolls', PAGE_SIZE, '', 'LATEST', 'ALL'],
 		queryFn: ({ pageParam = '' }) =>
-			getPublicPolls(PAGE_SIZE, pageParam as string),
+			getPublicPolls(
+				PAGE_SIZE,
+				pageParam as string,
+				undefined,
+				'ALL',
+				'LATEST'
+			),
 		initialPageParam: '',
 	});
 

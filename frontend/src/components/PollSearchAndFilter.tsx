@@ -8,6 +8,7 @@ interface PollSearchAndFilterProps {
 	searchTerm: string;
 	selectedFilter: FilterOption;
 	className?: string;
+	isFilterVisible?: boolean;
 }
 
 export default function PollSearchAndFilter({
@@ -16,6 +17,7 @@ export default function PollSearchAndFilter({
 	searchTerm,
 	selectedFilter,
 	className = '',
+	isFilterVisible = true,
 }: PollSearchAndFilterProps) {
 	const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
 
@@ -55,10 +57,12 @@ export default function PollSearchAndFilter({
 			</form>
 
 			{/* 필터 버튼들 */}
-			<PollFilter
-				selectedFilter={selectedFilter}
-				onFilterChange={onFilterChange}
-			/>
+			{isFilterVisible && (
+				<PollFilter
+					selectedFilter={selectedFilter}
+					onFilterChange={onFilterChange}
+				/>
+			)}
 		</div>
 	);
 }
