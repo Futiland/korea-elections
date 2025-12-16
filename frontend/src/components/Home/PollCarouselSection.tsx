@@ -15,6 +15,8 @@ interface PollCarouselSectionProps {
 	onClickPoll?: (pollId: string) => void;
 	CardComponent?: ComponentType<PollCardProps>;
 	autoplay?: boolean | { delay?: number };
+	paginationActiveColor?: string; // 활성 페이지네이션 색상 (Tailwind 클래스)
+	paginationInactiveColor?: string; // 비활성 페이지네이션 색상 (Tailwind 클래스)
 }
 
 const DEFAULT_POLLS: PublicPollData[] = [
@@ -104,6 +106,8 @@ export default function PollCarouselSection({
 	onClickPoll,
 	CardComponent = PollCarouselCard,
 	autoplay,
+	paginationActiveColor = 'bg-blue-600',
+	paginationInactiveColor = 'bg-slate-300',
 }: PollCarouselSectionProps) {
 	const [emblaRef, emblaApi] = useEmblaCarousel({
 		loop: true,
@@ -200,7 +204,7 @@ export default function PollCarouselSection({
 									key={index}
 									type="button"
 									className={`h-2 w-2 rounded-full transition-colors ${
-										isActive ? 'bg-blue-600' : 'bg-slate-300'
+										isActive ? paginationActiveColor : paginationInactiveColor
 									}`}
 									onClick={() => emblaApi && emblaApi.scrollTo(index)}
 									aria-label={`${index + 1}번 슬라이드로 이동`}

@@ -3,7 +3,7 @@ import { Users } from 'lucide-react';
 interface PollParticipationBadgeProps {
 	participationMessage: string;
 	remainingTimeLabel?: string | null;
-	color?: 'fuchsia' | 'blue' | 'sky';
+	color?: 'fuchsia' | 'blue' | 'sky' | 'red';
 }
 
 export function PollParticipationBadge({
@@ -26,6 +26,10 @@ export function PollParticipationBadge({
 		sky: {
 			badge: 'bg-sky-50 text-sky-700',
 			icon: 'text-sky-500',
+		},
+		red: {
+			badge: 'bg-red-50 text-red-700',
+			icon: 'text-red-500',
 		},
 	} as const;
 

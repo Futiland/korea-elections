@@ -8,12 +8,14 @@ import PollPreviewSection from '@/components/Home/PollPreviewSection';
 import PollCarouselSection from '@/components/Home/PollCarouselSection';
 import ClosingSoonCarouselCard from '@/components/Home/cards/ClosingSoonCarouselCard';
 import CategorySelector from '@/components/Home/CategorySelector';
-import { getPublicPolls } from '@/lib/api/poll';
+import { getOpinionPolls, getPublicPolls } from '@/lib/api/poll';
 import { Spinner } from '@/components/ui/spinner';
+import PollCarouselEventCard from '@/components/Home/cards/PollCarouselEventCard';
 
 const OPINION_POLL_SIZE = 5;
 const POPULAR_POLL_SIZE = 3;
 const ENDING_SOON_POLL_SIZE = 7;
+const EVENT_POLL_SIZE = 5;
 
 export default function Home() {
 	const router = useRouter();
@@ -69,12 +71,28 @@ export default function Home() {
 			),
 	});
 
+	// 이벤트 투표
+	const {
+		data: eventPollsData,
+		isLoading: isEventLoading,
+		isError: isEventError,
+	} = useQuery({
+		queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
+		queryFn: () =>
+			getPublicPolls(EVENT_POLL_SIZE, undefined, '크리스마스', 'ALL', 'LATEST'),
+	});
+
 	const opinionPolls = opinionPollsData?.data?.content || [];
 	const popularPolls = popularPollsData?.data?.content || [];
 	const endingSoonPolls = endingSoonPollsData?.data?.content || [];
-
-	const isLoading = isOpinionLoading || isPopularLoading || isEndingSoonLoading;
-	const hasError = isOpinionError || isPopularError || isEndingSoonError;
+	const eventPolls = eventPollsData?.data?.content || [];
+	const isLoading =
+		isOpinionLoading ||
+		isPopularLoading ||
+		isEndingSoonLoading ||
+		isEventLoading;
+	const hasError =
+		isOpinionError || isPopularError || isEndingSoonError || isEventError;
 
 	return (
 		<>
@@ -108,7 +126,7 @@ export default function Home() {
 								polls={opinionPolls}
 								autoplay={true}
 								onClickMore={() => {
-									router.push('/everyone-polls');
+									router.push('/everyone-polls?sort=LATEST&status=IN_PROGRESS');
 								}}
 								onClickPoll={(pollId: string) => {
 									router.push(`/everyone-polls/${pollId}`);
@@ -123,11 +141,33 @@ export default function Home() {
 								description="지금 가장 인기있는 모두의 투표를 확인해보세요."
 								polls={popularPolls}
 								onClickMore={() => {
-									router.push('/everyone-polls');
+									router.push(
+										'/everyone-polls?sort=POPULAR&status=IN_PROGRESS'
+									);
 								}}
 								onClickPoll={(pollId: string) => {
 									router.push(`/everyone-polls/${pollId}`);
 								}}
+							/>
+						)}
+
+						{/* 이벤트 투표 카루셀 */}
+						{eventPolls.length > 0 && (
+							<PollCarouselSection
+								title="이벤트 투표"
+								description="크리스마스 이벤트 투표를 확인해보세요."
+								polls={eventPolls}
+								moreLabel={true}
+								autoplay={true}
+								onClickMore={() => {
+									router.push('/everyone-polls?search=크리스마스&status=ALL');
+								}}
+								onClickPoll={(pollId: string) => {
+									router.push(`/everyone-polls/${pollId}`);
+								}}
+								CardComponent={PollCarouselEventCard}
+								paginationActiveColor="bg-red-600"
+								paginationInactiveColor="bg-slate-300"
 							/>
 						)}
 
@@ -139,12 +179,16 @@ export default function Home() {
 								polls={endingSoonPolls}
 								moreLabel={true}
 								onClickMore={() => {
-									router.push('/everyone-polls');
+									router.push(
+										'/everyone-polls?sort=ENDING_SOON&status=IN_PROGRESS'
+									);
 								}}
 								onClickPoll={(pollId: string) => {
 									router.push(`/everyone-polls/${pollId}`);
 								}}
 								CardComponent={ClosingSoonCarouselCard}
+								paginationActiveColor="bg-amber-600"
+								paginationInactiveColor="bg-slate-300"
 							/>
 						)}
 					</>

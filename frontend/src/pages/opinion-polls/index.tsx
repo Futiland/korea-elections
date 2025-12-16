@@ -1,24 +1,24 @@
 import Head from 'next/head';
-import { useState } from 'react';
 import PollCard from '@/components/PollCard';
-import { filterOptions, type FilterOption } from '@/components/PollFilter';
 import { Spinner } from '@/components/ui/spinner';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { getOpinionPolls } from '@/lib/api/poll';
 import PollSearchAndFilter from '@/components/PollSearchAndFilter';
 import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { usePollListFilters } from '@/hooks/usePollListFilters';
 
 const PAGE_SIZE = 10;
 
 export default function OpinionPolls() {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
-		filterOptions[0]
-	);
-
-	const sort = selectedFilter.sort;
-	const status = selectedFilter.status;
+	const {
+		searchTerm,
+		selectedFilter,
+		sort,
+		status,
+		handleFilterChange,
+		handleSearchChange,
+	} = usePollListFilters({ pathname: '/opinion-polls' });
 
 	const {
 		polls,
@@ -37,13 +37,7 @@ export default function OpinionPolls() {
 			status ?? 'ALL',
 		],
 		fetcher: (size, nextCursor) =>
-			getOpinionPolls(
-				size,
-				nextCursor,
-				searchTerm || undefined,
-				status ?? 'ALL',
-				sort ?? 'LATEST'
-			),
+			getOpinionPolls(size, nextCursor, searchTerm || undefined, status, sort),
 	});
 
 	return (
@@ -84,8 +78,8 @@ export default function OpinionPolls() {
 						<PollSearchAndFilter
 							searchTerm={searchTerm}
 							selectedFilter={selectedFilter}
-							onSearchChange={setSearchTerm}
-							onFilterChange={setSelectedFilter}
+							onSearchChange={handleSearchChange}
+							onFilterChange={handleFilterChange}
 							className="mb-8"
 							isFilterVisible={false}
 						/>
@@ -134,23 +128,23 @@ export default function OpinionPolls() {
 	);
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
 	const queryClient = new QueryClient();
 
-	// 기본 필터 값 (filterOptions[0] = LATEST, IN_PROGRESS)
-	const defaultFilter = filterOptions[0];
-	const defaultSort = defaultFilter.sort ?? 'LATEST';
-	const defaultStatus = defaultFilter.status ?? 'ALL';
+	// URL 쿼리 파라미터에서 search, sort, status 읽기
+	const search = (context.query.search as string) || '';
+	const sort = (context.query.sort as string) || 'LATEST';
+	const status = (context.query.status as string) || 'ALL';
 
 	await queryClient.prefetchInfiniteQuery({
-		queryKey: ['opinionPolls', PAGE_SIZE, '', defaultSort, defaultStatus],
+		queryKey: ['opinionPolls', PAGE_SIZE, search, sort, status],
 		queryFn: ({ pageParam = '' }) =>
 			getOpinionPolls(
 				PAGE_SIZE,
 				pageParam as string,
-				undefined,
-				defaultStatus,
-				defaultSort
+				search || undefined,
+				status,
+				sort
 			),
 		initialPageParam: '',
 	});
