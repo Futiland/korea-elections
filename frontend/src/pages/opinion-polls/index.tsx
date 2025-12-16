@@ -6,10 +6,12 @@ import { Spinner } from '@/components/ui/spinner';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { getOpinionPolls } from '@/lib/api/poll';
 import PollSearchAndFilter from '@/components/PollSearchAndFilter';
+import { GetServerSideProps } from 'next';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 const PAGE_SIZE = 10;
 
-export default function OpinionPoll() {
+export default function OpinionPolls() {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
 		filterOptions[0]
@@ -57,10 +59,10 @@ export default function OpinionPoll() {
 					property="og:description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
 				/>
-				<meta property="og:image" content="/img/everyone-poll.png" />
+				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta
 					property="og:url"
-					content={`${process.env.NEXT_PUBLIC_BASE_URL}/opinion-poll`}
+					content={`${process.env.NEXT_PUBLIC_BASE_URL}/opinion-polls`}
 				/>
 				<meta property="og:locale" content="ko_KR" />
 				<meta property="og:type" content="website" />
@@ -131,3 +133,31 @@ export default function OpinionPoll() {
 		</>
 	);
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+	const queryClient = new QueryClient();
+
+	// 기본 필터 값 (filterOptions[0] = LATEST, IN_PROGRESS)
+	const defaultFilter = filterOptions[0];
+	const defaultSort = defaultFilter.sort ?? 'LATEST';
+	const defaultStatus = defaultFilter.status ?? 'ALL';
+
+	await queryClient.prefetchInfiniteQuery({
+		queryKey: ['opinionPolls', PAGE_SIZE, '', defaultSort, defaultStatus],
+		queryFn: ({ pageParam = '' }) =>
+			getOpinionPolls(
+				PAGE_SIZE,
+				pageParam as string,
+				undefined,
+				defaultStatus,
+				defaultSort
+			),
+		initialPageParam: '',
+	});
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+	};
+};

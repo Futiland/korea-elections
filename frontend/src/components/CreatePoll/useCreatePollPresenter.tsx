@@ -137,13 +137,13 @@ export function useCreatePollPresenter({
 	const createPollMutation = useMutation({
 		mutationFn: (payload: CreatePollData) => createPoll(payload),
 		onSuccess: (data: CreatePollResponse) => {
-			// everyone-poll 페이지의 리스트만 리패치
+			// everyone-polls 페이지의 리스트만 리패치
 			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
 			toast.success('투표 생성이 완료되었습니다.');
 			hideDialog();
 			setIsOpen(false);
 			reset(defaultValues);
-			router.push(`/everyone-poll/${data.data.id}`);
+			router.push(`/everyone-polls/${data.data.id}`);
 		},
 		onError: () => {
 			toast.error('투표 생성에 실패했습니다.');

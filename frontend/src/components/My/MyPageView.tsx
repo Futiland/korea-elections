@@ -138,7 +138,7 @@ export default function MyPageView({
 										key: 'joined-opinion',
 										value: stats.participatedSystemPollCount,
 										label: '여론 조사',
-										href: '/mypage/joined-opinion-polls',
+										href: '/mypage/joined-opinion-pollss',
 										ariaLabel: '참여한 여론 조사',
 									},
 								].map((item) => (

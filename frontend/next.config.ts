@@ -1,17 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: true,
-  async redirects() {
-    return [
-      {
-        source: '/everyone-vote',
-        destination: '/everyone-poll',
-        permanent: true,
-      },
-    ];
-  },
+	/* config options here */
+	reactStrictMode: true,
 };
 
 export default nextConfig;

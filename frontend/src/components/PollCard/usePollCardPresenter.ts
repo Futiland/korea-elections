@@ -130,7 +130,7 @@ export function usePollCardPresenter({
 
 	const sharePath = useMemo(() => {
 		if (!pollData?.id) return '';
-		return `everyone-poll/${pollData.id}`;
+		return `everyone-polls/${pollData.id}`;
 	}, [pollData?.id]);
 
 	const shareUrl = useMemo(() => {

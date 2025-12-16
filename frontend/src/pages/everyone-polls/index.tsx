@@ -11,7 +11,7 @@ import { filterOptions, type FilterOption } from '@/components/PollFilter';
 
 const PAGE_SIZE = 10;
 
-export default function EveryonePoll() {
+export default function EveryonePolls() {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedFilter, setSelectedFilter] = useState<FilterOption>(
 		filterOptions[0]
@@ -59,10 +59,10 @@ export default function EveryonePoll() {
 					property="og:description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
 				/>
-				<meta property="og:image" content="/img/everyone-poll.png" />
+				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta
 					property="og:url"
-					content={`${process.env.NEXT_PUBLIC_BASE_URL}/everyone-poll`}
+					content={`${process.env.NEXT_PUBLIC_BASE_URL}/everyone-polls`}
 				/>
 				<meta property="og:locale" content="ko_KR" />
 				<meta property="og:type" content="website" />
