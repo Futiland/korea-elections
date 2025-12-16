@@ -61,15 +61,4 @@ interface PollRepository {
         sortType: PollSortType = PollSortType.LATEST,
         statusFilter: PollStatusFilter = PollStatusFilter.ALL
     ): SliceContent<Poll>
-
-    /**
-     * 전체 여론조사 키워드 검색 (PUBLIC + SYSTEM)
-     */
-    fun searchAllPolls(
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
-    ): SliceContent<Poll>
 }

@@ -135,31 +135,6 @@ class FakePollRepository : PollRepository {
         return searchByKeywordAndType(keyword, PollType.SYSTEM, size, nextCursor, statusFilter)
     }
 
-    override fun searchAllPolls(
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<Poll> {
-        val filteredPolls = polls.values
-            .filter { it.status in statusFilter.statuses }
-            .filter { it.title.contains(keyword) || it.description.contains(keyword) }
-            .sortedByDescending { it.id }
-
-        val startIndex = if (nextCursor == null) {
-            0
-        } else {
-            val cursorId = nextCursor.toLong()
-            filteredPolls.indexOfFirst { it.id < cursorId }.takeIf { it >= 0 } ?: filteredPolls.size
-        }
-
-        val content = filteredPolls.drop(startIndex).take(size)
-        val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
-
-        return SliceContent(content, cursor)
-    }
-
     private fun searchByKeywordAndType(
         keyword: String,
         pollType: PollType,

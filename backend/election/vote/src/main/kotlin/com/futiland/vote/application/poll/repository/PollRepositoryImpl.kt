@@ -203,22 +203,6 @@ class PollRepositoryImpl(
         )
     }
 
-    override fun searchAllPolls(
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<Poll> {
-        return searchByKeywordAllTypes(
-            keyword = keyword,
-            size = size,
-            nextCursor = nextCursor,
-            sortType = sortType,
-            statusFilter = statusFilter
-        )
-    }
-
     /**
      * 공통 검색 로직: 타입별 여론조사 키워드 검색 (정렬/필터 지원)
      */
@@ -269,61 +253,6 @@ class PollRepositoryImpl(
                         cursorId = cursorId,
                         statuses = statuses,
                         pollType = pollType,
-                        pageable = pageable
-                    )
-                }
-            }
-        }
-
-        val cursor = buildNextCursor(content, size, sortType)
-        return SliceContent(content, cursor)
-    }
-
-    /**
-     * 공통 검색 로직: 전체 타입 여론조사 키워드 검색 (정렬/필터 지원)
-     */
-    private fun searchByKeywordAllTypes(
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<Poll> {
-        val pageable = PageRequest.ofSize(size)
-        val statuses = statusFilter.statuses
-
-        val content = when (sortType) {
-            PollSortType.LATEST -> {
-                if (nextCursor == null) {
-                    repository.searchPollsLatestAllTypes(
-                        keyword = keyword,
-                        statuses = statuses,
-                        pageable = pageable
-                    )
-                } else {
-                    repository.searchPollsLatestFromCursorAllTypes(
-                        keyword = keyword,
-                        cursorId = nextCursor.toLong(),
-                        statuses = statuses,
-                        pageable = pageable
-                    )
-                }
-            }
-            PollSortType.POPULAR -> {
-                val parsedCursor = nextCursor?.let { parsePopularCursor(it) }
-                if (parsedCursor == null) {
-                    repository.searchPollsPopularAllTypes(
-                        keyword = keyword,
-                        statuses = statuses,
-                        pageable = pageable
-                    )
-                } else {
-                    val (cursorCount, cursorId) = parsedCursor
-                    repository.searchPollsPopularFromCursorAllTypes(
-                        keyword = keyword,
-                        cursorCount = cursorCount,
-                        cursorId = cursorId,
-                        statuses = statuses,
                         pageable = pageable
                     )
                 }
@@ -559,88 +488,4 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         pageable: PageRequest
     ): List<Poll>
 
-    // ===== 키워드 검색 쿼리 (전체 타입) =====
-
-    /**
-     * 키워드 검색 - 최신순 첫 페이지 (전체 타입)
-     */
-    @Query(
-        """
-        SELECT p FROM Poll p
-        WHERE p.status IN :statuses
-        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
-        ORDER BY p.id DESC
-        """
-    )
-    fun searchPollsLatestAllTypes(
-        keyword: String,
-        statuses: List<PollStatus>,
-        pageable: PageRequest
-    ): List<Poll>
-
-    /**
-     * 키워드 검색 - 최신순 커서 기반 다음 페이지 (전체 타입)
-     */
-    @Query(
-        """
-        SELECT p FROM Poll p
-        WHERE p.id < :cursorId
-        AND p.status IN :statuses
-        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
-        ORDER BY p.id DESC
-        """
-    )
-    fun searchPollsLatestFromCursorAllTypes(
-        keyword: String,
-        cursorId: Long,
-        statuses: List<PollStatus>,
-        pageable: PageRequest
-    ): List<Poll>
-
-    /**
-     * 키워드 검색 - 인기순 첫 페이지 (전체 타입)
-     */
-    @Query(
-        """
-        SELECT p FROM Poll p
-        WHERE p.status IN :statuses
-        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
-        ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
-        ) DESC, p.id DESC
-        """
-    )
-    fun searchPollsPopularAllTypes(
-        keyword: String,
-        statuses: List<PollStatus>,
-        pageable: PageRequest
-    ): List<Poll>
-
-    /**
-     * 키워드 검색 - 인기순 커서 기반 다음 페이지 (전체 타입)
-     */
-    @Query(
-        """
-        SELECT p FROM Poll p
-        WHERE p.status IN :statuses
-        AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
-        AND (
-            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) < :cursorCount
-            OR (
-                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) = :cursorCount
-                AND p.id < :cursorId
-            )
-        )
-        ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
-        ) DESC, p.id DESC
-        """
-    )
-    fun searchPollsPopularFromCursorAllTypes(
-        keyword: String,
-        cursorCount: Long,
-        cursorId: Long,
-        statuses: List<PollStatus>,
-        pageable: PageRequest
-    ): List<Poll>
 }

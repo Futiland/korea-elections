@@ -129,18 +129,6 @@ class PollQueryService(
         return toPollListResponses(pollsSlice, accountId)
     }
 
-    override fun searchAllPolls(
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<PollListResponse> {
-        val pollsSlice = pollRepository.searchAllPolls(keyword, size, nextCursor, sortType, statusFilter)
-        return toPollListResponses(pollsSlice, accountId)
-    }
-
     /**
      * Poll 목록을 PollListResponse 목록으로 변환 (N+1 최적화 포함)
      */

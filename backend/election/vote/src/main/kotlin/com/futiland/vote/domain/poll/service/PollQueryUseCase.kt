@@ -51,16 +51,4 @@ interface PollQueryUseCase {
         sortType: PollSortType = PollSortType.LATEST,
         statusFilter: PollStatusFilter = PollStatusFilter.ALL
     ): SliceContent<PollListResponse>
-
-    /**
-     * 전체 여론조사 키워드 검색 (PUBLIC + SYSTEM)
-     */
-    fun searchAllPolls(
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
-    ): SliceContent<PollListResponse>
 }
