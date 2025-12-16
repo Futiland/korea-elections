@@ -9,7 +9,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 
-export default function EveryonePollDetailPage() {
+export default function OpinionPollDetailPage() {
 	const router = useRouter();
 	const { id } = router.query;
 
@@ -21,7 +21,7 @@ export default function EveryonePollDetailPage() {
 		isLoading,
 		isError,
 	} = useQuery<PollResponse>({
-		queryKey: ['publicPoll', pollId],
+		queryKey: ['opinionPoll', pollId],
 		queryFn: () => getPoll(pollId),
 		enabled,
 		retry: 1,
@@ -51,7 +51,7 @@ export default function EveryonePollDetailPage() {
 	return (
 		<>
 			<Head>
-				<title>{poll.data.title} - 모두의 투표</title>
+				<title>{poll.data.title} - 모두의 투표: 여론조사</title>
 			</Head>
 
 			<main className="min-h-screen bg-slate-50 pb-24">
