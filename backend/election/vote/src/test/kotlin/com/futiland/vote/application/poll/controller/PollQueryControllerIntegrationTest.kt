@@ -119,6 +119,7 @@ class PollQueryControllerIntegrationTest {
                 type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -138,6 +139,7 @@ class PollQueryControllerIntegrationTest {
                 type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -157,6 +159,7 @@ class PollQueryControllerIntegrationTest {
                 type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -179,6 +182,7 @@ class PollQueryControllerIntegrationTest {
                 type = PollType.PUBLIC,
                 size = 2,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -200,6 +204,7 @@ class PollQueryControllerIntegrationTest {
                 type = PollType.PUBLIC,
                 size = 2,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -215,6 +220,7 @@ class PollQueryControllerIntegrationTest {
                     type = PollType.PUBLIC,
                     size = 2,
                     nextCursor = nextCursor,
+                    keyword = null,
                     userDetails = null
                 )
 

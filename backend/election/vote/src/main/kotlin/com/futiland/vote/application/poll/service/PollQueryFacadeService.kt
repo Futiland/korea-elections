@@ -30,13 +30,14 @@ class PollQueryFacadeService(
         accountId: Long?,
         size: Int,
         nextCursor: String?,
+        keyword: String,
         sortType: PollSortType,
         statusFilter: PollStatusFilter
     ): SliceContent<PollListResponse> {
         return when (pollType) {
             PollType.PUBLIC -> pollQueryUseCase.searchPublicPolls(
                 accountId = accountId,
-                keyword = "",
+                keyword = keyword,
                 size = size,
                 nextCursor = nextCursor,
                 sortType = sortType,
@@ -44,7 +45,7 @@ class PollQueryFacadeService(
             )
             PollType.SYSTEM -> pollQueryUseCase.searchSystemPolls(
                 accountId = accountId,
-                keyword = "",
+                keyword = keyword,
                 size = size,
                 nextCursor = nextCursor,
                 sortType = sortType,
@@ -55,21 +56,5 @@ class PollQueryFacadeService(
 
     override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
         return pollQueryUseCase.getMyPolls(accountId, page, size)
-    }
-
-    override fun searchPollsByType(
-        pollType: PollType?,
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType,
-        statusFilter: PollStatusFilter
-    ): SliceContent<PollListResponse> {
-        return when (pollType) {
-            PollType.PUBLIC -> pollQueryUseCase.searchPublicPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
-            PollType.SYSTEM -> pollQueryUseCase.searchSystemPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
-            null -> pollQueryUseCase.searchAllPolls(accountId, keyword, size, nextCursor, sortType, statusFilter)
-        }
     }
 }

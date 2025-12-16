@@ -12,33 +12,20 @@ interface PollQueryFacadeUseCase {
     fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse
 
     /**
-     * 여론조사 목록 조회 (타입별)
+     * 여론조사 목록 조회/검색 (타입별)
      *
      * @param pollType 여론조사 타입 (PUBLIC, SYSTEM)
+     * @param keyword 검색 키워드 (빈 문자열이면 전체 목록 조회)
      */
     fun getPollListByType(
         pollType: PollType,
         accountId: Long?,
         size: Int,
         nextCursor: String?,
+        keyword: String = "",
         sortType: PollSortType = PollSortType.LATEST,
         statusFilter: PollStatusFilter = PollStatusFilter.ALL
     ): SliceContent<PollListResponse>
 
     fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse>
-
-    /**
-     * 여론조사 키워드 검색 (타입별)
-     *
-     * @param pollType 여론조사 타입 (PUBLIC, SYSTEM, null이면 전체)
-     */
-    fun searchPollsByType(
-        pollType: PollType?,
-        accountId: Long?,
-        keyword: String,
-        size: Int,
-        nextCursor: String?,
-        sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
-    ): SliceContent<PollListResponse>
 }
