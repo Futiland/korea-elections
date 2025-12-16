@@ -71,3 +71,10 @@ export const getMyParticipatedPublicPolls = (params: PageParam) =>
 // 내가 참여한 여론 조사
 export const getMyParticipatedOpinionPolls = (params: PageParam) =>
 	apiGet<MyPollResponse>('/rest/poll/v1/system/response/my', params);
+
+// 여론 조사(시스템 폴) 목록 - 커서 기반 페이지네이션
+export const getOpinionPolls = (size: number, nextCursor?: string) =>
+	apiGet<PublicPollResponse>(
+		'/rest/poll/v1/system',
+		nextCursor ? { size, nextCursor } : { size }
+	);
