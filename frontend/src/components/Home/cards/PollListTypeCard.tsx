@@ -22,7 +22,7 @@ export default function PollListTypeCard({
 
 	return (
 		<article
-			className="group flex h-full cursor-pointer flex-col justify-between border-b border-slate-200 px-1 py-3 transition-colors hover:bg-sky-50/60"
+			className="group flex h-full flex-col justify-between border-b border-slate-200 px-1 py-3 transition-colors hover:bg-sky-50/60"
 			onClick={() => onClickPoll?.(pollData?.id.toString())}
 		>
 			<header className="mb-1 flex items-center justify-between gap-3 pb-2">
@@ -50,8 +50,8 @@ export default function PollListTypeCard({
 				<p className="line-clamp-2 text-sm font-semibold tracking-tight text-slate-900 md:text-base">
 					{pollData.title}
 				</p>
-				<p className="line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
-					{pollData.description}
+				<p className="min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+					{pollData.description || '\u00A0'}
 				</p>
 			</section>
 
@@ -64,7 +64,7 @@ export default function PollListTypeCard({
 					type="button"
 					size="sm"
 					variant="default"
-					className="inline-flex items-center gap-1 rounded-full border bg-blue-700 px-3 py-1 text-[11px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm "
+					className="cursor-pointer inline-flex items-center gap-1 rounded-full border bg-blue-700 px-3 py-1 text-[11px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm "
 					onClick={(event) => {
 						event.stopPropagation();
 						onClickPoll?.(pollData?.id.toString());

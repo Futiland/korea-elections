@@ -25,7 +25,7 @@ export default function ClosingSoonCarouselCard({
 		!!remainingTimeLabel && pollData?.status === 'IN_PROGRESS';
 
 	return (
-		<Card className="group h-full cursor-pointer border-amber-100/80 bg-gradient-to-br from-amber-50/80 via-orange-30/60 to-white py-3 transition-all hover:-translate-y-1 hover:border-amber-300 hover:bg-amber-50/90 hover:shadow-md">
+		<Card className="group h-full border-amber-100/80 bg-gradient-to-br from-amber-50/80 via-orange-30/60 to-white py-3 transition-all hover:-translate-y-1 hover:border-amber-300 hover:bg-amber-50/90 hover:shadow-md gap-2">
 			<CardHeader className="px-5 pt-2">
 				<div className="mb-2 flex items-center justify-between gap-2">
 					{isClosingSoon && (
@@ -48,8 +48,8 @@ export default function ClosingSoonCarouselCard({
 			</CardHeader>
 
 			<CardContent className="flex h-full flex-col px-5 pb-3 pt-1">
-				<p className="mb-3 line-clamp-3 text-xs leading-relaxed text-slate-700 md:text-sm">
-					{pollData.description}
+				<p className="mb-3 min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+					{pollData.description || '\u00A0'}
 				</p>
 
 				<div className="mt-auto">
@@ -57,7 +57,7 @@ export default function ClosingSoonCarouselCard({
 						type="button"
 						size="sm"
 						variant="default"
-						className="inline-flex items-center justify-between rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] font-semibold text-red-700  hover:border-red-300 hover:bg-red-100 hover:text-red-800"
+						className="cursor-pointer inline-flex items-center justify-between rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] font-semibold text-red-700  hover:border-red-300 hover:bg-red-100 hover:text-red-800"
 						onClick={(event) => {
 							event.stopPropagation();
 							onClickPoll?.(pollData?.id.toString());

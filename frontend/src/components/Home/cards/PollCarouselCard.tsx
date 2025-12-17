@@ -23,7 +23,7 @@ export default function PollCarouselCard({
 
 	return (
 		<Card
-			className="gap-2 group h-full cursor-pointer border-blue-100/80 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-white transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50/80 hover:shadow-md"
+			className="py-4 gap-2 group h-full border-blue-100/80 bg-gradient-to-br from-blue-50/80 via-sky-50/60 to-white transition-all hover:-translate-y-1 hover:border-blue-300 hover:bg-blue-50/80 hover:shadow-md"
 			// onClick={() => onClickPoll?.(poll.id)}
 		>
 			<CardHeader className="pt-2">
@@ -38,8 +38,8 @@ export default function PollCarouselCard({
 			</CardHeader>
 
 			<CardContent className="flex h-full flex-col px-5 pb-2 pt-0">
-				<p className="mb-4 line-clamp-3 text-xs leading-relaxed text-slate-700 md:text-sm">
-					{pollData.description}
+				<p className="mb-2 min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+					{pollData.description || '\u00A0'}
 				</p>
 
 				{/* <div className="flex items-center justify-between gap-3 text-[11px] text-slate-600 md:text-xs">
@@ -58,12 +58,12 @@ export default function PollCarouselCard({
 						</span>
 					</span>
 				</div> */}
-				<div className="text-right">
+				<div className="text-right mt-auto">
 					<Button
 						type="button"
 						size="sm"
 						variant="default"
-						className="inline-flex items-center justify-between rounded-full bg-blue-700 px-4 py-3 text-[13px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm"
+						className="cursor-pointer inline-flex items-center justify-between rounded-full bg-blue-700 px-4 py-3 text-[13px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm"
 						onClick={(event) => {
 							event.stopPropagation();
 							onClickPoll?.(pollData?.id.toString());
