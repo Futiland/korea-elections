@@ -3,7 +3,7 @@ import PollSearchAndFilter from '@/components/PollSearchAndFilter';
 import Head from 'next/head';
 import { useInfinitePolls } from '@/hooks/useInfinitePolls';
 import { Spinner } from '@/components/ui/spinner';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { getPublicPolls } from '@/lib/api/poll';
 import { usePollListFilters } from '@/hooks/usePollListFilters';
@@ -128,13 +128,13 @@ export default function EveryonePolls() {
 	);
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
 	const queryClient = new QueryClient();
 
-	// URL 쿼리 파라미터에서 search, sort, status 읽기
-	const search = (context.query.search as string) || '';
-	const sort = (context.query.sort as string) || 'LATEST';
-	const status = (context.query.status as string) || 'ALL';
+	// 기본 필터: search='', sort='LATEST', status='ALL'
+	const search = '';
+	const sort = 'LATEST';
+	const status = 'ALL';
 
 	await queryClient.prefetchInfiniteQuery({
 		queryKey: ['publicPolls', PAGE_SIZE, search, sort, status],
@@ -153,5 +153,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 		props: {
 			dehydratedState: dehydrate(queryClient),
 		},
+		revalidate: 300,
 	};
 };

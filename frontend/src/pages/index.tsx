@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useQuery } from '@tanstack/react-query';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 
@@ -227,12 +227,12 @@ export default function Home() {
 	);
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
 	const queryClient = new QueryClient();
 
-	// 병렬로 3가지 데이터 prefetch
+	// 병렬로 모든 데이터 prefetch
 	await Promise.all([
-		// 최신 투표
+		// 메인 여론 조사
 		queryClient.prefetchQuery({
 			queryKey: ['homeOpinionPolls', OPINION_POLL_SIZE],
 			queryFn: () =>
@@ -292,5 +292,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		props: {
 			dehydratedState: dehydrate(queryClient),
 		},
+		// ISR: 10분 마다 재생성 (백그라운드에서)
+		revalidate: 600,
 	};
 };

@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, QueryClient, dehydrate } from '@tanstack/react-query';
+import type { GetStaticProps, GetStaticPaths } from 'next';
 
 import PollCard from '@/components/PollCard';
 import type { PollResponse } from '@/lib/types/poll';
@@ -84,3 +85,41 @@ export default function OpinionPollDetailPage() {
 		</>
 	);
 }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+	return {
+		paths: [],
+		fallback: 'blocking',
+	};
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	const id = context.params?.id;
+	const pollId = Number(id);
+
+	if (!pollId || Number.isNaN(pollId)) {
+		return {
+			notFound: true,
+		};
+	}
+
+	const queryClient = new QueryClient();
+
+	try {
+		await queryClient.prefetchQuery<PollResponse>({
+			queryKey: ['opinionPoll', pollId],
+			queryFn: () => getPoll(pollId),
+		});
+	} catch (error) {
+		return {
+			notFound: true,
+		};
+	}
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+		revalidate: 600,
+	};
+};
