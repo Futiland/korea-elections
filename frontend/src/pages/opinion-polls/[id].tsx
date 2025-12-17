@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, QueryClient, dehydrate } from '@tanstack/react-query';
+import type { GetStaticProps, GetStaticPaths } from 'next';
 
 import PollCard from '@/components/PollCard';
 import type { PollResponse } from '@/lib/types/poll';
@@ -52,6 +53,18 @@ export default function OpinionPollDetailPage() {
 		<>
 			<Head>
 				<title>{poll.data.title} - 모두의 투표: 여론조사</title>
+				<meta property="og:title" content={poll.data.title} />
+				<meta property="og:description" content={poll.data.description} />
+				<meta property="og:image" content="/img/everyone-polls.png" />
+				<meta
+					property="og:url"
+					content={`${process.env.NEXT_PUBLIC_BASE_URL}/opinion-polls/${poll.data.id}`}
+				/>
+				<meta property="og:locale" content="ko_KR" />
+				<meta property="og:type" content="website" />
+				<meta property="og:site_name" content="KEP" />
+				<meta property="og:image:width" content="1200" />
+				<meta property="og:image:height" content="630" />
 			</Head>
 
 			<main className="min-h-screen bg-slate-50 pb-24">
@@ -84,3 +97,41 @@ export default function OpinionPollDetailPage() {
 		</>
 	);
 }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+	return {
+		paths: [],
+		fallback: 'blocking',
+	};
+};
+
+export const getStaticProps: GetStaticProps = async (context) => {
+	const id = context.params?.id;
+	const pollId = Number(id);
+
+	if (!pollId || Number.isNaN(pollId)) {
+		return {
+			notFound: true,
+		};
+	}
+
+	const queryClient = new QueryClient();
+
+	try {
+		await queryClient.prefetchQuery<PollResponse>({
+			queryKey: ['opinionPoll', pollId],
+			queryFn: () => getPoll(pollId),
+		});
+	} catch (error) {
+		return {
+			notFound: true,
+		};
+	}
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient),
+		},
+		revalidate: 600,
+	};
+};
