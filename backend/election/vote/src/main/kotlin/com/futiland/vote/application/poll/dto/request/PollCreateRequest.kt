@@ -63,6 +63,37 @@ data class PublicPollDraftCreateRequest(
     val options: List<PollOptionRequest>? = null,
 )
 
+@Schema(description = "시스템 여론조사 생성 요청")
+data class SystemPollCreateRequest(
+    @Schema(description = "여론조사 제목", example = "2025년 대선 후보 지지율 조사", required = true)
+    val title: String,
+
+    @Schema(description = "여론조사 설명", example = "2025년 대선 후보에 대한 지지율을 조사합니다", required = true)
+    val description: String,
+
+    @Schema(
+        description = """
+            응답 유형
+            - SINGLE_CHOICE: 단일 선택
+            - MULTIPLE_CHOICE: 다중 선택 (제한 없이 모두 선택 가능)
+            - SCORE: 점수제 (기본 0~10점)
+        """,
+        example = "SINGLE_CHOICE",
+        required = true,
+        allowableValues = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "SCORE"]
+    )
+    val responseType: ResponseType,
+
+    @Schema(description = "재투표 가능 여부 (사용자가 여러 번 투표할 수 있는지)", example = "false", required = true)
+    val isRevotable: Boolean,
+
+    @Schema(description = "여론조사 종료 일시", example = "2025-01-17T23:59:59", required = true)
+    val endAt: LocalDateTime,
+
+    @Schema(description = "선택지 목록 (SINGLE_CHOICE, MULTIPLE_CHOICE일 때 필수)", required = false)
+    val options: List<PollOptionRequest>? = null,
+)
+
 @Schema(description = "여론조사 선택지")
 data class PollOptionRequest(
     @Schema(description = "선택지 텍스트", example = "사과", required = true)

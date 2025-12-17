@@ -5,6 +5,7 @@ import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.application.poll.dto.request.PublicPollCreateRequest
 import com.futiland.vote.application.poll.dto.request.PublicPollDraftCreateRequest
 import com.futiland.vote.application.poll.dto.request.PollUpdateRequest
+import com.futiland.vote.application.poll.dto.request.SystemPollCreateRequest
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.domain.poll.service.PollCommandUseCase
 import io.swagger.v3.oas.annotations.Operation
@@ -123,6 +124,64 @@ class PollCommandController(
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<PollDetailResponse> {
         val response = pollCommandUseCase.createPublicPollDraft(
+            request = request,
+            creatorAccountId = userDetails.user.accountId
+        )
+        return HttpApiResponse.of(response)
+    }
+
+    @Operation(
+        summary = "시스템 여론조사 생성",
+        description = """
+            시스템 여론조사를 생성합니다. 관리자만 생성할 수 있으며, 생성 즉시 IN_PROGRESS 상태가 됩니다.
+
+            **질문 유형:**
+            - SINGLE_CHOICE: 단일 선택 (options 필수)
+            - MULTIPLE_CHOICE: 다중 선택 (options 필수, minSelections/maxSelections 설정 가능)
+            - SCORE: 점수제 (options 불필요, minScore/maxScore 설정)
+
+            **주의사항:**
+            - endAt은 필수입니다
+            - 점수제가 아닌 경우 최소 2개 이상의 옵션이 필요합니다
+            - 시스템 여론조사는 공개 목록에 노출되지 않으며 별도 API로 조회합니다
+        """
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "시스템 여론조사 생성 성공",
+                content = [Content(schema = Schema(implementation = PollDetailResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "잘못된 요청 (필수 필드 누락, 유효하지 않은 날짜 등)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "인증 실패",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "권한 없음 (관리자만 생성 가능)",
+                content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
+            )
+        ]
+    )
+    @PostMapping("/system")
+    fun createSystemPoll(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "시스템 여론조사 생성 요청",
+            required = true,
+            content = [Content(schema = Schema(implementation = SystemPollCreateRequest::class))]
+        )
+        @RequestBody request: SystemPollCreateRequest,
+        @Parameter(hidden = true)
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    ): HttpApiResponse<PollDetailResponse> {
+        val response = pollCommandUseCase.createSystemPoll(
             request = request,
             creatorAccountId = userDetails.user.accountId
         )
