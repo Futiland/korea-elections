@@ -50,7 +50,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 				<div className="max-w-lg mx-auto">{children}</div>
 				{/* 투표 생성 플로팅 버튼 */}
 				{visibleCreatePollButton && (
-					<div className="fixed bottom-6 right-6 z-50 lg:right-[calc(50%-12rem)]">
+					<div className="fixed bottom-6 right-6 z-50 md:right-[calc(50%-350px+20px)]">
 						<button
 							type="button"
 							className="w-14 h-14 rounded-full bg-blue-800 text-white shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"

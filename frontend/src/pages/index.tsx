@@ -11,11 +11,13 @@ import CategorySelector from '@/components/Home/CategorySelector';
 import { getOpinionPolls, getPublicPolls } from '@/lib/api/poll';
 import { Spinner } from '@/components/ui/spinner';
 import PollCarouselEventCard from '@/components/Home/cards/PollCarouselEventCard';
+import Footer from '@/components/layout/Footer';
 
-const OPINION_POLL_SIZE = 5;
+const OPINION_POLL_SIZE = 3;
 const POPULAR_POLL_SIZE = 3;
 const ENDING_SOON_POLL_SIZE = 7;
 const EVENT_POLL_SIZE = 5;
+const LATEST_POLL_SIZE = 3;
 
 export default function Home() {
 	const router = useRouter();
@@ -82,10 +84,21 @@ export default function Home() {
 			getPublicPolls(EVENT_POLL_SIZE, undefined, '크리스마스', 'ALL', 'LATEST'),
 	});
 
+	const {
+		data: latestPollsData,
+		isLoading: isLatestLoading,
+		isError: isLatestError,
+	} = useQuery({
+		queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
+		queryFn: () =>
+			getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
+	});
+
 	const opinionPolls = opinionPollsData?.data?.content || [];
 	const popularPolls = popularPollsData?.data?.content || [];
 	const endingSoonPolls = endingSoonPollsData?.data?.content || [];
 	const eventPolls = eventPollsData?.data?.content || [];
+	const latestPolls = latestPollsData?.data?.content || [];
 	const isLoading =
 		isOpinionLoading ||
 		isPopularLoading ||
@@ -137,7 +150,7 @@ export default function Home() {
 						{/* 인기 투표 섹션 */}
 						{popularPolls.length > 0 && (
 							<PollPreviewSection
-								title="인기있는 모두의 투표"
+								title="🔥 인기있는 모두의 투표"
 								description="지금 가장 인기있는 모두의 투표를 확인해보세요."
 								polls={popularPolls}
 								onClickMore={() => {
@@ -154,8 +167,8 @@ export default function Home() {
 						{/* 이벤트 투표 카루셀 */}
 						{eventPolls.length > 0 && (
 							<PollCarouselSection
-								title="이벤트 투표"
-								description="크리스마스 이벤트 투표를 확인해보세요."
+								title="🎄 크리스마스 이벤트 투표 모음"
+								// description="크리스마스 이벤트 투표를 확인해보세요."
 								polls={eventPolls}
 								moreLabel={true}
 								autoplay={true}
@@ -168,6 +181,21 @@ export default function Home() {
 								CardComponent={PollCarouselEventCard}
 								paginationActiveColor="bg-red-600"
 								paginationInactiveColor="bg-slate-300"
+							/>
+						)}
+
+						{/* 최신 투표 섹션 */}
+						{latestPolls.length > 0 && (
+							<PollPreviewSection
+								title="🆕 최신 투표 모음"
+								description="지금 가장 최신 투표를 확인해보세요."
+								polls={latestPolls}
+								onClickMore={() => {
+									router.push('/everyone-polls?sort=LATEST&status=ALL');
+								}}
+								onClickPoll={(pollId: string) => {
+									router.push(`/everyone-polls/${pollId}`);
+								}}
 							/>
 						)}
 
@@ -194,6 +222,7 @@ export default function Home() {
 					</>
 				)}
 			</main>
+			<Footer />
 		</>
 	);
 }
@@ -237,6 +266,24 @@ export const getServerSideProps: GetServerSideProps = async () => {
 					undefined,
 					'IN_PROGRESS',
 					'ENDING_SOON'
+				),
+		}),
+		// 최신 투표
+		queryClient.prefetchQuery({
+			queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
+			queryFn: () =>
+				getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
+		}),
+		// 이벤트 투표
+		queryClient.prefetchQuery({
+			queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
+			queryFn: () =>
+				getPublicPolls(
+					EVENT_POLL_SIZE,
+					undefined,
+					'크리스마스',
+					'ALL',
+					'LATEST'
 				),
 		}),
 	]);
