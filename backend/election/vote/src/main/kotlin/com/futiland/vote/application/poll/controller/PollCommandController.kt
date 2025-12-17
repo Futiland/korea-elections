@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
@@ -66,7 +67,7 @@ class PollCommandController(
             required = true,
             content = [Content(schema = Schema(implementation = PublicPollCreateRequest::class))]
         )
-        @RequestBody request: PublicPollCreateRequest,
+        @Valid @RequestBody request: PublicPollCreateRequest,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<PollDetailResponse> {
@@ -119,7 +120,7 @@ class PollCommandController(
             required = true,
             content = [Content(schema = Schema(implementation = PublicPollDraftCreateRequest::class))]
         )
-        @RequestBody request: PublicPollDraftCreateRequest,
+        @Valid @RequestBody request: PublicPollDraftCreateRequest,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<PollDetailResponse> {
@@ -177,7 +178,7 @@ class PollCommandController(
             required = true,
             content = [Content(schema = Schema(implementation = SystemPollCreateRequest::class))]
         )
-        @RequestBody request: SystemPollCreateRequest,
+        @Valid @RequestBody request: SystemPollCreateRequest,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails,
     ): HttpApiResponse<PollDetailResponse> {
