@@ -1,7 +1,10 @@
 package com.futiland.vote.application.poll.repository
 
 import com.futiland.vote.domain.poll.entity.Poll
+import com.futiland.vote.domain.poll.entity.PollSortType
 import com.futiland.vote.domain.poll.entity.PollStatus
+import com.futiland.vote.domain.poll.entity.PollStatusFilter
+import com.futiland.vote.domain.poll.entity.PollType
 import com.futiland.vote.domain.poll.repository.PollRepository
 import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
@@ -33,11 +36,37 @@ class FakePollRepository : PollRepository {
         return polls[id]
     }
 
-    override fun findAllPublicDisplayable(size: Int, nextCursor: String?): SliceContent<Poll> {
-        // 공개 표시 가능한 여론조사: IN_PROGRESS, EXPIRED 상태만
-        val displayableStatuses = listOf(PollStatus.IN_PROGRESS, PollStatus.EXPIRED)
+    override fun findAllPublicDisplayable(
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
         val filteredPolls = polls.values
-            .filter { it.status in displayableStatuses }
+            .filter { it.status in statusFilter.statuses }
+            .sortedByDescending { it.id }
+
+        val startIndex = if (nextCursor == null) {
+            0
+        } else {
+            val cursorId = nextCursor.toLong()
+            filteredPolls.indexOfFirst { it.id < cursorId }.takeIf { it >= 0 } ?: filteredPolls.size
+        }
+
+        val content = filteredPolls.drop(startIndex).take(size)
+        val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
+
+        return SliceContent(content, cursor)
+    }
+
+    override fun findAllSystemDisplayable(
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        val filteredPolls = polls.values
+            .filter { it.status in statusFilter.statuses }
             .sortedByDescending { it.id }
 
         val startIndex = if (nextCursor == null) {
@@ -84,6 +113,51 @@ class FakePollRepository : PollRepository {
         }
 
         return pollsToExpire.size
+    }
+
+    override fun searchPublicPolls(
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        return searchByKeywordAndType(keyword, PollType.PUBLIC, size, nextCursor, statusFilter)
+    }
+
+    override fun searchSystemPolls(
+        keyword: String,
+        size: Int,
+        nextCursor: String?,
+        sortType: PollSortType,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        return searchByKeywordAndType(keyword, PollType.SYSTEM, size, nextCursor, statusFilter)
+    }
+
+    private fun searchByKeywordAndType(
+        keyword: String,
+        pollType: PollType,
+        size: Int,
+        nextCursor: String?,
+        statusFilter: PollStatusFilter
+    ): SliceContent<Poll> {
+        val filteredPolls = polls.values
+            .filter { it.pollType == pollType && it.status in statusFilter.statuses }
+            .filter { it.title.contains(keyword) || it.description.contains(keyword) }
+            .sortedByDescending { it.id }
+
+        val startIndex = if (nextCursor == null) {
+            0
+        } else {
+            val cursorId = nextCursor.toLong()
+            filteredPolls.indexOfFirst { it.id < cursorId }.takeIf { it >= 0 } ?: filteredPolls.size
+        }
+
+        val content = filteredPolls.drop(startIndex).take(size)
+        val cursor = if (content.size < size) null else content.lastOrNull()?.id?.toString()
+
+        return SliceContent(content, cursor)
     }
 
     fun clear() {

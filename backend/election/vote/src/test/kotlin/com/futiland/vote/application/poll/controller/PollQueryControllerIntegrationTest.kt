@@ -115,9 +115,11 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll2.id)
 
             // Act
-            val response = pollQueryController.getPublicPollList(
+            val response = pollQueryController.getPollListByType(
+                type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -133,9 +135,11 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPublicPollList(
+            val response = pollQueryController.getPollListByType(
+                type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = createUserDetails(testAccount.id)
             )
 
@@ -151,9 +155,11 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(draftPoll.id)
 
             // Act
-            val response = pollQueryController.getPublicPollList(
+            val response = pollQueryController.getPollListByType(
+                type = PollType.PUBLIC,
                 size = 10,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -172,9 +178,11 @@ class PollQueryControllerIntegrationTest {
             }
 
             // Act
-            val response = pollQueryController.getPublicPollList(
+            val response = pollQueryController.getPollListByType(
+                type = PollType.PUBLIC,
                 size = 2,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -192,9 +200,11 @@ class PollQueryControllerIntegrationTest {
             }
 
             // Act - 첫 페이지 조회
-            val firstPageResponse = pollQueryController.getPublicPollList(
+            val firstPageResponse = pollQueryController.getPollListByType(
+                type = PollType.PUBLIC,
                 size = 2,
                 nextCursor = null,
+                keyword = null,
                 userDetails = null
             )
 
@@ -206,9 +216,11 @@ class PollQueryControllerIntegrationTest {
 
             // Act - 두 번째 페이지 조회 (nextCursor가 있는 경우)
             if (nextCursor != null) {
-                val secondPageResponse = pollQueryController.getPublicPollList(
+                val secondPageResponse = pollQueryController.getPollListByType(
+                    type = PollType.PUBLIC,
                     size = 2,
                     nextCursor = nextCursor,
+                    keyword = null,
                     userDetails = null
                 )
 

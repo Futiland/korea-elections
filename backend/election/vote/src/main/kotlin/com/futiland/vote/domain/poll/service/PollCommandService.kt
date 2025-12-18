@@ -3,6 +3,7 @@ package com.futiland.vote.domain.poll.service
 import com.futiland.vote.application.poll.dto.request.PublicPollCreateRequest
 import com.futiland.vote.application.poll.dto.request.PublicPollDraftCreateRequest
 import com.futiland.vote.application.poll.dto.request.PollUpdateRequest
+import com.futiland.vote.application.poll.dto.request.SystemPollCreateRequest
 import com.futiland.vote.application.poll.dto.response.CreatorInfoResponse
 import com.futiland.vote.application.poll.dto.response.PollDetailResponse
 import com.futiland.vote.domain.account.repository.AccountRepository
@@ -75,6 +76,38 @@ class PollCommandService(
                     pollId = savedPoll.id,
                     optionText = optionReq.optionText,
                     // optionOrder가 전달되지 않으면 리스트 순서대로 자동 부여 (1부터 시작)
+                    optionOrder = optionReq.optionOrder ?: (index + 1)
+                )
+            }
+            pollOptionRepository.saveAll(pollOptions)
+        } else {
+            emptyList()
+        }
+
+        val account = accountRepository.getById(creatorAccountId)
+        val creatorInfo = CreatorInfoResponse(account.id, account.name)
+        return PollDetailResponse.from(savedPoll, options, responseCount = 0, isVoted = false, creatorInfo)
+    }
+
+    @Transactional
+    override fun createSystemPoll(request: SystemPollCreateRequest, creatorAccountId: Long): PollDetailResponse {
+        val poll = Poll.createActive(
+            title = request.title,
+            description = request.description,
+            responseType = request.responseType,
+            pollType = PollType.SYSTEM,
+            isRevotable = request.isRevotable,
+            creatorAccountId = creatorAccountId,
+            endAt = request.endAt
+        )
+
+        val savedPoll = pollRepository.save(poll)
+
+        val options = if (poll.responseType != ResponseType.SCORE && request.options != null) {
+            val pollOptions = request.options.mapIndexed { index, optionReq ->
+                PollOption.create(
+                    pollId = savedPoll.id,
+                    optionText = optionReq.optionText,
                     optionOrder = optionReq.optionOrder ?: (index + 1)
                 )
             }
