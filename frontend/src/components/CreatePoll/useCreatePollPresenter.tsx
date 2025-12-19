@@ -138,12 +138,12 @@ export function useCreatePollPresenter({
 		mutationFn: (payload: CreatePollData) => createPoll(payload),
 		onSuccess: (data: CreatePollResponse) => {
 			// everyone-polls 페이지의 리스트만 리패치
-			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
-			toast.success('투표 생성이 완료되었습니다.');
+			// queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
+			toast.success('투표 생성이 완료되었습니다. 생성된 투표로 이동합니다.');
 			hideDialog();
 			setIsOpen(false);
-			reset(defaultValues);
 			router.push(`/everyone-polls/${data.data.id}`);
+			reset(defaultValues); // 투표 생성 후 폼 초기화
 		},
 		onError: () => {
 			toast.error('투표 생성에 실패했습니다.');

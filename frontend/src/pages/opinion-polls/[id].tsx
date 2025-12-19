@@ -86,7 +86,7 @@ export default function OpinionPollDetailPage() {
 								type="button"
 								size="default"
 								className="w-34 h-10 rounded-full border border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 font-semibold text-sm"
-								onClick={() => router.push('/everyone-polls')}
+								onClick={() => router.push('/opinion-polls')}
 							>
 								다른 투표 보기
 							</Button>

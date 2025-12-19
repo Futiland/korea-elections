@@ -12,7 +12,7 @@ import {
 import { PageParam } from '../types/common';
 
 export const createPoll = (data: CreatePollData) =>
-	apiPost<CreatePollResponse>('/rest/poll/v1/public', data);
+	apiPost<CreatePollResponse>('/rest/poll/v1/system', data);
 
 type PollListType = 'public' | 'system';
 

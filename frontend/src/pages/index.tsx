@@ -30,7 +30,7 @@ export default function Home() {
 	} = useQuery({
 		queryKey: ['homeOpinionPolls', OPINION_POLL_SIZE],
 		queryFn: () =>
-			getPublicPolls(
+			getOpinionPolls(
 				OPINION_POLL_SIZE,
 				undefined,
 				undefined,

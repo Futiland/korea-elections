@@ -83,11 +83,11 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 			<Dialog open={dialog.isOpen} onOpenChange={dialog.onOpenChange}>
 				<DialogContent
 					closeOnOverlayClick={false}
-					className="max-h-[calc(100vh-60px)] w-[calc(100%-40px)] overflow-y-scroll bg-slate-100 px-5 py-6"
+					className="max-h-[calc(100vh-60px)] w-[calc(100%-40px)] max-w-[calc(100vw-40px)] overflow-y-scroll overflow-x-hidden bg-slate-100 px-5 py-6"
 				>
-					<form onSubmit={handleFormSubmit}>
-						<FieldGroup>
-							<FieldSet>
+					<form onSubmit={handleFormSubmit} className="w-full min-w-0">
+						<FieldGroup className="w-full min-w-0">
+							<FieldSet className="w-full min-w-0">
 								<div>
 									<h2 className="text-xl font-bold">모두의 투표 만들기</h2>
 									<span className="text-sm text-slate-500">
@@ -167,23 +167,23 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 									</Field>
 
 									<Field>
-										<FieldLabel className="text-md font-bold">
-											<div className="flex items-center justify-between gap-2 w-full">
+										<div className="flex items-center justify-between gap-2 w-full min-w-0">
+											<FieldLabel className="text-md font-bold min-w-0 shrink">
 												<div className="flex items-center gap-1">
 													<span>투표 폼 타입</span>
 													<span className="text-xs text-blue-500">(필수)</span>
 												</div>
-												<Button
-													type="button"
-													variant="ghost"
-													size="sm"
-													className="h-7 px-2 text-xs text-blue-700 inline-flex items-center gap-1 hover:bg-blue-50 hover:text-blue-700 rounded-full border border-blue-200 cursor-pointer"
-													onClick={() => setIsTypeInfoOpen(true)}
-												>
-													<Info className="h-3.5 w-3.5" />폼 타입 안내
-												</Button>
-											</div>
-										</FieldLabel>
+											</FieldLabel>
+											<Button
+												type="button"
+												variant="ghost"
+												size="sm"
+												className="h-7 px-2 text-xs text-blue-700 inline-flex items-center gap-1 hover:bg-blue-50 hover:text-blue-700 rounded-full border border-blue-200 cursor-pointer"
+												onClick={() => setIsTypeInfoOpen(true)}
+											>
+												<Info className="h-3.5 w-3.5" />폼 타입 안내
+											</Button>
+										</div>
 										<Controller
 											control={control}
 											name="responseType"
@@ -227,8 +227,8 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 											<FieldGroup className="gap-2">
 												{fields.map((fieldItem, idx) => (
 													<Field key={fieldItem.id}>
-														<div className="flex items-center gap-2">
-															<div className="flex-1">
+														<div className="flex items-center gap-2 min-w-0">
+															<div className="flex-1 min-w-0">
 																<Input
 																	type="text"
 																	placeholder={`옵션 ${idx + 1}`}
@@ -307,10 +307,10 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 							</FieldSet>
 
 							<Field>
-								<div className="flex gap-3">
+								<div className="flex gap-3 min-w-0">
 									<Button
 										type="button"
-										className="flex-1 h-10 bg-blue-100 text-blue-900 hover:bg-blue-200"
+										className="flex-1 h-10 min-w-0 bg-blue-100 text-blue-900 hover:bg-blue-200"
 										onClick={handleCancel}
 									>
 										취소
@@ -318,7 +318,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 									<Button
 										type="submit"
 										disabled={isSubmitting}
-										className="flex-1 h-10 bg-blue-800 text-white hover:bg-blue-700"
+										className="flex-1 h-10 min-w-0 bg-blue-800 text-white hover:bg-blue-700"
 									>
 										{isSubmitting ? '제출 중...' : '투표 생성'}
 									</Button>
