@@ -21,11 +21,10 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: vote-app
-  TARGET_ENV: ${{ inputs.environment || github.event.inputs.environment || 'dev' }}
 
 jobs:
   deploy-dev:
-    if: env.TARGET_ENV == 'dev'
+    if: ${{ (inputs.environment || github.event.inputs.environment || 'dev') == 'dev' }}
     name: Deploy to Development
     runs-on: homeserver
     environment: dev
@@ -171,7 +170,7 @@ jobs:
           echo "🌐 Access URL: http://localhost:${{ env.DEPLOY_PORT }}"
 
   deploy-prod:
-    if: env.TARGET_ENV == 'prod'
+    if: ${{ (inputs.environment || github.event.inputs.environment || 'dev') == 'prod' }}
     name: Deploy to Production
     runs-on: vote-prod
     environment: prod
