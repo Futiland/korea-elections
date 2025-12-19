@@ -70,10 +70,9 @@ export function usePollCardPresenter({
 		pollData?.responseCount
 	);
 
-	const remainingTimeLabel =
-		pollData?.startAt && pollData?.endAt
-			? getDateRangeDurationLabel(pollData.startAt, pollData.endAt)
-			: null;
+	const remainingTimeLabel = pollData?.endAt
+		? getDateRangeDurationLabel(pollData.endAt)
+		: null;
 
 	const submitPublicPollMutation = useMutation({
 		mutationFn: (payload: {

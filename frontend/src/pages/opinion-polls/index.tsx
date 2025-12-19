@@ -74,16 +74,15 @@ export default function OpinionPolls() {
 					</div>
 
 					{/* 검색 및 필터 */}
-					{polls.length > 0 && (
-						<PollSearchAndFilter
-							searchTerm={searchTerm}
-							selectedFilter={selectedFilter}
-							onSearchChange={handleSearchChange}
-							onFilterChange={handleFilterChange}
-							className="mb-8"
-							isFilterVisible={false}
-						/>
-					)}
+
+					<PollSearchAndFilter
+						searchTerm={searchTerm}
+						selectedFilter={selectedFilter}
+						onSearchChange={handleSearchChange}
+						onFilterChange={handleFilterChange}
+						className="mb-8"
+						isFilterVisible={false}
+					/>
 
 					{/* 투표 카드 리스트 */}
 					<div className="space-y-6">

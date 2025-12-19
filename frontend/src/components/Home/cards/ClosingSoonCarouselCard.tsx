@@ -16,10 +16,9 @@ export default function ClosingSoonCarouselCard({
 		pollData?.responseCount
 	);
 
-	const remainingTimeLabel =
-		pollData?.startAt && pollData?.endAt
-			? getDateRangeDurationLabel(pollData.startAt, pollData.endAt)
-			: null;
+	const remainingTimeLabel = pollData?.endAt
+		? getDateRangeDurationLabel(pollData.endAt)
+		: null;
 
 	const isClosingSoon =
 		!!remainingTimeLabel && pollData?.status === 'IN_PROGRESS';

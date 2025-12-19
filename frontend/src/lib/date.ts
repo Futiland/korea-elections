@@ -14,10 +14,23 @@ import { ko } from 'date-fns/locale';
 
 /**
  * 문자열 또는 Date → Date 객체로 변환
- * 타임존 정보가 없는 경우 로컬 타임존으로 해석
+ * 타임존 정보가 없는 경우 UTC로 해석 (서버가 UTC로 보내는 경우)
  */
 export function toDate(date: string | Date): Date {
-	return typeof date === 'string' ? parseISO(date) : date;
+	if (typeof date === 'string') {
+		// 타임존 정보가 없는 경우 UTC로 해석
+		if (
+			!date.includes('Z') &&
+			!date.includes('+') &&
+			!date.match(/-\d{2}:\d{2}$/)
+		) {
+			// 공백을 T로 변환하고 UTC로 파싱 (Z 추가)
+			const normalized = date.replace(' ', 'T');
+			return parseISO(normalized + 'Z');
+		}
+		return parseISO(date);
+	}
+	return date;
 }
 
 /** yyyy-MM-dd 형식 포맷팅 */
@@ -129,25 +142,23 @@ export function toLocalISOString(date: Date): string {
 	return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
 
-/** 날짜 범위를 표현하는 라벨 생성 (시작~종료까지의 전체 기간 기준)
+/** 날짜 범위를 표현하는 라벨 생성 (현재 시간 기준 종료일까지의 남은 시간)
  *
- * - 항상 시작일 기준 종료일까지의 남은 기간을 계산
+ * - 현재 시간 기준 종료일까지의 남은 기간을 계산
  * - 이미 종료된 경우 null
+ * - 7일을 초과하는 경우 null
  */
-export function getDateRangeDurationLabel(
-	startAt: Date | string,
-	endAt: Date | string
-): string | null {
-	const startDate = toDate(startAt);
+export function getDateRangeDurationLabel(endAt: Date | string): string | null {
 	const endDate = toDate(endAt);
+	const now = new Date();
 
-	// 종료 시점이 시작 시점보다 이전이면 표시하지 않음
-	if (endDate <= startDate) {
+	// 종료 시점이 현재 시간보다 이전이면 표시하지 않음
+	if (endDate <= now) {
 		return null;
 	}
 
-	// 시작일 기준 종료일까지의 전체 기간
-	const diffMs = endDate.getTime() - startDate.getTime();
+	// 현재 시간 기준 종료일까지의 남은 시간
+	const diffMs = endDate.getTime() - now.getTime();
 
 	const diffMinutes = Math.floor(diffMs / (1000 * 60));
 

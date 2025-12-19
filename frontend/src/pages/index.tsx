@@ -15,7 +15,7 @@ import Footer from '@/components/layout/Footer';
 
 const OPINION_POLL_SIZE = 3;
 const POPULAR_POLL_SIZE = 3;
-const ENDING_SOON_POLL_SIZE = 7;
+const ENDING_SOON_POLL_SIZE = 5;
 const EVENT_POLL_SIZE = 5;
 const LATEST_POLL_SIZE = 3;
 
