@@ -11,7 +11,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import { Loader2, Share2 } from 'lucide-react';
+import { CheckCircle2, Loader2, Share2 } from 'lucide-react';
 import { formatDateTimeLocal } from '@/lib/date';
 
 import type { PollCardViewProps } from './usePollCardPresenter';
@@ -151,11 +151,12 @@ export default function PollCardView({
 										{/* 투표 완료 */}
 										{pollData?.isVoted && !pollData?.isRevotable && (
 											<button
-												className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+												className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 												type="button"
 												onClick={() => onClickShowResults(true)}
 											>
-												결과보기
+												<CheckCircle2 className="w-5 h-5" />
+												<span>투표 완료 · 결과 보기</span>
 											</button>
 										)}
 
@@ -175,11 +176,12 @@ export default function PollCardView({
 													)}
 												</button>
 												<button
-													className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+													className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 													type="button"
 													onClick={() => onClickShowResults(true)}
 												>
-													결과보기
+													{/* <CheckCircle2 className="w-5 h-5" /> */}
+													<span>결과 보기</span>
 												</button>
 											</>
 										)}
@@ -189,11 +191,12 @@ export default function PollCardView({
 								{/* 종료된 투표 */}
 								{pollData?.status === 'EXPIRED' && pollData?.isVoted && (
 									<button
-										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 										type="button"
 										onClick={() => onClickShowResults(true)}
 									>
-										결과보기
+										<CheckCircle2 className="w-5 h-5" />
+										<span>내 투표 결과 보기</span>
 									</button>
 								)}
 							</>

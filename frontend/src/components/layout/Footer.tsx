@@ -18,7 +18,7 @@ export default function Footer() {
 					<p>대표자 : 이준희</p>
 					<p>주소 : 서울특별시 강동구 천중로 264</p>
 					<p>사업자등록번호 : 105-60-00842</p>
-					<p>이메일 : joonhee.alert@gmail.com</p>
+					<p>이메일 : joonheealert@gmail.com</p>
 					<p>전화번호 : 070-8027-8679</p>
 				</div>
 			</div>
