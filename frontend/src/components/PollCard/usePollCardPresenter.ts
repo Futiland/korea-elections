@@ -49,6 +49,7 @@ export interface PollCardViewProps {
 	onClickShowResults: (show: boolean) => void;
 	onSubmitPoll: () => void;
 	isSubmittingPoll: boolean;
+	isLoggedIn: boolean;
 }
 
 export function usePollCardPresenter({
@@ -60,7 +61,7 @@ export function usePollCardPresenter({
 	>([]);
 	const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 	const [currentOrigin, setCurrentOrigin] = useState('');
-	const { ensureLoggedIn } = useRequireLogin();
+	const { ensureLoggedIn, isLoggedIn } = useRequireLogin();
 
 	const queryClient = useQueryClient();
 	const isRefreshingPolls = useIsFetching({ queryKey: ['publicPolls'] }) > 0;
@@ -200,7 +201,7 @@ export function usePollCardPresenter({
 		(show: boolean) =>
 			ensureLoggedIn({
 				onSuccess: () => setShowResults(show),
-				description: '투표 결과를 확인하려면 로그인이 필요합니다.',
+				description: '로그인 후 투표 결과를 확인해보세요. 😃',
 			}),
 		[ensureLoggedIn]
 	);
@@ -251,5 +252,6 @@ export function usePollCardPresenter({
 		onSubmitPoll,
 		isSubmittingPoll:
 			submitPublicPollMutation.isPending || Boolean(isRefreshingPolls),
+		isLoggedIn,
 	};
 }

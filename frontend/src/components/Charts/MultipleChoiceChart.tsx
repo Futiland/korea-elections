@@ -62,14 +62,18 @@ export default function MultipleChoiceChart({
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white py-2 px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
-					<p className="font-semibold text-gray-800">{label}</p>
-					<p className="text-blue-600 font-bold">
-						{data.voteCount.toLocaleString()}명
+				<div className="bg-white py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg shadow-lg flex flex-col items-start gap-1 max-w-[260px]">
+					<p className="font-semibold text-gray-800 text-xs sm:text-sm break-words leading-snug">
+						{label}
 					</p>
-					<p className="text-gray-600 font-bold">
-						({Math.round(data.percentage)}%)
-					</p>
+					<div className="flex items-baseline gap-1 text-xs sm:text-sm">
+						<p className="text-blue-600 font-bold">
+							{data.voteCount.toLocaleString()}명
+						</p>
+						<p className="text-gray-600 font-bold">
+							({Math.round(data.percentage)}%)
+						</p>
+					</div>
 				</div>
 			);
 		}

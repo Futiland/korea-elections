@@ -33,6 +33,7 @@ export default function PollCardView({
 	onClickShowResults,
 	onSubmitPoll,
 	isSubmittingPoll,
+	isLoggedIn,
 }: PollCardViewProps) {
 	return (
 		<>
@@ -180,7 +181,6 @@ export default function PollCardView({
 													type="button"
 													onClick={() => onClickShowResults(true)}
 												>
-													{/* <CheckCircle2 className="w-5 h-5" /> */}
 													<span>결과 보기</span>
 												</button>
 											</>
@@ -188,7 +188,7 @@ export default function PollCardView({
 									</>
 								)}
 
-								{/* 종료된 투표 */}
+								{/* 종료된 투표 - 로그인 사용자만 결과 보기 버튼 표시 */}
 								{pollData?.status === 'EXPIRED' && pollData?.isVoted && (
 									<button
 										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
@@ -196,7 +196,18 @@ export default function PollCardView({
 										onClick={() => onClickShowResults(true)}
 									>
 										<CheckCircle2 className="w-5 h-5" />
-										<span>내 투표 결과 보기</span>
+										<span>투표 완료 · 결과 보기</span>
+									</button>
+								)}
+
+								{/* 종료된 투표 - 비로그인 상태 버튼 표시 */}
+								{pollData?.status === 'EXPIRED' && !isLoggedIn && (
+									<button
+										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+										type="button"
+										onClick={() => onClickShowResults(true)}
+									>
+										<span>로그인 후 결과 보기</span>
 									</button>
 								)}
 							</>
