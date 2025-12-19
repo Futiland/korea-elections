@@ -172,7 +172,7 @@ jobs:
   deploy-prod:
     if: inputs.environment == 'prod'
     name: Deploy to Production
-    runs-on: vote-prod
+    runs-on: [self-hosted, Linux, X64, vote-prod]
     environment: prod
 
     steps:
