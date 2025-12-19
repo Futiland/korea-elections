@@ -19,7 +19,7 @@ export default function EveryonePollDetailPage() {
 
 	const {
 		data: poll,
-		isLoading,
+		isFetching,
 		isError,
 	} = useQuery<PollResponse>({
 		queryKey: ['publicPoll', pollId],
@@ -33,7 +33,7 @@ export default function EveryonePollDetailPage() {
 		return null; // 라우터가 아직 준비되지 않음
 	}
 
-	if (isLoading) {
+	if (isFetching) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-slate-50">
 				<Spinner className="w-10 h-10 text-blue-500" />

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { MyPollData } from '@/lib/types/poll';
 import Pagination from '../Pagination';
@@ -37,8 +37,17 @@ export default function MyPollListView({
 	buttonText,
 	emptyDescription,
 }: MyPollListViewProps) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	// 페이지네이션이 변경되거나 items 데이터가 변경되면 스크롤을 맨 위로 이동
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}, [page, items]);
+
 	return (
-		<div className="min-h-screen px-4 py-6">
+		<div ref={containerRef} className="min-h-screen px-4 py-6">
 			<div className="w-full max-w-lg mx-auto space-y-4">
 				<header className="space-y-1">
 					<h1 className="text-xl font-bold">{title}</h1>
@@ -79,7 +88,7 @@ export default function MyPollListView({
 				)}
 
 				{/* Pagination */}
-				{totalPages > 0 && (
+				{totalPages > 0 && !isLoading && (
 					<Pagination
 						page={page}
 						totalPages={totalPages}

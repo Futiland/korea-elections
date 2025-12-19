@@ -45,7 +45,7 @@ export default function JoinedOpinionPollsPage() {
 	const handlePageChange = (nextPage: number) => {
 		router.replace(
 			{
-				pathname: '/mypage/joined-legislation',
+				pathname: '/mypage/joined-opinion-polls',
 				query: { page: nextPage },
 			},
 			undefined,
