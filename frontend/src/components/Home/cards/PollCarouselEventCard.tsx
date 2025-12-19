@@ -16,10 +16,9 @@ export default function PollCarouselEventCard({
 		pollData?.responseCount
 	);
 
-	const remainingTimeLabel =
-		pollData?.startAt && pollData?.endAt
-			? getDateRangeDurationLabel(pollData.startAt, pollData.endAt)
-			: null;
+	const remainingTimeLabel = pollData?.endAt
+		? getDateRangeDurationLabel(pollData.endAt)
+		: null;
 
 	return (
 		<Card className="group relative h-full overflow-hidden border-2 bg-gradient-to-br from-red-50 via-green-50/30 to-amber-50/40 gap-1 shadow-lg">

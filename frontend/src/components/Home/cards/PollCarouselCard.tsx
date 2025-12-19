@@ -16,10 +16,9 @@ export default function PollCarouselCard({
 		pollData?.responseCount
 	);
 
-	const remainingTimeLabel =
-		pollData?.startAt && pollData?.endAt
-			? getDateRangeDurationLabel(pollData.startAt, pollData.endAt)
-			: null;
+	const remainingTimeLabel = pollData?.endAt
+		? getDateRangeDurationLabel(pollData.endAt)
+		: null;
 
 	return (
 		<Card
