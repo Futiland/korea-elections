@@ -30,7 +30,7 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 		// 로그인 여부 체크
 		ensureLoggedIn({
 			onSuccess: () => setIsCreatePollOpen(true),
-			description: '모두의 투표를 생성하려면 로그인이 필요합니다.',
+			description: '로그인 후 모두의 투표를 생성해보세요. 😃',
 		});
 
 	return (

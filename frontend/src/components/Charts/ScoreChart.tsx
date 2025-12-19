@@ -22,6 +22,10 @@ export default function ScoreChart({
 	totalResponses,
 	height = 300,
 }: ScoreChartProps) {
+	const averageScoreRaw = data?.averageScore ?? 0;
+	// 소수점 한 자리에서 버림 (예: 3.58 -> 3.5)
+	const averageScoreFloored = Math.floor(averageScoreRaw * 10) / 10;
+
 	const getTickStep = (maxValue: number) => {
 		if (maxValue <= 10) return 1;
 		if (maxValue <= 50) return 5;
@@ -66,11 +70,11 @@ export default function ScoreChart({
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white py-2 px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
-					<p className="text-blue-600 font-bold">
+				<div className="bg-white py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg shadow-lg flex justify-start items-center gap-1">
+					<p className="text-blue-600 font-bold text-xs sm:text-sm">
 						{data.count.toLocaleString()}명
 					</p>
-					<p className="text-gray-600 font-bold">
+					<p className="text-gray-600 font-bold text-xs sm:text-sm">
 						({Math.round(data.percentage)}%)
 					</p>
 				</div>
@@ -85,7 +89,7 @@ export default function ScoreChart({
 				<h3 className="text-lg font-semibold">투표 결과</h3>
 				<span className="text-sm text-gray-500">
 					총 응답: {totalResponses.toLocaleString()}명 • 평균:{' '}
-					{Math.round(data?.averageScore ?? 0)}점
+					{averageScoreFloored.toFixed(1)}점
 				</span>
 			</div>
 			<ResponsiveContainer width="100%" height={height}>
