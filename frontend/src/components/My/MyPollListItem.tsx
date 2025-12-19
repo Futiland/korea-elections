@@ -34,20 +34,20 @@ export default function MyPollListItem({
 		>
 			<div className="flex-1 space-y-1">
 				<div className="flex items-start gap-2">
-					{/* 배지: 고정 위치, 제목 줄바꿈과 독립 */}
+					{/* 상태 배지 */}
 					<StatusBadge status={item.status} className="shrink-0" />
 
 					<div className="flex-1 space-y-1">
-						<div className="flex items-center gap-2">
-							<p className="text-sm font-semibold text-slate-900">
+						{/* 제목 + (모바일 전용 재투표 가능 배지) - 한 줄에 붙어서 표시 */}
+						<div className="flex flex-wrap items-center gap-2 min-w-0">
+							<p className="text-sm font-semibold text-slate-900 break-words">
 								{item.title}
+								{item.isRevotable && (
+									<span className="inline-flex sm:hidden shrink-0 rounded-full bg-yellow-50 px-2.5 py-1 text-[11px] font-semibold text-yellow-700">
+										재투표 가능
+									</span>
+								)}
 							</p>
-							{/* 모바일: 제목 바로 옆에 재투표 가능 표시 */}
-							{item.isRevotable && (
-								<span className="inline-flex sm:hidden rounded-full bg-yellow-50 px-2.5 py-1 text-[11px] font-semibold text-yellow-700">
-									재투표 가능
-								</span>
-							)}
 						</div>
 					</div>
 				</div>
@@ -77,7 +77,7 @@ export default function MyPollListItem({
 				variant="ghost"
 				size="icon"
 				onClick={handleDetailClick}
-				className="h-10 w-10 shrink-0 text-slate-600 hover:text-slate-900"
+				className="h-10 w-10 shrink-0 text-slate-600 hover:text-slate-900 cursor-pointer"
 			>
 				<ChevronRight className="h-10 w-10" />
 			</Button>

@@ -43,7 +43,7 @@ export default function JoinedPublicPollsPage() {
 	const handlePageChange = (nextPage: number) => {
 		router.replace(
 			{
-				pathname: '/mypage/joined-polls',
+				pathname: '/mypage/joined-public-polls',
 				query: { page: nextPage },
 			},
 			undefined,

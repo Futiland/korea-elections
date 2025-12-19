@@ -131,14 +131,14 @@ export default function MyPageView({
 										key: 'joined-public',
 										value: stats.participatedPublicPollCount,
 										label: '참여한 투표',
-										href: '/mypage/joined-polls',
+										href: '/mypage/joined-public-polls',
 										ariaLabel: '참여한 투표',
 									},
 									{
 										key: 'joined-opinion',
 										value: stats.participatedSystemPollCount,
 										label: '여론 조사',
-										href: '/mypage/joined-opinion-pollss',
+										href: '/mypage/joined-opinion-polls',
 										ariaLabel: '참여한 여론 조사',
 									},
 								].map((item) => (
@@ -178,7 +178,7 @@ export default function MyPageView({
 						<MyPollSummary
 							title="참여한 모두의 투표"
 							items={myParticipatedPublicPolls.content}
-							moreUrl="/mypage/joined-polls"
+							moreUrl="/mypage/joined-public-polls"
 							isLoading={isFetchingMyParticipatedPublicPolls}
 						/>
 					)}
@@ -187,7 +187,7 @@ export default function MyPageView({
 						<MyPollSummary
 							title="참여한 입법 투표"
 							items={myParticipatedOpinionPolls.content}
-							moreUrl="/mypage/joined-legislation"
+							moreUrl="/mypage/joined-opinion-polls"
 							isLoading={isFetchingMyParticipatedOpinionPolls}
 						/>
 					)}
