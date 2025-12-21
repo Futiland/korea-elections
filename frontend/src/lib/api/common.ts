@@ -46,13 +46,25 @@ export async function apiFetch<T>(options: ApiFetchOptions): Promise<T> {
 		body: body ? JSON.stringify(body) : undefined,
 	});
 
-	// 토큰 만료처리
+	// 401 에러 처리
 	if (res.status === 401) {
-		if (typeof window !== 'undefined') {
-			localStorage.removeItem('token');
-			window.location.href = '/login'; //토큰이 없으면 로그인 페이지로..
+		// 로그인 API의 경우 응답 body를 읽어서 에러 메시지 전달
+		const isLoginApi = path.includes('/signin');
+
+		if (isLoginApi) {
+			// 로그인 실패인 경우 응답 body를 읽어서 에러 메시지 전달
+			const errData = await res.json().catch(() => ({}));
+			throw new Error(
+				errData.message || errData.code || '로그인에 실패했습니다.'
+			);
+		} else {
+			// 토큰 만료인 경우
+			if (typeof window !== 'undefined') {
+				localStorage.removeItem('token');
+				window.location.href = '/login'; //토큰이 없으면 로그인 페이지로..
+			}
+			throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
 		}
-		throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
 	}
 
 	if (!res.ok) {

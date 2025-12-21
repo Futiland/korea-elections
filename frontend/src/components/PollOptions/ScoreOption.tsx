@@ -8,7 +8,7 @@ interface ScoreOptionProps {
 	isVoted: boolean;
 }
 
-const INITIAL_SCORE = 0;
+const INITIAL_SCORE = 5;
 
 export default function ScoreOption({
 	maxScore = 10,
@@ -42,6 +42,9 @@ export default function ScoreOption({
 					max={maxScore}
 					step={1}
 					className="w-full"
+					style={{
+						cursor: 'pointer',
+					}}
 				/>
 				<div className="flex justify-between text-xs text-slate-500 mt-2">
 					{Array.from({ length: maxScore + 1 }, (_, i) => (

@@ -29,10 +29,15 @@ export function TypeInfoDialog({ open, onOpenChange }: TypeInfoDialogProps) {
 					</div>
 					<div className="space-y-4 text-sm text-slate-700">
 						<div className="space-y-2 rounded-md border border-slate-200 bg-slate-50/60 p-3">
-							<p>
-								<span className="font-semibold text-blue-700">단일 선택</span> _
-								한 가지만 선택할 수 있어요.
-							</p>
+							<div>
+								<p className="mb-1">
+									<span className="font-semibold text-blue-700">단일 선택</span>{' '}
+									_ 한 가지만 선택할 수 있어요.
+								</p>
+								<p className="text-xs text-slate-600 mt-1">
+									예시: 동의/비동의, 매우좋음/좋음/보통/나쁨/매우나쁨, 찬성/반대
+								</p>
+							</div>
 							<div className="rounded-md border border-slate-200 bg-white p-3">
 								<SingleChoiceOption
 									options={SAMPLE_OPTIONS}
@@ -44,10 +49,15 @@ export function TypeInfoDialog({ open, onOpenChange }: TypeInfoDialogProps) {
 						</div>
 
 						<div className="space-y-2 rounded-md border border-slate-200 bg-slate-50/60 p-3">
-							<p>
-								<span className="font-semibold text-blue-700">다중 선택</span> _
-								여러 개를 동시에 선택할 수 있어요.
-							</p>
+							<div>
+								<p className="mb-1">
+									<span className="font-semibold text-blue-700">다중 선택</span>{' '}
+									_ 여러 개를 동시에 선택할 수 있어요.
+								</p>
+								<p className="text-xs text-slate-600 mt-1">
+									예시: 관심 있는 주제를 여러 개 선택 (IT/경제/정치/스포츠 등)
+								</p>
+							</div>
 							<div className="rounded-md border border-slate-200 bg-white p-3">
 								<MultipleChoiceOption
 									options={SAMPLE_OPTIONS}
@@ -59,14 +69,22 @@ export function TypeInfoDialog({ open, onOpenChange }: TypeInfoDialogProps) {
 						</div>
 
 						<div className="space-y-2 rounded-md border border-slate-200 bg-slate-50/60 p-3">
-							<p>
-								<span className="font-semibold text-blue-700">점수제</span> _
-								선택지에 점수를 부여해 선호도를 표현해요.
-							</p>
+							<div>
+								<p className="mb-1">
+									<span className="font-semibold text-blue-700">점수제</span> _
+									질문에 대해 0점부터 10점까지 점수로 평가할 수 있어요.
+								</p>
+								<p className="text-xs text-slate-600 mt-1">
+									예시: "사업 방향성에 대한 나의 점수는 10점 만점에 몇
+									점인가요?"
+									<br />
+									"이번 프로젝트의 만족도는 10점 만점에 몇 점인가요?"
+								</p>
+							</div>
 							<div className="rounded-md border border-slate-200 bg-white p-3">
 								<ScoreOption
-									maxScore={5}
-									selectedScore={3}
+									maxScore={10}
+									selectedScore={7}
 									onChange={() => {}}
 									isVoted
 								/>

@@ -35,6 +35,8 @@ export default function Home() {
 				status: 'IN_PROGRESS',
 				sort: 'LATEST',
 			}),
+		refetchOnWindowFocus: true,
+		retry: 2,
 	});
 
 	// 이벤트 투표
@@ -51,6 +53,8 @@ export default function Home() {
 				status: 'IN_PROGRESS',
 				sort: 'POPULAR',
 			}),
+		refetchOnWindowFocus: true,
+		retry: 2,
 	});
 
 	// 최신 투표
@@ -66,6 +70,8 @@ export default function Home() {
 				status: 'ALL',
 				sort: 'LATEST',
 			}),
+		refetchOnWindowFocus: true,
+		retry: 2,
 	});
 
 	// 인기 투표_추후 오픈
@@ -251,6 +257,7 @@ export const getStaticProps: GetStaticProps = async () => {
 					status: 'IN_PROGRESS',
 					sort: 'LATEST',
 				}),
+			retry: 2,
 		}),
 		// 최신 투표
 		queryClient.prefetchQuery({
@@ -261,6 +268,7 @@ export const getStaticProps: GetStaticProps = async () => {
 					status: 'ALL',
 					sort: 'LATEST',
 				}),
+			retry: 2,
 		}),
 		// 이벤트 투표
 		queryClient.prefetchQuery({
@@ -272,6 +280,7 @@ export const getStaticProps: GetStaticProps = async () => {
 					status: 'IN_PROGRESS',
 					sort: 'POPULAR',
 				}),
+			retry: 2,
 		}),
 		// 인기 투표
 		// queryClient.prefetchQuery({
