@@ -81,7 +81,13 @@ export default function Home() {
 	} = useQuery({
 		queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
 		queryFn: () =>
-			getPublicPolls(EVENT_POLL_SIZE, undefined, '새해', 'ALL', 'POPULAR'),
+			getPublicPolls(
+				EVENT_POLL_SIZE,
+				undefined,
+				'새해',
+				'IN_PROGRESS',
+				'POPULAR'
+			),
 	});
 
 	const {
@@ -238,12 +244,30 @@ export const getStaticProps: GetStaticProps = async () => {
 		queryClient.prefetchQuery({
 			queryKey: ['homeOpinionPolls', OPINION_POLL_SIZE],
 			queryFn: () =>
-				getPublicPolls(
+				getOpinionPolls(
 					OPINION_POLL_SIZE,
 					undefined,
 					undefined,
 					'IN_PROGRESS',
 					'LATEST'
+				),
+		}),
+		// 최신 투표
+		queryClient.prefetchQuery({
+			queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
+			queryFn: () =>
+				getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
+		}),
+		// 이벤트 투표
+		queryClient.prefetchQuery({
+			queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
+			queryFn: () =>
+				getPublicPolls(
+					EVENT_POLL_SIZE,
+					undefined,
+					'새해',
+					'IN_PROGRESS',
+					'POPULAR'
 				),
 		}),
 		// 인기 투표
@@ -270,24 +294,6 @@ export const getStaticProps: GetStaticProps = async () => {
 		// 			'ENDING_SOON'
 		// 		),
 		// }),
-		// 최신 투표
-		queryClient.prefetchQuery({
-			queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
-			queryFn: () =>
-				getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
-		}),
-		// 이벤트 투표
-		queryClient.prefetchQuery({
-			queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
-			queryFn: () =>
-				getPublicPolls(
-					EVENT_POLL_SIZE,
-					undefined,
-					'크리스마스',
-					'ALL',
-					'LATEST'
-				),
-		}),
 	]);
 
 	return {

@@ -27,19 +27,15 @@ export const getPolls = (
 	const endpoint =
 		type === 'public' ? '/rest/poll/v1/public' : '/rest/poll/v1/system';
 
-	// system 타입은 필터링 파라미터를 지원하지 않음
 	const params: Record<string, string | number> = { size };
 
 	if (nextCursor) {
 		params.nextCursor = nextCursor;
 	}
 
-	// public 타입만 필터링 파라미터 지원
-	if (type === 'public') {
-		if (keyword) params.keyword = keyword;
-		if (status) params.status = status;
-		if (sort) params.sort = sort;
-	}
+	if (keyword) params.keyword = keyword;
+	if (status) params.status = status;
+	if (sort) params.sort = sort;
 
 	return apiGet<PublicPollResponse>(endpoint, params);
 };
