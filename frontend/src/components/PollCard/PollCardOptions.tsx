@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SingleChoiceOption from '../PollOptions/SingleChoiceOption';
 import MultipleChoiceOption from '../PollOptions/MultipleChoiceOption';
 import ScoreOption from '../PollOptions/ScoreOption';
@@ -22,7 +22,15 @@ export default function PollCardOptions({
 	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
 		string[]
 	>([]);
-	const [selectedScore, setSelectedScore] = useState<number>(0);
+	const [selectedScore, setSelectedScore] = useState<number>(5);
+
+	// 점수제의 경우 초기값을 부모에게 전달
+	useEffect(() => {
+		if (responseType === 'SCORE') {
+			onChange(selectedScore);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []); // 마운트 시 한 번만 실행
 
 	const handleSingleChoiceChange = (value: string) => {
 		setSelectedSingleChoice(value);

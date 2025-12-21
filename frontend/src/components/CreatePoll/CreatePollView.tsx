@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
 	Controller,
 	type Control,
@@ -61,6 +61,8 @@ export type CreatePollViewProps = {
 
 export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 	const [isTypeInfoOpen, setIsTypeInfoOpen] = useState(false);
+	const [isSelectOpen, setIsSelectOpen] = useState(false);
+	const selectTriggerRef = useRef<HTMLButtonElement>(null);
 	const {
 		handleFormSubmit,
 		handleCancel,
@@ -77,6 +79,34 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 		descriptionLength,
 		handleOptionType,
 	} = form;
+
+	// Select 외부 클릭 감지
+	useEffect(() => {
+		if (!isSelectOpen) return;
+
+		const handleClickOutside = (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			// Select content나 trigger가 아닌 곳을 클릭한 경우
+			if (
+				selectTriggerRef.current &&
+				!selectTriggerRef.current.contains(target) &&
+				!target.closest('[data-slot="select-content"]') &&
+				!target.closest('[data-radix-popper-content-wrapper]')
+			) {
+				setIsSelectOpen(false);
+			}
+		};
+
+		// 약간의 지연을 두어 현재 클릭 이벤트가 처리된 후 실행
+		const timeoutId = setTimeout(() => {
+			document.addEventListener('mousedown', handleClickOutside);
+		}, 0);
+
+		return () => {
+			clearTimeout(timeoutId);
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isSelectOpen]);
 
 	return (
 		<>
@@ -190,16 +220,24 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 											render={({ field }) => (
 												<Select
 													value={field.value}
+													open={isSelectOpen}
+													onOpenChange={setIsSelectOpen}
 													onValueChange={(value) => {
 														field.onChange(value);
 														handleOptionType(value as QuestionType);
+														setIsSelectOpen(false);
 													}}
 												>
-													<SelectTrigger className="bg-white">
+													<SelectTrigger
+														ref={selectTriggerRef}
+														className="bg-white"
+													>
 														<SelectValue placeholder="폼 타입을 선택해 주세요." />
 													</SelectTrigger>
 													<SelectContent>
-														<SelectItem value="SCORE">점수제</SelectItem>
+														<SelectItem value="SCORE">
+															점수제 (0-10점 평가)
+														</SelectItem>
 														<SelectItem value="SINGLE_CHOICE">
 															단일 선택
 														</SelectItem>
