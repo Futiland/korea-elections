@@ -422,7 +422,7 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         SELECT p FROM Poll p
         WHERE p.status IN :statuses AND p.pollType = :pollType
         ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL
         ) DESC, p.id DESC
         """
     )
@@ -440,14 +440,14 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         SELECT p FROM Poll p
         WHERE p.status IN :statuses AND p.pollType = :pollType
         AND (
-            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) < :cursorCount
+            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL) < :cursorCount
             OR (
-                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) = :cursorCount
+                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL) = :cursorCount
                 AND p.id < :cursorId
             )
         )
         ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL
         ) DESC, p.id DESC
         """
     )
@@ -511,7 +511,7 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         AND p.pollType = :pollType
         AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
         ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL
         ) DESC, p.id DESC
         """
     )
@@ -532,14 +532,14 @@ interface JpaPollRepository : JpaRepository<Poll, Long> {
         AND p.pollType = :pollType
         AND (p.title LIKE %:keyword% OR p.description LIKE %:keyword%)
         AND (
-            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) < :cursorCount
+            (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL) < :cursorCount
             OR (
-                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id) = :cursorCount
+                (SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL) = :cursorCount
                 AND p.id < :cursorId
             )
         )
         ORDER BY (
-            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id
+            SELECT COUNT(pr) FROM PollResponse pr WHERE pr.pollId = p.id AND pr.deletedAt IS NULL
         ) DESC, p.id DESC
         """
     )
