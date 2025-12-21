@@ -16,8 +16,8 @@ class MaskingStrategyTest {
         }
 
         @Test
-        fun `2글자 이름은 첫글자만 보이고 나머지 마스킹`() {
-            assertThat(strategy.mask("홍길")).isEqualTo("홍*")
+        fun `2글자 이름은 3글자처럼 보이게 별 2개로 마스킹`() {
+            assertThat(strategy.mask("홍길")).isEqualTo("홍**")
         }
 
         @Test
