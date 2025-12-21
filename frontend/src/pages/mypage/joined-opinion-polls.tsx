@@ -7,8 +7,6 @@ import PaginatedPollListView from '@/components/My/MyPollListView';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { getMyParticipatedOpinionPolls } from '@/lib/api/poll';
 import type { MyPollResponse } from '@/lib/types/poll';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 const PAGE_SIZE = 10;
 
@@ -59,18 +57,18 @@ export default function JoinedOpinionPollsPage() {
 	return (
 		<>
 			<Head>
-				<title>참여한 여론조사 투표 | KEP</title>
+				<title>참여한 민심 투표 투표 | KEP</title>
 			</Head>
 			<PaginatedPollListView
-				title="참여한 여론조사 투표"
-				description="내가 참여한 여론조사 투표 전체 목록을 볼 수 있어요."
+				title="참여한 민심 투표 투표"
+				description="내가 참여한 민심 투표 투표 전체 목록을 볼 수 있어요."
 				items={list}
 				page={page}
 				totalPages={totalPages}
 				isLoading={isLoading || isFetching || !isReady}
 				isError={isError}
 				onPageChange={handlePageChange}
-				emptyMessage="참여한 여론조사 투표가 없습니다."
+				emptyMessage="참여한 민심 투표 투표가 없습니다."
 				buttonUrl="/opinion-polls"
 			/>
 		</>

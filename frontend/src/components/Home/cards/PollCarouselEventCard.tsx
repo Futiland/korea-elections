@@ -61,7 +61,7 @@ export default function PollCarouselEventCard({
 				<CardTitle className="line-clamp-2 text-base font-bold tracking-tight text-slate-900 md:text-lg">
 					{pollData.title}
 				</CardTitle>
-				<p className="min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+				<p className="min-h-[2.5rem] line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-slate-700 md:text-sm">
 					{pollData.description || '\u00A0'}
 				</p>
 			</CardHeader>
