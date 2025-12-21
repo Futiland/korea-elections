@@ -30,13 +30,42 @@ export default function Home() {
 	} = useQuery({
 		queryKey: ['homeOpinionPolls', OPINION_POLL_SIZE],
 		queryFn: () =>
-			getOpinionPolls(
-				OPINION_POLL_SIZE,
-				undefined,
-				undefined,
-				'IN_PROGRESS',
-				'LATEST'
-			),
+			getOpinionPolls({
+				size: OPINION_POLL_SIZE,
+				status: 'IN_PROGRESS',
+				sort: 'LATEST',
+			}),
+	});
+
+	// 이벤트 투표
+	const {
+		data: eventPollsData,
+		isLoading: isEventLoading,
+		isError: isEventError,
+	} = useQuery({
+		queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
+		queryFn: () =>
+			getPublicPolls({
+				size: EVENT_POLL_SIZE,
+				keyword: '새해',
+				status: 'IN_PROGRESS',
+				sort: 'POPULAR',
+			}),
+	});
+
+	// 최신 투표
+	const {
+		data: latestPollsData,
+		isLoading: isLatestLoading,
+		isError: isLatestError,
+	} = useQuery({
+		queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
+		queryFn: () =>
+			getPublicPolls({
+				size: LATEST_POLL_SIZE,
+				status: 'ALL',
+				sort: 'LATEST',
+			}),
 	});
 
 	// 인기 투표_추후 오픈
@@ -72,33 +101,6 @@ export default function Home() {
 	// 			'ENDING_SOON'
 	// 		),
 	// });
-
-	// 이벤트 투표
-	const {
-		data: eventPollsData,
-		isLoading: isEventLoading,
-		isError: isEventError,
-	} = useQuery({
-		queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
-		queryFn: () =>
-			getPublicPolls(
-				EVENT_POLL_SIZE,
-				undefined,
-				'새해',
-				'IN_PROGRESS',
-				'POPULAR'
-			),
-	});
-
-	const {
-		data: latestPollsData,
-		isLoading: isLatestLoading,
-		isError: isLatestError,
-	} = useQuery({
-		queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
-		queryFn: () =>
-			getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
-	});
 
 	const opinionPolls = opinionPollsData?.data?.content || [];
 	// const popularPolls = popularPollsData?.data?.content || [];
@@ -244,31 +246,32 @@ export const getStaticProps: GetStaticProps = async () => {
 		queryClient.prefetchQuery({
 			queryKey: ['homeOpinionPolls', OPINION_POLL_SIZE],
 			queryFn: () =>
-				getOpinionPolls(
-					OPINION_POLL_SIZE,
-					undefined,
-					undefined,
-					'IN_PROGRESS',
-					'LATEST'
-				),
+				getOpinionPolls({
+					size: OPINION_POLL_SIZE,
+					status: 'IN_PROGRESS',
+					sort: 'LATEST',
+				}),
 		}),
 		// 최신 투표
 		queryClient.prefetchQuery({
 			queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
 			queryFn: () =>
-				getPublicPolls(LATEST_POLL_SIZE, undefined, undefined, 'ALL', 'LATEST'),
+				getPublicPolls({
+					size: LATEST_POLL_SIZE,
+					status: 'ALL',
+					sort: 'LATEST',
+				}),
 		}),
 		// 이벤트 투표
 		queryClient.prefetchQuery({
 			queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
 			queryFn: () =>
-				getPublicPolls(
-					EVENT_POLL_SIZE,
-					undefined,
-					'새해',
-					'IN_PROGRESS',
-					'POPULAR'
-				),
+				getPublicPolls({
+					size: EVENT_POLL_SIZE,
+					keyword: '새해',
+					status: 'IN_PROGRESS',
+					sort: 'POPULAR',
+				}),
 		}),
 		// 인기 투표
 		// queryClient.prefetchQuery({

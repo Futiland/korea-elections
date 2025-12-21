@@ -16,48 +16,39 @@ export const createPoll = (data: CreatePollData) =>
 
 type PollListType = 'public' | 'system';
 
-export const getPolls = (
-	type: PollListType,
-	size: number,
-	nextCursor?: string,
-	keyword?: string,
-	status?: string,
-	sort?: string
-) => {
-	const endpoint =
-		type === 'public' ? '/rest/poll/v1/public' : '/rest/poll/v1/system';
+interface GetPollsParams {
+	size: number;
+	nextCursor?: string;
+	keyword?: string;
+	status?: string;
+	sort?: string;
+}
 
-	const params: Record<string, string | number> = { size };
+const POLL_ENDPOINTS: Record<PollListType, string> = {
+	public: '/rest/poll/v1/public',
+	system: '/rest/poll/v1/system',
+};
 
-	if (nextCursor) {
-		params.nextCursor = nextCursor;
-	}
+const getPolls = (type: PollListType, params: GetPollsParams) => {
+	const endpoint = POLL_ENDPOINTS[type];
+	const queryParams: Record<string, string | number> = { size: params.size };
 
-	if (keyword) params.keyword = keyword;
-	if (status) params.status = status;
-	if (sort) params.sort = sort;
+	if (params.nextCursor) queryParams.nextCursor = params.nextCursor;
+	if (params.keyword) queryParams.keyword = params.keyword;
+	if (params.status) queryParams.status = params.status;
+	if (params.sort) queryParams.sort = params.sort;
 
-	return apiGet<PublicPollResponse>(endpoint, params);
+	return apiGet<PublicPollResponse>(endpoint, queryParams);
 };
 
 // 편의를 위한 별칭 함수들
 // 모두의 투표 목록 - 커서 기반 페이지네이션
-export const getPublicPolls = (
-	size: number,
-	nextCursor?: string,
-	keyword?: string,
-	status?: string,
-	sort?: string
-) => getPolls('public', size, nextCursor, keyword, status, sort);
+export const getPublicPolls = (params: GetPollsParams) =>
+	getPolls('public', params);
 
 // 여론 조사(시스템 폴) 목록 - 커서 기반 페이지네이션
-export const getOpinionPolls = (
-	size: number,
-	nextCursor?: string,
-	keyword?: string,
-	status?: string,
-	sort?: string
-) => getPolls('system', size, nextCursor, keyword, status, sort);
+export const getOpinionPolls = (params: GetPollsParams) =>
+	getPolls('system', params);
 
 export const getPoll = (pollId: number) =>
 	apiGet<PollResponse>(`/rest/poll/v1/detail/${pollId}`);

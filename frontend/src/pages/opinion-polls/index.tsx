@@ -36,8 +36,13 @@ export default function OpinionPolls() {
 			sort ?? 'LATEST',
 			status ?? 'ALL',
 		],
-		fetcher: (size, nextCursor) =>
-			getOpinionPolls(size, nextCursor, searchTerm || undefined, status, sort),
+		fetcher: (params) =>
+			getOpinionPolls({
+				...params,
+				keyword: searchTerm || undefined,
+				status,
+				sort,
+			}),
 	});
 
 	return (
@@ -138,13 +143,13 @@ export const getStaticProps: GetStaticProps = async () => {
 	await queryClient.prefetchInfiniteQuery({
 		queryKey: ['opinionPolls', PAGE_SIZE, search, sort, status],
 		queryFn: ({ pageParam = '' }) =>
-			getOpinionPolls(
-				PAGE_SIZE,
-				pageParam as string,
-				search || undefined,
+			getOpinionPolls({
+				size: PAGE_SIZE,
+				nextCursor: pageParam as string,
+				keyword: search || undefined,
 				status,
-				sort
-			),
+				sort,
+			}),
 		initialPageParam: '',
 	});
 
