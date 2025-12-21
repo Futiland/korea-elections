@@ -16,7 +16,8 @@ interface MaskingStrategy {
 /**
  * 이름 마스킹 전략
  * 첫 글자만 보이고 나머지는 * 처리
- * 예: "홍길동" -> "홍**"
+ * 2글자 이름은 3글자처럼 보이게 ** 처리
+ * 예: "홍길동" -> "홍**", "홍길" -> "홍**"
  */
 class NameMaskingStrategy : MaskingStrategy {
     override fun mask(value: String): String {
@@ -24,7 +25,9 @@ class NameMaskingStrategy : MaskingStrategy {
         if (value.length == 1) return value
 
         val firstChar = value.first()
-        val maskedPart = "*".repeat(value.length - 1)
+        // 2글자인 경우 3글자처럼 보이게 ** 처리
+        val asteriskCount = if (value.length == 2) 2 else value.length - 1
+        val maskedPart = "*".repeat(asteriskCount)
         return "$firstChar$maskedPart"
     }
 }
