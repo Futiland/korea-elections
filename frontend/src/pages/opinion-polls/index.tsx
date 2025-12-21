@@ -43,7 +43,7 @@ export default function OpinionPolls() {
 	return (
 		<>
 			<Head>
-				<title>모두의 투표_여론조사</title>
+				<title>모두의 투표_민심 투표</title>
 				<meta
 					name="description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
@@ -68,7 +68,7 @@ export default function OpinionPolls() {
 					{/* 페이지 제목 */}
 					<div className="mb-8">
 						<h1 className="text-3xl font-bold text-slate-900 mb-2">
-							여론조사 투표
+							민심 투표
 						</h1>
 						<p className="text-slate-600">여러분의 소중한 의견을 들려주세요.</p>
 					</div>

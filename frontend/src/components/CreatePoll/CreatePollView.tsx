@@ -83,7 +83,7 @@ export function CreatePollView({ dialog, form }: CreatePollViewProps) {
 			<Dialog open={dialog.isOpen} onOpenChange={dialog.onOpenChange}>
 				<DialogContent
 					closeOnOverlayClick={false}
-					className="max-h-[calc(100vh-60px)] w-[calc(100%-40px)] max-w-[calc(100vw-40px)] overflow-y-scroll overflow-x-hidden bg-slate-100 px-5 py-6"
+					className="max-h-[calc(100vh-60px)] w-lg max-w-[calc(100vw-40px)] overflow-y-scroll overflow-x-hidden bg-slate-100 px-5 py-6"
 				>
 					<form onSubmit={handleFormSubmit} className="w-full min-w-0">
 						<FieldGroup className="w-full min-w-0">

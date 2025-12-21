@@ -37,7 +37,7 @@ export default function PollCarouselCard({
 			</CardHeader>
 
 			<CardContent className="flex h-full flex-col px-5 pb-2 pt-0">
-				<p className="mb-2 min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+				<p className="mb-2 min-h-[2.5rem] line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-slate-700 md:text-sm">
 					{pollData.description || '\u00A0'}
 				</p>
 

@@ -47,7 +47,7 @@ export default function ClosingSoonCarouselCard({
 			</CardHeader>
 
 			<CardContent className="flex h-full flex-col px-5 pb-3 pt-1">
-				<p className="mb-3 min-h-[2.5rem] line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+				<p className="mb-3 min-h-[2.5rem] line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-slate-700 md:text-sm">
 					{pollData.description || '\u00A0'}
 				</p>
 

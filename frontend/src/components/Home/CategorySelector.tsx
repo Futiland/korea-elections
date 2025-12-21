@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
-import { Users, BarChart3 } from 'lucide-react';
+import { Users, Scale } from 'lucide-react';
 
 export default function CategorySelector() {
 	const router = useRouter();
@@ -14,8 +14,8 @@ export default function CategorySelector() {
 					className="inline-flex items-center gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
 					onClick={() => router.push('/opinion-polls')}
 				>
-					<BarChart3 className="h-4 w-4 text-purple-600" />
-					<span>여론조사</span>
+					<Scale className="h-4 w-4 text-purple-600" />
+					<span>민심 투표</span>
 				</Button>
 				<Button
 					variant="outline"

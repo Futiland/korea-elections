@@ -92,7 +92,7 @@ export default function PollCardView({
 					</CardHeader>
 
 					{/* 상세 내용 */}
-					<div className="mb-6 text-sm text-slate-600 leading-relaxed">
+					<div className="mb-6 whitespace-pre-line text-sm text-slate-600 leading-relaxed">
 						{pollData?.description}
 					</div>
 

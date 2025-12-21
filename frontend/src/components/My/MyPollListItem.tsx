@@ -51,7 +51,7 @@ export default function MyPollListItem({
 						</div>
 					</div>
 				</div>
-				<p className="line-clamp-2 text-xs leading-relaxed text-slate-600">
+				<p className="line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-slate-600">
 					{item.description || ''}
 				</p>
 				<div className="flex items-center gap-1 text-[11px] text-slate-500">

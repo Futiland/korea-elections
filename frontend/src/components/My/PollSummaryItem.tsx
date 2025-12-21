@@ -37,7 +37,7 @@ export default function PollSummaryItem({ item }: PollSummaryItemProps) {
 				<p className="line-clamp-2 text-sm font-semibold tracking-tight text-slate-900 md:text-base">
 					{item.title}
 				</p>
-				<p className="line-clamp-2 text-xs leading-relaxed text-slate-700 md:text-sm">
+				<p className="line-clamp-2 whitespace-pre-line text-xs leading-relaxed text-slate-700 md:text-sm">
 					{item.description || ''}
 				</p>
 			</section>
