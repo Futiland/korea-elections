@@ -22,7 +22,7 @@ export default function PollCardOptions({
 	const [selectedMultipleChoices, setSelectedMultipleChoices] = useState<
 		string[]
 	>([]);
-	const [selectedScore, setSelectedScore] = useState<number>(1);
+	const [selectedScore, setSelectedScore] = useState<number>(0);
 
 	const handleSingleChoiceChange = (value: string) => {
 		setSelectedSingleChoice(value);

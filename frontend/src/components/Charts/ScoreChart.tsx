@@ -36,9 +36,9 @@ export default function ScoreChart({
 		return magnitude > 0 ? magnitude * 5 : 100;
 	};
 
-	// 1-10점까지 모든 점수에 대한 데이터 생성
-	const chartData = Array.from({ length: 10 }, (_, index) => {
-		const score = index + 1;
+	// 0-10점까지 모든 점수에 대한 데이터 생성
+	const chartData = Array.from({ length: 11 }, (_, index) => {
+		const score = index;
 		const count = data?.scoreDistribution?.[score] ?? 0;
 		const percentage = totalResponses > 0 ? (count / totalResponses) * 100 : 0;
 		return {

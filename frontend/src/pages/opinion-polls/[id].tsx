@@ -52,7 +52,7 @@ export default function OpinionPollDetailPage() {
 	return (
 		<>
 			<Head>
-				<title>{poll.data.title} - 모두의 투표: 민심 투표</title>
+				<title>{poll.data.title} - 민심 투표</title>
 				<meta property="og:title" content={poll.data.title} />
 				<meta property="og:description" content={poll.data.description} />
 				<meta property="og:image" content="/img/everyone-polls.png" />

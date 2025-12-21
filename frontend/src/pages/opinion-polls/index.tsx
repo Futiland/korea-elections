@@ -48,12 +48,12 @@ export default function OpinionPolls() {
 	return (
 		<>
 			<Head>
-				<title>모두의 투표_민심 투표</title>
+				<title>민심 투표</title>
 				<meta
 					name="description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
 				/>
-				<meta property="og:title" content="모두의 투표" />
+				<meta property="og:title" content="만삼 투표" />
 				<meta
 					property="og:description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
@@ -86,7 +86,7 @@ export default function OpinionPolls() {
 						onSearchChange={handleSearchChange}
 						onFilterChange={handleFilterChange}
 						className="mb-8"
-						isFilterVisible={false}
+						isFilterVisible={polls.length > 0}
 					/>
 
 					{/* 투표 카드 리스트 */}
