@@ -1,5 +1,5 @@
 import { Slider } from '@/components/ui/slider';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ScoreOptionProps {
 	maxScore?: number;
@@ -16,7 +16,11 @@ export default function ScoreOption({
 	onChange,
 	isVoted,
 }: ScoreOptionProps) {
-	const [selectedScore, setSelectedScore] = useState(INITIAL_SCORE);
+	const [selectedScore, setSelectedScore] = useState(initialScore);
+
+	useEffect(() => {
+		setSelectedScore(initialScore);
+	}, [initialScore]);
 
 	const handleValueChange = (values: number[]) => {
 		const newScore = values[0];
@@ -34,24 +38,24 @@ export default function ScoreOption({
 				<Slider
 					value={[selectedScore]}
 					onValueChange={handleValueChange}
-					min={1}
+					min={0}
 					max={maxScore}
 					step={1}
 					className="w-full"
 				/>
 				<div className="flex justify-between text-xs text-slate-500 mt-2">
-					{Array.from({ length: maxScore }, (_, i) => (
+					{Array.from({ length: maxScore + 1 }, (_, i) => (
 						<button
-							key={i + 1}
-							onClick={() => handleValueChange([i + 1])}
+							key={i}
+							onClick={() => handleValueChange([i])}
 							className={`text-center px-1 py-1 transition-colors rounded-4xl w-6 h-6 ${
-								selectedScore === i + 1
+								selectedScore === i
 									? 'text-primary font-bold bg-slate-200 '
 									: 'text-slate-500 hover:text-slate-700'
 							}`}
 							disabled={isVoted}
 						>
-							{i + 1}
+							{i}
 						</button>
 					))}
 				</div>
