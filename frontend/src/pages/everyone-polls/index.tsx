@@ -36,8 +36,13 @@ export default function EveryonePolls() {
 			sort ?? 'LATEST',
 			status ?? 'ALL',
 		],
-		fetcher: (size, nextCursor) =>
-			getPublicPolls(size, nextCursor, searchTerm || undefined, status, sort),
+		fetcher: (params) =>
+			getPublicPolls({
+				...params,
+				keyword: searchTerm || undefined,
+				status,
+				sort,
+			}),
 	});
 
 	return (
@@ -139,13 +144,13 @@ export const getStaticProps: GetStaticProps = async () => {
 	await queryClient.prefetchInfiniteQuery({
 		queryKey: ['publicPolls', PAGE_SIZE, search, sort, status],
 		queryFn: ({ pageParam = '' }) =>
-			getPublicPolls(
-				PAGE_SIZE,
-				pageParam as string,
-				search || undefined,
+			getPublicPolls({
+				size: PAGE_SIZE,
+				nextCursor: pageParam as string,
+				keyword: search || undefined,
 				status,
-				sort
-			),
+				sort,
+			}),
 		initialPageParam: '',
 	});
 

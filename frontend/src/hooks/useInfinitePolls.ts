@@ -14,7 +14,13 @@ type UseInfinitePollsOptions = {
 	 * 페이지네이션 API 호출 함수.
 	 * 기본값: getPublicPolls
 	 */
-	fetcher?: (size: number, cursor?: string) => Promise<PublicPollResponse>;
+	fetcher?: (params: {
+		size: number;
+		nextCursor?: string;
+		keyword?: string;
+		status?: string;
+		sort?: string;
+	}) => Promise<PublicPollResponse>;
 };
 
 export function useInfinitePolls({
@@ -32,7 +38,10 @@ export function useInfinitePolls({
 	} = useInfiniteQuery({
 		queryKey: queryKey ?? ['publicPolls', pageSize],
 		queryFn: ({ pageParam }: { pageParam?: string }) =>
-			fetcher(pageSize, pageParam ?? ''),
+			fetcher({
+				size: pageSize,
+				nextCursor: pageParam,
+			}),
 		getNextPageParam: (lastPage: PublicPollResponse) => {
 			const nextCursor = lastPage.data.nextCursor;
 			return nextCursor && nextCursor !== '' ? nextCursor : undefined;
