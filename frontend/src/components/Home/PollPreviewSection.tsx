@@ -14,88 +14,11 @@ interface PollPreviewSectionProps {
 	CardComponent?: ComponentType<PollCardProps>;
 }
 
-const DEFAULT_POLLS: PublicPollData[] = [
-	{
-		id: 1,
-		title: '가장 좋아하는 캐릭터는?',
-		description:
-			'가장 좋아하는 캐릭터를 선택해 주세요. 여러분의 의견이 여론을 바꿉니다.',
-		startAt: new Date('2025-03-01'),
-		endAt: new Date('2025-03-07'),
-		responseType: 'SINGLE_CHOICE',
-		status: 'IN_PROGRESS',
-		createdAt: new Date('2025-03-01'),
-		creatorInfo: {
-			accountId: 1,
-			name: 'John Doe',
-		},
-		responseCount: 100,
-		isVoted: false,
-		options: [
-			{
-				id: 1,
-				optionText: '옵션 1',
-				optionOrder: 1,
-			},
-		],
-		isRevotable: true,
-	},
-	{
-		id: 2,
-		title: '생일선물로 뭘 받고 싶나요?',
-		description: '생일선물로 뭘 받고 싶나요? 여러분의 의견이 여론을 바꿉니다.',
-		startAt: new Date('2025-03-02'),
-		endAt: new Date('2025-03-09'),
-		responseType: 'SINGLE_CHOICE',
-		status: 'IN_PROGRESS',
-		createdAt: new Date('2025-03-02'),
-		creatorInfo: {
-			accountId: 2,
-			name: 'Jane Doe',
-		},
-		responseCount: 100,
-		isVoted: false,
-		options: [
-			{
-				id: 1,
-				optionText: '옵션 1',
-				optionOrder: 1,
-			},
-		],
-		isRevotable: true,
-	},
-	{
-		id: 3,
-		title: '어떤 음식 조합이 가장 맛있을까요?',
-		description:
-			'어떤 음식 조합이 가장 맛있을까요? 여러분의 의견이 여론을 바꿉니다.',
-		startAt: new Date('2025-03-03'),
-		endAt: new Date('2025-03-10'),
-		responseType: 'SINGLE_CHOICE',
-		status: 'IN_PROGRESS',
-		createdAt: new Date('2025-03-03'),
-		creatorInfo: {
-			accountId: 3,
-			name: 'John Doe',
-		},
-		responseCount: 100,
-		isVoted: false,
-		options: [
-			{
-				id: 1,
-				optionText: '옵션 1',
-				optionOrder: 1,
-			},
-		],
-		isRevotable: true,
-	},
-];
-
 export default function PollPreviewSection({
-	title = '인기있는 모두의 투표',
+	title = '모두의 투표',
 	description = '',
 	moreLabel = '더보기',
-	polls = DEFAULT_POLLS,
+	polls = [],
 	onClickMore,
 	onClickPoll,
 	CardComponent = PollPreviewCard,
@@ -122,7 +45,7 @@ export default function PollPreviewSection({
 				)}
 			</header>
 
-			<div className="grid gap-4">
+			<div className="grid">
 				{polls.map((poll) => (
 					<CardComponent
 						key={poll.id}

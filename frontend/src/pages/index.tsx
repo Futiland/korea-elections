@@ -39,39 +39,39 @@ export default function Home() {
 			),
 	});
 
-	// 인기 투표
-	const {
-		data: popularPollsData,
-		isLoading: isPopularLoading,
-		isError: isPopularError,
-	} = useQuery({
-		queryKey: ['homePopularPolls', POPULAR_POLL_SIZE],
-		queryFn: () =>
-			getPublicPolls(
-				POPULAR_POLL_SIZE,
-				undefined,
-				undefined,
-				'IN_PROGRESS',
-				'POPULAR'
-			),
-	});
+	// 인기 투표_추후 오픈
+	// const {
+	// 	data: popularPollsData,
+	// 	isLoading: isPopularLoading,
+	// 	isError: isPopularError,
+	// } = useQuery({
+	// 	queryKey: ['homePopularPolls', POPULAR_POLL_SIZE],
+	// 	queryFn: () =>
+	// 		getPublicPolls(
+	// 			POPULAR_POLL_SIZE,
+	// 			undefined,
+	// 			undefined,
+	// 			'IN_PROGRESS',
+	// 			'POPULAR'
+	// 		),
+	// });
 
 	// 마감 임박 투표
-	const {
-		data: endingSoonPollsData,
-		isLoading: isEndingSoonLoading,
-		isError: isEndingSoonError,
-	} = useQuery({
-		queryKey: ['homeEndingSoonPolls', ENDING_SOON_POLL_SIZE],
-		queryFn: () =>
-			getPublicPolls(
-				ENDING_SOON_POLL_SIZE,
-				undefined,
-				undefined,
-				'IN_PROGRESS',
-				'ENDING_SOON'
-			),
-	});
+	// const {
+	// 	data: endingSoonPollsData,
+	// 	isLoading: isEndingSoonLoading,
+	// 	isError: isEndingSoonError,
+	// } = useQuery({
+	// 	queryKey: ['homeEndingSoonPolls', ENDING_SOON_POLL_SIZE],
+	// 	queryFn: () =>
+	// 		getPublicPolls(
+	// 			ENDING_SOON_POLL_SIZE,
+	// 			undefined,
+	// 			undefined,
+	// 			'IN_PROGRESS',
+	// 			'ENDING_SOON'
+	// 		),
+	// });
 
 	// 이벤트 투표
 	const {
@@ -81,7 +81,7 @@ export default function Home() {
 	} = useQuery({
 		queryKey: ['homeEventPolls', EVENT_POLL_SIZE],
 		queryFn: () =>
-			getPublicPolls(EVENT_POLL_SIZE, undefined, '크리스마스', 'ALL', 'LATEST'),
+			getPublicPolls(EVENT_POLL_SIZE, undefined, '새해', 'ALL', 'POPULAR'),
 	});
 
 	const {
@@ -95,17 +95,19 @@ export default function Home() {
 	});
 
 	const opinionPolls = opinionPollsData?.data?.content || [];
-	const popularPolls = popularPollsData?.data?.content || [];
-	const endingSoonPolls = endingSoonPollsData?.data?.content || [];
+	// const popularPolls = popularPollsData?.data?.content || [];
+	// const endingSoonPolls = endingSoonPollsData?.data?.content || [];
 	const eventPolls = eventPollsData?.data?.content || [];
 	const latestPolls = latestPollsData?.data?.content || [];
 	const isLoading =
 		isOpinionLoading ||
-		isPopularLoading ||
-		isEndingSoonLoading ||
+		// isPopularLoading ||
+		// isEndingSoonLoading ||
 		isEventLoading;
 	const hasError =
-		isOpinionError || isPopularError || isEndingSoonError || isEventError;
+		isOpinionError || // isPopularError ||
+		// isEndingSoonError ||
+		isEventError;
 
 	return (
 		<>
@@ -133,22 +135,22 @@ export default function Home() {
 					</div>
 				) : (
 					<>
-						{/* 최신 투표 카루셀 */}
+						{/* 민심투표 카루셀 */}
 						{opinionPolls.length > 0 && (
 							<PollCarouselSection
 								polls={opinionPolls}
 								autoplay={true}
 								onClickMore={() => {
-									router.push('/everyone-polls?sort=LATEST&status=IN_PROGRESS');
+									router.push('/opinion-polls?sort=LATEST&status=IN_PROGRESS');
 								}}
 								onClickPoll={(pollId: string) => {
-									router.push(`/everyone-polls/${pollId}`);
+									router.push(`/opinion-polls/${pollId}`);
 								}}
 							/>
 						)}
 
 						{/* 인기 투표 섹션 */}
-						{popularPolls.length > 0 && (
+						{/* {popularPolls.length > 0 && (
 							<PollPreviewSection
 								title="🔥 인기있는 모두의 투표"
 								description="지금 가장 인기있는 모두의 투표를 확인해보세요."
@@ -162,32 +164,12 @@ export default function Home() {
 									router.push(`/everyone-polls/${pollId}`);
 								}}
 							/>
-						)}
-
-						{/* 이벤트 투표 카루셀 */}
-						{eventPolls.length > 0 && (
-							<PollCarouselSection
-								title="🎄 크리스마스 이벤트 투표 모음"
-								// description="크리스마스 이벤트 투표를 확인해보세요."
-								polls={eventPolls}
-								moreLabel={true}
-								autoplay={true}
-								onClickMore={() => {
-									router.push('/everyone-polls?search=크리스마스&status=ALL');
-								}}
-								onClickPoll={(pollId: string) => {
-									router.push(`/everyone-polls/${pollId}`);
-								}}
-								CardComponent={PollCarouselEventCard}
-								paginationActiveColor="bg-red-600"
-								paginationInactiveColor="bg-slate-300"
-							/>
-						)}
+						)} */}
 
 						{/* 최신 투표 섹션 */}
 						{latestPolls.length > 0 && (
 							<PollPreviewSection
-								title="🆕 최신 투표 모음"
+								title="🎉 최신 투표 모음"
 								description="지금 가장 최신 투표를 확인해보세요."
 								polls={latestPolls}
 								onClickMore={() => {
@@ -199,8 +181,28 @@ export default function Home() {
 							/>
 						)}
 
+						{/* 이벤트 투표 카루셀 */}
+						{eventPolls.length > 0 && (
+							<PollCarouselSection
+								title="새해 이벤트 투표 모음"
+								description="2026년 붉은 말의 해"
+								polls={eventPolls}
+								moreLabel={true}
+								autoplay={true}
+								onClickMore={() => {
+									router.push('/everyone-polls?search=새해&status=ALL');
+								}}
+								onClickPoll={(pollId: string) => {
+									router.push(`/everyone-polls/${pollId}`);
+								}}
+								CardComponent={PollCarouselEventCard}
+								paginationActiveColor="bg-red-600"
+								paginationInactiveColor="bg-slate-300"
+							/>
+						)}
+
 						{/* 마감 임박 투표 카루셀 */}
-						{endingSoonPolls.length > 0 && (
+						{/* {endingSoonPolls.length > 0 && (
 							<PollCarouselSection
 								title="마감 임박 투표"
 								description="지금 마감 임박 투표를 확인해보세요."
@@ -218,7 +220,7 @@ export default function Home() {
 								paginationActiveColor="bg-amber-600"
 								paginationInactiveColor="bg-slate-300"
 							/>
-						)}
+						)} */}
 					</>
 				)}
 			</main>
@@ -245,29 +247,29 @@ export const getStaticProps: GetStaticProps = async () => {
 				),
 		}),
 		// 인기 투표
-		queryClient.prefetchQuery({
-			queryKey: ['homePopularPolls', POPULAR_POLL_SIZE],
-			queryFn: () =>
-				getPublicPolls(
-					POPULAR_POLL_SIZE,
-					undefined,
-					undefined,
-					'IN_PROGRESS',
-					'POPULAR'
-				),
-		}),
+		// queryClient.prefetchQuery({
+		// 	queryKey: ['homePopularPolls', POPULAR_POLL_SIZE],
+		// 	queryFn: () =>
+		// 		getPublicPolls(
+		// 			POPULAR_POLL_SIZE,
+		// 			undefined,
+		// 			undefined,
+		// 			'IN_PROGRESS',
+		// 			'POPULAR'
+		// 		),
+		// }),
 		// 마감 임박 투표
-		queryClient.prefetchQuery({
-			queryKey: ['homeEndingSoonPolls', ENDING_SOON_POLL_SIZE],
-			queryFn: () =>
-				getPublicPolls(
-					ENDING_SOON_POLL_SIZE,
-					undefined,
-					undefined,
-					'IN_PROGRESS',
-					'ENDING_SOON'
-				),
-		}),
+		// queryClient.prefetchQuery({
+		// 	queryKey: ['homeEndingSoonPolls', ENDING_SOON_POLL_SIZE],
+		// 	queryFn: () =>
+		// 		getPublicPolls(
+		// 			ENDING_SOON_POLL_SIZE,
+		// 			undefined,
+		// 			undefined,
+		// 			'IN_PROGRESS',
+		// 			'ENDING_SOON'
+		// 		),
+		// }),
 		// 최신 투표
 		queryClient.prefetchQuery({
 			queryKey: ['homeLatestPolls', LATEST_POLL_SIZE],
