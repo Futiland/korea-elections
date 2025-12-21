@@ -3,6 +3,7 @@ package com.futiland.vote.application.account.controller
 import com.futiland.vote.application.account.dto.response.AccountStatsResponse
 import com.futiland.vote.application.account.dto.response.ProfileResponse
 import com.futiland.vote.application.account.dto.response.StopperResponse
+import com.futiland.vote.application.aop.masking.SkipMasking
 import com.futiland.vote.application.common.httpresponse.HttpApiResponse
 import com.futiland.vote.application.config.security.CustomUserDetails
 import com.futiland.vote.domain.account.service.AccountQueryUseCase
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 class QueryController(
     private val accountQueryUseCase: AccountQueryUseCase,
 ) {
+    @SkipMasking
     @GetMapping("/info/profile")
     fun getAccountInfo(
         @AuthenticationPrincipal userDetails: CustomUserDetails,
