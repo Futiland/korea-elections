@@ -1,4 +1,4 @@
-import { Calendar } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { formatDateTimeLocal, getDateRangeDurationLabel } from '@/lib/date';
@@ -55,9 +55,17 @@ export default function PollListTypeCard({
 			</section>
 
 			<footer className="mt-2 flex items-center justify-between text-[11px] text-slate-500 md:text-xs">
-				<span className="rounded-full bg-slate-100 px-2 py-1 font-medium text-slate-500">
-					모두의 투표
-				</span>
+				<div className="inline-flex items-center">
+					<span className="rounded-full bg-slate-200 px-2 py-1 font-medium text-slate-500">
+						모두의 투표
+					</span>
+					{remainingTimeLabel && (
+						<span className="text-sky-700 inline-flex items-center gap-1 ml-1 px-1 py-1 text-[11px] font-medium">
+							<Clock className="h-3.5 w-3.5 text-sky-700" />
+							{remainingTimeLabel}
+						</span>
+					)}
+				</div>
 
 				<Button
 					type="button"
