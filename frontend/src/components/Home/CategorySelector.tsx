@@ -11,7 +11,7 @@ export default function CategorySelector() {
 				<Button
 					variant="outline"
 					size="sm"
-					className="inline-flex items-center gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+					className="cursor-pointer inline-flex items-center gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
 					onClick={() => router.push('/opinion-polls')}
 				>
 					<Scale className="h-4 w-4 text-purple-600" />
@@ -20,7 +20,7 @@ export default function CategorySelector() {
 				<Button
 					variant="outline"
 					size="sm"
-					className="inline-flex items-center gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+					className="cursor-pointer inline-flex items-center gap-2 border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
 					onClick={() => router.push('/everyone-polls')}
 				>
 					<Users className="h-4 w-4 text-blue-600" />

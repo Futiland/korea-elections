@@ -137,9 +137,9 @@ export default function MyPageView({
 									{
 										key: 'joined-opinion',
 										value: stats.participatedSystemPollCount,
-										label: '여론 조사',
+										label: '민심 투표',
 										href: '/mypage/joined-opinion-polls',
-										ariaLabel: '참여한 여론 조사',
+										ariaLabel: '참여한 민심 투표',
 									},
 								].map((item) => (
 									<div
@@ -185,7 +185,7 @@ export default function MyPageView({
 
 					{myParticipatedOpinionPolls.content.length > 0 && (
 						<MyPollSummary
-							title="참여한 입법 투표"
+							title="참여한 민심 투표"
 							items={myParticipatedOpinionPolls.content}
 							moreUrl="/mypage/joined-opinion-polls"
 							isLoading={isFetchingMyParticipatedOpinionPolls}
