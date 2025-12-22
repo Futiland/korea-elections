@@ -14,12 +14,10 @@ export default function IntroduceLayout() {
 					"참여해야 보인다"
 				</p>
 				<p className="text-sm text-slate-600 leading-relaxed ">
-					KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다.
+					KEP는 본인 인증된 시민만 참여하는
+					<br className="block sm:hidden" /> 여론조사 플랫폼입니다.
 					<br />
 					투표에 참여한 사람만 결과를 확인할 수 있습니다.
-				</p>
-				<p className="text-sm text-slate-700 font-medium">
-					구경꾼의 여론이 아닌, 직접 참여한 시민의 선택만 남습니다.
 				</p>
 			</div>
 
@@ -36,9 +34,7 @@ export default function IntroduceLayout() {
 						<ul className="space-y-1 text-xs text-slate-700">
 							<li className="flex items-start">
 								<span className="mr-1.5">•</span>
-								<span>
-									휴대폰 본인인증을 거친 만 18세 이상 내국인만 참여합니다.
-								</span>
+								<span>본인인증을 거친 만 18세 이상 내국인만 참여합니다.</span>
 							</li>
 							<li className="flex items-start">
 								<span className="mr-1.5">•</span>
@@ -58,10 +54,6 @@ export default function IntroduceLayout() {
 							<li className="flex items-start">
 								<span className="mr-1.5">•</span>
 								<span>투표해야 결과를 볼 수 있습니다.</span>
-							</li>
-							<li className="flex items-start">
-								<span className="mr-1.5">•</span>
-								<span>관망하는 사람 없이, 의견을 가진 시민만 남습니다.</span>
 							</li>
 						</ul>
 					</div>
@@ -111,7 +103,9 @@ export default function IntroduceLayout() {
 							</thead>
 							<tbody>
 								<tr className="border-b border-slate-100">
-									<td className="px-3 py-2 font-medium text-slate-700">표본</td>
+									<td className="px-3 py-2 font-medium text-slate-700 min-w-[45px]">
+										표본
+									</td>
 									<td className="px-3 py-2 text-slate-600">무작위 전화 표본</td>
 									<td className="px-3 py-2 text-blue-800 font-medium">
 										직접 참여한 시민
@@ -127,20 +121,16 @@ export default function IntroduceLayout() {
 								<tr>
 									<td className="px-3 py-2 font-medium text-slate-700">결과</td>
 									<td className="px-3 py-2 text-slate-600">
-										언론이 해석한 결과
+										매체가 결과를 전달
 									</td>
 									<td className="px-3 py-2 text-blue-800 font-medium">
-										참여자가 직접 확인
+										실시간으로 참여자가 직접 확인
 									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-
-				<p className="text-xs text-slate-700 font-medium ">
-					KEP에서는 여론이 전달되지 않습니다. 직접 만들어지고, 직접 확인됩니다.
-				</p>
 			</div>
 
 			{/* 익명성 보장 */}
@@ -159,11 +149,7 @@ export default function IntroduceLayout() {
 						</li>
 						<li className="flex items-start">
 							<span className="mr-1.5 text-blue-600 font-bold">✓</span>
-							<span>이름, 전화번호 암호화 저장</span>
-						</li>
-						<li className="flex items-start">
-							<span className="mr-1.5 text-blue-600 font-bold">✓</span>
-							<span>탈퇴 시 인증 정보 익명화</span>
+							<span>개인 정보 암호화</span>
 						</li>
 					</ul>
 				</div>
