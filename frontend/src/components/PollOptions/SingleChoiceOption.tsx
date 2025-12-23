@@ -22,20 +22,23 @@ export default function SingleChoiceOption({
 			className="flex flex-wrap items-start gap-2 w-full"
 			disabled={isVoted}
 		>
-			{options.map((option, index) => (
-				<div
-					key={index}
-					className="flex items-center gap-2 cursor-pointer p-2 rounded"
-				>
-					<RadioGroupItem value={option.id.toString()} id={`option-${index}`} />
-					<Label
-						htmlFor={`option-${index}`}
-						className={`cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
+			{options.map((option) => {
+				const optionId = `option-${option.id}`;
+				return (
+					<div
+						key={option.id}
+						className="flex items-center gap-2 cursor-pointer p-2 rounded"
 					>
-						{option.optionText}
-					</Label>
-				</div>
-			))}
+						<RadioGroupItem value={option.id.toString()} id={optionId} />
+						<Label
+							htmlFor={optionId}
+							className={`cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
+						>
+							{option.optionText}
+						</Label>
+					</div>
+				);
+			})}
 		</RadioGroup>
 	);
 }

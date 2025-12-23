@@ -6,6 +6,7 @@ import { QuestionType } from '@/lib/types/poll';
 import { OptionData } from '@/lib/types/poll';
 
 type PollCardOptionsProps = {
+	pollId: number;
 	responseType: QuestionType;
 	options: OptionData[];
 	onChange: (value: number[] | number) => void;
@@ -13,6 +14,7 @@ type PollCardOptionsProps = {
 };
 
 export default function PollCardOptions({
+	pollId,
 	responseType,
 	options,
 	onChange,
