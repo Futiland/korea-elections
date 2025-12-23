@@ -6,6 +6,7 @@ import { QuestionType } from '@/lib/types/poll';
 import { OptionData } from '@/lib/types/poll';
 
 type PollCardOptionsProps = {
+	pollId: number;
 	responseType: QuestionType;
 	options: OptionData[];
 	onChange: (value: number[] | number) => void;
@@ -13,6 +14,7 @@ type PollCardOptionsProps = {
 };
 
 export default function PollCardOptions({
+	pollId,
 	responseType,
 	options,
 	onChange,
@@ -54,6 +56,7 @@ export default function PollCardOptions({
 		<div className="mb-6 space-y-4 flex flex-col items-start">
 			{responseType === 'SINGLE_CHOICE' && (
 				<SingleChoiceOption
+					pollId={pollId}
 					options={options}
 					value={selectedSingleChoice}
 					onValueChange={handleSingleChoiceChange}
