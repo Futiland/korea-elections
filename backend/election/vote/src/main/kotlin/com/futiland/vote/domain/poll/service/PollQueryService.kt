@@ -31,7 +31,7 @@ class PollQueryService(
 
         val responseCount = pollResponseRepository.countDistinctParticipantsByPollId(pollId)
         val isVoted = accountId?.let {
-            pollResponseRepository.findByPollIdAndAccountId(pollId, it) != null
+            pollResponseRepository.findAllByPollIdAndAccountId(pollId, it).isNotEmpty()
         } ?: false
 
         return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
