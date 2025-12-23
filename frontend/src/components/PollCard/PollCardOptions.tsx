@@ -56,7 +56,6 @@ export default function PollCardOptions({
 		<div className="mb-6 space-y-4 flex flex-col items-start">
 			{responseType === 'SINGLE_CHOICE' && (
 				<SingleChoiceOption
-					pollId={pollId}
 					options={options}
 					value={selectedSingleChoice}
 					onValueChange={handleSingleChoiceChange}
