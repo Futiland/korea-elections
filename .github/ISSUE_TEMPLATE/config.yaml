@@ -1,0 +1,15 @@
+blank_issues_enabled: false
+contact_links: []
+issue_types:
+  - name: Bug
+    description: An unexpected problem or behavior
+    labels: ["bug"]
+  - name: Feature
+    description: A request, idea, or new functionality
+    labels: ["enhancement"]
+  - name: Task
+    description: A specific piece of work
+    labels: ["task"]
+  - name: Story
+    description: A user story that describes a feature from the user's perspective
+    labels: ["story"]

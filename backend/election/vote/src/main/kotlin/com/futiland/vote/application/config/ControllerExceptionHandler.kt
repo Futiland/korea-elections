@@ -6,6 +6,7 @@ import com.futiland.vote.application.exception.ApplicationException
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
@@ -21,6 +22,7 @@ class ControllerExceptionHandler {
     @ExceptionHandler(ApplicationException::class)
     fun handleApplicationException(e: ApplicationException): ResponseEntity<HttpApiResponse<*>> {
         logger.error { "Application Exception occurred. code=${e.code.name}, message=${e.message}" }
+        logger.error { e.stackTraceToString() }
 
         if(e.code == CodeEnum.FRS_002) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
@@ -62,7 +64,7 @@ class ControllerExceptionHandler {
             .body(
                 HttpApiResponse.fromExceptionMessage(
                     code = CodeEnum.FRS_003,
-                    message = e.message
+                    message = e.message ?: ""
                 )
             )
     }
@@ -70,6 +72,7 @@ class ControllerExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<HttpApiResponse<*>> {
         logger.error { "MethodArgumentNotValidException Exception occurred. message=${e.message}" }
+        logger.error { e.stackTraceToString() }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(
                 HttpApiResponse.fromExceptionMessage(
@@ -77,6 +80,40 @@ class ControllerExceptionHandler {
                     message = createMessage(e)
                 )
             )
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ResponseEntity<HttpApiResponse<*>> {
+        logger.error { "HttpMessageNotReadableException Exception occurred. message=${e.message}" }
+        logger.error { e.stackTraceToString() }
+
+        val message = extractMissingFieldMessage(e) ?: "요청 본문을 파싱할 수 없습니다"
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                HttpApiResponse.fromExceptionMessage(
+                    code = CodeEnum.FRS_003,
+                    message = message
+                )
+            )
+    }
+
+    private fun extractMissingFieldMessage(e: HttpMessageNotReadableException): String? {
+        val cause = e.cause
+        if (cause is com.fasterxml.jackson.databind.exc.MismatchedInputException) {
+            val fieldName = cause.path.lastOrNull()?.fieldName ?: return null
+            return "${fieldName}은(는) 필수 입력 항목입니다"
+        }
+        if (cause is com.fasterxml.jackson.databind.exc.ValueInstantiationException) {
+            val message = cause.message ?: return null
+            val regex = """parameter (\w+)""".toRegex()
+            val match = regex.find(message)
+            if (match != null) {
+                val fieldName = match.groupValues[1]
+                return "${fieldName}은(는) 필수 입력 항목입니다"
+            }
+        }
+        return null
     }
 
     private fun createMessage(e: MethodArgumentNotValidException): String {

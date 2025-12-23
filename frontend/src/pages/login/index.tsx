@@ -9,12 +9,13 @@ import type { LoginData } from '@/lib/types/account';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
-import IntroduceLayout from '@/components/IntroduceLayout';
+import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Loader2 } from 'lucide-react';
 import { useAuthToken } from '@/hooks/useAuthToken';
 import { Spinner } from '@/components/ui/spinner';
 import PasswordField from '@/components/PasswordField';
 import { REG_PHONE } from '@/lib/regex';
+import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -71,10 +72,16 @@ export default function LoginPage() {
 		router.push('/signup');
 	};
 
+	const changePassword = (e: React.FormEvent) => {
+		e.preventDefault();
+		// port one 본인 인증 절차 진행
+		useVerificationPortOne({ redirectUrl: '/change-password' });
+	};
+
 	if (!isReady) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
-				<Spinner />
+				<Spinner className="w-10 h-10 text-blue-500" />
 			</div>
 		);
 	}
@@ -85,7 +92,7 @@ export default function LoginPage() {
 				<title>로그인 | KEP</title>
 			</Head>
 
-			<div className="flex items-center justify-center p-5 bg-white">
+			<div className="flex items-center justify-center p-5 bg-white h-screen">
 				<div className="w-full max-w-lg mx-auto">
 					{/* 로고 */}
 					<h1 className="flex flex-col items-center mt-20 mb-25">
@@ -129,7 +136,7 @@ export default function LoginPage() {
 						{/* 로그인 버튼 */}
 						<Button
 							type="submit"
-							className="w-full bg-blue-900 hover:bg-blue-800 text-white h-10"
+							className="w-full bg-blue-800 hover:bg-blue-700 text-white h-10"
 							disabled={loginMutation.isPending}
 						>
 							{loginMutation.isPending && (
@@ -147,7 +154,18 @@ export default function LoginPage() {
 							회원가입
 						</Button>
 					</form>
-					<div className="flex flex-col items-center mt-25">
+
+					<div className="flex flex-col items-center my-6">
+						<Button
+							variant="ghost"
+							className="px-4 h-7"
+							onClick={changePassword}
+						>
+							비밀번호 찾기
+						</Button>
+					</div>
+
+					<div className="flex flex-col items-center mt-8">
 						<Button
 							variant="outline"
 							className="py-2 px-4 mt-4 h-10"
@@ -156,12 +174,13 @@ export default function LoginPage() {
 							KEP는 어떤 서비스 인가요?
 						</Button>
 					</div>
+
 					<Dialog open={isOpen} onOpenChange={setIsOpen}>
 						<DialogContent className="bg-slate-100 px-5 py-6 w-[calc(100%-40px)] max-h-[calc(100vh-60px)] overflow-y-scroll">
 							<IntroduceLayout />
 							<DialogFooter>
 								<Button
-									className="w-full bg-blue-900 text-white hover:bg-blue-800"
+									className="w-full bg-blue-800 text-white hover:bg-blue-700"
 									onClick={() => setIsOpen(false)}
 								>
 									확인

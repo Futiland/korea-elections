@@ -1,5 +1,7 @@
 package com.futiland.vote.application.account.dto.response
 
+import com.futiland.vote.application.aop.masking.Masked
+import com.futiland.vote.application.aop.masking.MaskingType
 import com.futiland.vote.domain.account.entity.Gender
 import java.time.LocalDate
 
@@ -7,6 +9,7 @@ import java.time.LocalDate
  * 본인인증 최종단계 이후 응답받은 값을 서비스에 맞게 파싱한 값
  */
 data class IdentityVerifiedInfoResponse(
+    @Masked(type = MaskingType.NAME)
     val name: String,
     val gender: Gender,
     val birthDate: LocalDate,

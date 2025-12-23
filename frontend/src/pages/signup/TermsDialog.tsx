@@ -7,12 +7,12 @@ import {
 import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
-type TermsDialog = {
+type TermsDialogProps = {
 	isOpen: boolean;
 	setIsOpen: (isVisible: boolean) => void;
 };
 
-export default function TermsDialog({ isOpen, setIsOpen }: TermsDialog) {
+export default function TermsDialog({ isOpen, setIsOpen }: TermsDialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogContent className="w-[calc(100%-40px)] bg-slate-100 px-5 py-6">
@@ -48,7 +48,7 @@ export default function TermsDialog({ isOpen, setIsOpen }: TermsDialog) {
 				</div>
 				<DialogFooter>
 					<Button
-						className="w-full bg-blue-900 text-white hover:bg-blue-800"
+						className="w-full bg-blue-800 text-white hover:bg-blue-700"
 						onClick={() => setIsOpen(false)}
 					>
 						확인
