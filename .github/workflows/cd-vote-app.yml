@@ -169,10 +169,15 @@ jobs:
           echo ""
           echo "🌐 Access URL: http://localhost:${{ env.DEPLOY_PORT }}"
 
+  # ============================================================================
+  # [TEMPORARY] Production deployment to homeserver (port 38080)
+  # Reason: AWS t2.micro resource limitation
+  # TODO: Restore original deploy-prod-aws when moving back to AWS
+  # ============================================================================
   deploy-prod:
     if: ${{ (inputs.environment || github.event.inputs.environment || 'dev') == 'prod' }}
-    name: Deploy to Production
-    runs-on: vote-prod
+    name: Deploy to Production (Homeserver)
+    runs-on: homeserver
     environment: prod
 
     steps:
@@ -184,7 +189,7 @@ jobs:
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_ID }}" >> $GITHUB_ENV
           echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
           echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
-          echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
+          echo "DEPLOY_PORT=38080" >> $GITHUB_ENV
           echo "IMAGE_TAG=prod-latest" >> $GITHUB_ENV
           echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:prod-latest" >> $GITHUB_ENV
 
@@ -209,7 +214,7 @@ jobs:
 
       - name: Deploy to production environment
         run: |
-          echo "🚀 Deploying to production environment..."
+          echo "🚀 Deploying to production environment (homeserver)..."
 
           # Stop and remove existing container
           echo "⏹️ Stopping existing container..."
@@ -303,7 +308,7 @@ jobs:
         run: |
           echo "🚀 Deployment Summary"
           echo "===================="
-          echo "Environment: prod"
+          echo "Environment: prod (homeserver - temporary)"
           echo "Branch: ${{ github.ref_name }}"
           echo "Built Image: ${{ env.TARGET_IMAGE }}"
           echo "Container: ${{ env.CONTAINER_NAME }}"
@@ -313,3 +318,152 @@ jobs:
           docker ps --filter "name=${{ env.CONTAINER_NAME }}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
           echo ""
           echo "🌐 Access URL: http://localhost:${{ env.DEPLOY_PORT }}"
+
+  # ============================================================================
+  # [ORIGINAL] Production deployment to AWS t2.micro (commented out)
+  # Uncomment this and comment out deploy-prod above when restoring AWS deployment
+  # ============================================================================
+  # deploy-prod-aws:
+  #   if: ${{ (inputs.environment || github.event.inputs.environment || 'dev') == 'prod' }}
+  #   name: Deploy to Production
+  #   runs-on: vote-prod
+  #   environment: prod
+  #
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Set up environment variables
+  #       run: |
+  #         echo "DOCKER_USERNAME=${{ secrets.DOCKER_ID }}" >> $GITHUB_ENV
+  #         echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PW }}" >> $GITHUB_ENV
+  #         echo "CONTAINER_NAME=vote-app-prod" >> $GITHUB_ENV
+  #         echo "DEPLOY_PORT=8080" >> $GITHUB_ENV
+  #         echo "IMAGE_TAG=prod-latest" >> $GITHUB_ENV
+  #         echo "TARGET_IMAGE=${{ env.REGISTRY }}/${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}:prod-latest" >> $GITHUB_ENV
+  #
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ env.DOCKER_USERNAME }}
+  #         password: ${{ env.DOCKER_PASSWORD }}
+  #
+  #     - name: Pull Docker image
+  #       run: |
+  #         echo "📥 Pulling latest Docker image: ${{ env.TARGET_IMAGE }}"
+  #
+  #         # Remove existing image with same tag to force fresh pull
+  #         echo "🧹 Removing existing image with tag if exists..."
+  #         docker rmi ${{ env.TARGET_IMAGE }} -f || true
+  #
+  #         # Pull latest image
+  #         docker pull ${{ env.TARGET_IMAGE }}
+  #
+  #         echo "✅ Successfully pulled latest image"
+  #
+  #     - name: Deploy to production environment
+  #       run: |
+  #         echo "🚀 Deploying to production environment..."
+  #
+  #         # Stop and remove existing container
+  #         echo "⏹️ Stopping existing container..."
+  #         docker stop ${{ env.CONTAINER_NAME }} || true
+  #         docker rm ${{ env.CONTAINER_NAME }} || true
+  #
+  #         # Start new container
+  #         echo "▶️ Starting new container..."
+  #         docker run -d \
+  #           --name ${{ env.CONTAINER_NAME }} \
+  #           --restart unless-stopped \
+  #           -p ${{ env.DEPLOY_PORT }}:8080 \
+  #           -e JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}" \
+  #           -e PASSWORD_SECRET_KEY="${{ secrets.PASSWORD_SECRET_KEY }}" \
+  #           -e PORTONE_STORE_ID="${{ secrets.PORTONE_STORE_ID }}" \
+  #           -e PORTONE_AUTH_TOKEN="${{ secrets.PORTONE_AUTH_TOKEN }}" \
+  #           -e DB_URL="${{ secrets.DB_URL }}" \
+  #           -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+  #           -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+  #           ${{ env.TARGET_IMAGE }}
+  #
+  #         echo "✅ Production container started successfully"
+  #         docker ps --filter "name=${{ env.CONTAINER_NAME }}"
+  #
+  #     - name: Verify deployment
+  #       run: |
+  #         echo "⏳ Waiting for application to start..."
+  #         sleep 15
+  #
+  #         # Check if container is running
+  #         if docker ps --filter "name=${{ env.CONTAINER_NAME }}" --filter "status=running" | grep -q ${{ env.CONTAINER_NAME }}; then
+  #           echo "✅ Production container is running successfully"
+  #
+  #           # Health check with retry
+  #           for i in {1..5}; do
+  #             if curl -f -s http://localhost:${{ env.DEPLOY_PORT }}/actuator/health > /dev/null 2>&1; then
+  #               echo "✅ Production health check passed"
+  #               break
+  #             else
+  #               echo "⏳ Production health check attempt $i/5 failed, retrying in 5s..."
+  #               sleep 5
+  #             fi
+  #
+  #             if [ $i -eq 5 ]; then
+  #               echo "⚠️ Production health check endpoint not responding"
+  #               echo "📋 Container logs:"
+  #               docker logs --tail 20 ${{ env.CONTAINER_NAME }}
+  #             fi
+  #           done
+  #         else
+  #           echo "❌ Production container failed to start"
+  #           docker logs ${{ env.CONTAINER_NAME }}
+  #           exit 1
+  #         fi
+  #
+  #     - name: Clean up old Docker images
+  #       run: |
+  #         echo "🧹 Cleaning up old Docker images..."
+  #
+  #         # Get current running container's image ID
+  #         CURRENT_IMAGE_ID=$(docker inspect ${{ env.CONTAINER_NAME }} --format='{{.Image}}' 2>/dev/null || echo "")
+  #
+  #         if [ -n "$CURRENT_IMAGE_ID" ]; then
+  #           echo "Current container image ID: $CURRENT_IMAGE_ID"
+  #
+  #           # Remove all vote-app images except the current one
+  #           echo "Removing old ${{ env.IMAGE_NAME }} images (keeping only current)..."
+  #           OLD_IMAGES=$(docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }} --format "{{.ID}}" | grep -v "$CURRENT_IMAGE_ID" || echo "")
+  #
+  #           if [ -n "$OLD_IMAGES" ]; then
+  #             echo "Found old images to remove:"
+  #             echo "$OLD_IMAGES"
+  #             echo "$OLD_IMAGES" | xargs -r docker rmi -f || true
+  #             echo "✅ Old images removed"
+  #           else
+  #             echo "No old images to clean up"
+  #           fi
+  #         else
+  #           echo "⚠️ Could not get current container image ID"
+  #         fi
+  #
+  #         # Clean up dangling images
+  #         echo "Cleaning up dangling images..."
+  #         docker image prune -f || true
+  #
+  #         # Show remaining images
+  #         echo "📦 Remaining ${{ env.IMAGE_NAME }} images:"
+  #         docker images ${{ secrets.DOCKER_ID }}/${{ env.IMAGE_NAME }}
+  #
+  #     - name: Show deployment summary
+  #       run: |
+  #         echo "🚀 Deployment Summary"
+  #         echo "===================="
+  #         echo "Environment: prod"
+  #         echo "Branch: ${{ github.ref_name }}"
+  #         echo "Built Image: ${{ env.TARGET_IMAGE }}"
+  #         echo "Container: ${{ env.CONTAINER_NAME }}"
+  #         echo "Port: ${{ env.DEPLOY_PORT }}"
+  #         echo ""
+  #         echo "Container Status:"
+  #         docker ps --filter "name=${{ env.CONTAINER_NAME }}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+  #         echo ""
+  #         echo "🌐 Access URL: http://localhost:${{ env.DEPLOY_PORT }}"
