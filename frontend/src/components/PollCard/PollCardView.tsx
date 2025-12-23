@@ -99,6 +99,7 @@ export default function PollCardView({
 					{/* 선택 옵션 */}
 					{!showResults && pollData && (
 						<PollCardOptions
+							pollId={pollData.id}
 							responseType={pollData.responseType}
 							options={pollData.options}
 							onChange={onChangeSelectedOption}
