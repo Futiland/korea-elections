@@ -40,6 +40,7 @@ export function TypeInfoDialog({ open, onOpenChange }: TypeInfoDialogProps) {
 							</div>
 							<div className="rounded-md border border-slate-200 bg-white p-3">
 								<SingleChoiceOption
+									pollId={0}
 									options={SAMPLE_OPTIONS}
 									value={SAMPLE_OPTIONS[0].id.toString()}
 									onValueChange={() => {}}
