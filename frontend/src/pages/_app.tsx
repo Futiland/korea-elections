@@ -45,8 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
 				<meta property="og:title" content="모두의 투표" />
 				<meta
 					property="og:description"
-					content="KEP는 간단한 본인 인증을 통해 투명하고 신뢰할 수 있는 데이터를 확인할 수
-						있는 시민 참여형 서비스입니다."
+					content="KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다."
 				/>
 				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta property="og:image:width" content="1200" />
