@@ -40,6 +40,10 @@ class PollResponseRepositoryImpl(
         return repository.countByPollIdAndDeletedAtIsNull(pollId)
     }
 
+    override fun countDistinctParticipantsByPollId(pollId: Long): Long {
+        return repository.countDistinctAccountIdByPollIdAndDeletedAtIsNull(pollId)
+    }
+
     override fun countByOptionId(optionId: Long): Long {
         return repository.countByOptionIdAndDeletedAtIsNull(optionId)
     }
@@ -70,6 +74,13 @@ interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
     fun findAllByPollIdAndDeletedAtIsNull(pollId: Long): List<PollResponse>
     fun countByPollIdAndDeletedAtIsNull(pollId: Long): Long
     fun countByOptionIdAndDeletedAtIsNull(optionId: Long): Long
+
+    @Query("""
+        SELECT COUNT(DISTINCT pr.accountId) FROM PollResponse pr
+        WHERE pr.pollId = :pollId
+        AND pr.deletedAt IS NULL
+    """)
+    fun countDistinctAccountIdByPollIdAndDeletedAtIsNull(pollId: Long): Long
 
     // No Offset 페이지네이션 (커버링 인덱스: idx_account_id)
     @Query("""

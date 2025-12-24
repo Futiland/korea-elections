@@ -29,9 +29,9 @@ class PollQueryService(
         val options = pollOptionRepository.findAllByPollId(pollId)
         val creatorInfo = accountForPollRepository.getCreatorInfoById(poll.creatorAccountId)
 
-        val responseCount = pollResponseRepository.countByPollId(pollId)
+        val responseCount = pollResponseRepository.countDistinctParticipantsByPollId(pollId)
         val isVoted = accountId?.let {
-            pollResponseRepository.findByPollIdAndAccountId(pollId, it) != null
+            pollResponseRepository.findAllByPollIdAndAccountId(pollId, it).isNotEmpty()
         } ?: false
 
         return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
@@ -57,7 +57,7 @@ class PollQueryService(
         val creatorInfoMap = accountForPollRepository.getCreatorInfoByIds(creatorIds)
 
         val pollListResponses = polls.map { poll ->
-            val responseCount = pollResponseRepository.countByPollId(poll.id)
+            val responseCount = pollResponseRepository.countDistinctParticipantsByPollId(poll.id)
             val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
             val creatorInfo = creatorInfoMap[poll.creatorAccountId]!!
             PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
@@ -77,7 +77,7 @@ class PollQueryService(
         val pollMap = polls.associateBy { it.id }
 
         val responseCountMap = pollIds.associateWith { pollId ->
-            pollResponseRepository.countByPollId(pollId)
+            pollResponseRepository.countDistinctParticipantsByPollId(pollId)
         }
 
         val allParticipatedPolls = pollResponses.mapNotNull { pollResponse ->
@@ -148,7 +148,7 @@ class PollQueryService(
         val creatorInfoMap = accountForPollRepository.getCreatorInfoByIds(creatorIds)
 
         val pollListResponses = polls.map { poll ->
-            val responseCount = pollResponseRepository.countByPollId(poll.id)
+            val responseCount = pollResponseRepository.countDistinctParticipantsByPollId(poll.id)
             val options = optionsByPollId[poll.id]?.map { PollOptionResponse.from(it) } ?: emptyList()
             val creatorInfo = creatorInfoMap[poll.creatorAccountId]!!
             PollListResponse.from(poll, responseCount, options, isVoted = votedPollIds.contains(poll.id), creatorInfo = creatorInfo)
