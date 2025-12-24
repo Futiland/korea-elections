@@ -51,12 +51,12 @@ export default function OpinionPolls() {
 				<title>민심 투표</title>
 				<meta
 					name="description"
-					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
+					content="KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다."
 				/>
 				<meta property="og:title" content="만삼 투표" />
 				<meta
 					property="og:description"
-					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
+					content="KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다."
 				/>
 				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta
