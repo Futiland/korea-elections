@@ -84,11 +84,17 @@ export function usePollCardPresenter({
 			submitPublicPoll(payload.pollId, payload.optionId, payload.responseType),
 		onSuccess: () => {
 			toast.success('투표가 완료되었습니다.');
+			// 목록 쿼리 갱신
 			queryClient.invalidateQueries({ queryKey: ['publicPolls'] });
+			queryClient.invalidateQueries({ queryKey: ['opinionPolls'] });
+
 			// 개별 poll 쿼리도 갱신하여 결과를 볼 수 있게 함
 			if (pollData?.id) {
 				queryClient.invalidateQueries({
 					queryKey: ['publicPoll', pollData.id],
+				});
+				queryClient.invalidateQueries({
+					queryKey: ['opinionPoll', pollData.id],
 				});
 			}
 		},
