@@ -3,6 +3,7 @@ import Header from './Header';
 // import BottomMenuBar from './BottomMenubar';
 import { useRouter } from 'next/router';
 import CreatePollDialog from '../CreatePoll';
+import TopButton from '../TopButton';
 import { Plus } from 'lucide-react';
 import { useRequireLogin } from '@/hooks/useRequireLogin';
 
@@ -24,6 +25,8 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 	const visibleHeader = !isLoginPage;
 	const visibleCreatePollButton =
 		!isLoginPage && !isSignUpPage && !isMaintenanceMode && !isOpinionPollPage;
+	// visibleCreatePollButton 조건 + isOpinionPollPage
+	const visibleTopButton = !isLoginPage && !isSignUpPage && !isMaintenanceMode;
 	// const visibleBottomMenuBar = !isLoginPage && !isSignUpPage;
 
 	const handleCreatePollClick = () =>
@@ -48,6 +51,16 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 				}}
 			>
 				<div className="max-w-lg mx-auto">{children}</div>
+				{/* 탑 버튼 */}
+				{visibleTopButton && (
+					<div
+						className={`fixed right-6 z-50 md:right-[calc(50%-350px+20px)] ${
+							visibleCreatePollButton ? 'bottom-[88px]' : 'bottom-6'
+						}`}
+					>
+						<TopButton />
+					</div>
+				)}
 				{/* 투표 생성 플로팅 버튼 */}
 				{visibleCreatePollButton && (
 					<div className="fixed bottom-6 right-6 z-50 md:right-[calc(50%-350px+20px)]">

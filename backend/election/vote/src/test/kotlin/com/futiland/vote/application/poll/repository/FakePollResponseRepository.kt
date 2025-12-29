@@ -42,6 +42,15 @@ class FakePollResponseRepository : PollResponseRepository {
         return responses.values.count { it.pollId == pollId && it.deletedAt == null }.toLong()
     }
 
+    override fun countDistinctParticipantsByPollId(pollId: Long): Long {
+        return responses.values
+            .filter { it.pollId == pollId && it.deletedAt == null }
+            .map { it.accountId }
+            .distinct()
+            .count()
+            .toLong()
+    }
+
     override fun countByOptionId(optionId: Long): Long {
         return responses.values.count { it.optionId == optionId && it.deletedAt == null }.toLong()
     }

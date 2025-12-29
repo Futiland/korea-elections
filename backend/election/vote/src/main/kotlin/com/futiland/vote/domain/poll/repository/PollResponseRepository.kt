@@ -10,6 +10,11 @@ interface PollResponseRepository {
     fun findAllByPollIdAndAccountId(pollId: Long, accountId: Long): List<PollResponse>
     fun findAllByPollId(pollId: Long): List<PollResponse>
     fun countByPollId(pollId: Long): Long
+
+    /**
+     * 해당 Poll에 참여한 고유 사용자 수 (multichoice에서 중복 카운트 방지)
+     */
+    fun countDistinctParticipantsByPollId(pollId: Long): Long
     fun countByOptionId(optionId: Long): Long
 
     /**

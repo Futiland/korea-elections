@@ -25,7 +25,7 @@ class PollResultQueryService(
 
     override fun getPollResult(pollId: Long, accountId: Long): PollResultResponse {
         val poll = pollRepository.getById(pollId)
-        val totalResponseCount = pollResponseRepository.countByPollId(pollId)
+        val totalResponseCount = pollResponseRepository.countDistinctParticipantsByPollId(pollId)
 
         val myResponse = getMyResponse(pollId, accountId, poll.responseType)
 
