@@ -1,6 +1,7 @@
 import { OptionResultsDate } from '@/lib/types/poll';
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { CHART_COLORS } from './chartColors';
 
 type SingleChoiceChartProps = {
 	data: OptionResultsDate[];
@@ -13,18 +14,7 @@ export default function SingleChoiceChart({
 	totalResponses,
 	height = 200,
 }: SingleChoiceChartProps) {
-	const colors = [
-		'#3B82F6', // blue
-		'#EF4444', // red
-		'#10B981', // green
-		'#F59E0B', // yellow
-		'#8B5CF6', // purple
-		'#EC4899', // pink
-		'#06B6D4', // cyan
-		'#84CC16', // lime
-		'#F97316', // orange
-		'#6366F1', // indigo
-	];
+	const colors = CHART_COLORS;
 
 	const CustomTooltip = ({ active, payload }: any) => {
 		if (active && payload && payload.length) {

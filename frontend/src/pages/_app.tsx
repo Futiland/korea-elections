@@ -39,10 +39,11 @@ export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
 			<Head>
-				<title>모두의 투표</title>
+				{/* 공통 메타 태그만 유지 (각 페이지에서 덮어쓸 수 있음) */}
 				<meta property="og:type" content="website" />
-				<meta property="og:site_name" content="KEP" />
-				<meta property="og:title" content="모두의 투표" />
+				<meta property="og:site_name" content="모두의 투표" />
+				<meta property="og:locale" content="ko_KR" />
+				{/* <meta property="og:title" content="모두의 투표" />
 				<meta
 					property="og:description"
 					content="KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다."
@@ -50,8 +51,8 @@ export default function App({ Component, pageProps }: AppProps) {
 				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta property="og:image:width" content="1200" />
 				<meta property="og:image:height" content="630" />
-				<meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
-				<meta property="og:locale" content="ko_KR"></meta>
+				<meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} /> */}
+
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 

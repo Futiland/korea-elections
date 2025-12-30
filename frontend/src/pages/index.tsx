@@ -131,6 +131,15 @@ export default function Home() {
 					name="description"
 					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
 				/>
+				<meta property="og:title" content="모두의 투표" />
+				<meta
+					property="og:description"
+					content="쉽게 만들고, 바로 공유하고, 함께 참여하는 투표 플랫폼"
+				/>
+				<meta property="og:image" content="/img/everyone-polls.png" />
+				<meta property="og:image:width" content="1200" />
+				<meta property="og:site_name" content="모두의 투표" />
+				<meta property="og:url" content={process.env.NEXT_PUBLIC_BASE_URL} />
 			</Head>
 
 			<main className="flex min-h-screen flex-col items-center bg-slate-50 pb-16">
