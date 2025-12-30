@@ -10,7 +10,13 @@ import { Spinner } from '@/components/ui/spinner';
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
 
-export default function OpinionPollDetailPage() {
+interface OpinionPollDetailPageProps {
+	pollData?: PollResponse['data'];
+}
+
+export default function OpinionPollDetailPage({
+	pollData: initialPollData,
+}: OpinionPollDetailPageProps) {
 	const router = useRouter();
 	const { id } = router.query;
 
@@ -27,13 +33,16 @@ export default function OpinionPollDetailPage() {
 		enabled,
 		retry: 1,
 		refetchOnWindowFocus: false,
+		initialData: initialPollData
+			? ({ data: initialPollData } as PollResponse)
+			: undefined,
 	});
 
 	if (!enabled) {
 		return null; // 라우터가 아직 준비되지 않음
 	}
 
-	if (isFetching) {
+	if (isFetching && !poll?.data) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-slate-50">
 				<Spinner className="w-10 h-10 text-blue-500" />
@@ -49,22 +58,28 @@ export default function OpinionPollDetailPage() {
 		);
 	}
 
+	const ogTitle = poll.data.title;
+	const ogDescription =
+		poll.data.description ||
+		'KEP는 본인 인증된 시민만 참여하는 여론조사 플랫폼입니다.';
+	const ogUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/opinion-polls/${poll.data.id}`;
+
 	return (
 		<>
 			<Head>
-				<title>{poll.data.title} - 민심 투표</title>
-				<meta property="og:title" content={poll.data.title} />
-				<meta property="og:description" content={poll.data.description} />
-				<meta property="og:image" content="/img/everyone-polls.png" />
+				<title>{ogTitle} - 민심 투표</title>
+				<meta name="description" content={ogDescription} />
+				<meta key="og:title" property="og:title" content={ogTitle} />
 				<meta
-					property="og:url"
-					content={`${process.env.NEXT_PUBLIC_BASE_URL}/opinion-polls/${poll.data.id}`}
+					key="og:description"
+					property="og:description"
+					content={ogDescription}
 				/>
+				<meta key="og:url" property="og:url" content={ogUrl} />
+				<meta property="og:image" content="/img/everyone-polls.png" />
 				<meta property="og:locale" content="ko_KR" />
 				<meta property="og:type" content="website" />
-				<meta property="og:site_name" content="KEP" />
-				<meta property="og:image:width" content="1200" />
-				<meta property="og:image:height" content="630" />
+				<meta property="og:site_name" content="모두의 투표" />
 			</Head>
 
 			<main className="min-h-screen bg-slate-50 pb-24">
@@ -118,20 +133,21 @@ export const getStaticProps: GetStaticProps = async (context) => {
 	const queryClient = new QueryClient();
 
 	try {
-		await queryClient.prefetchQuery<PollResponse>({
+		const pollData = await queryClient.fetchQuery<PollResponse>({
 			queryKey: ['opinionPoll', pollId],
 			queryFn: () => getPoll(pollId),
 		});
+
+		return {
+			props: {
+				dehydratedState: dehydrate(queryClient),
+				pollData: pollData.data, // 서버 사이드에서 메타 태그 설정을 위한 데이터
+			},
+			revalidate: 600,
+		};
 	} catch (error) {
 		return {
 			notFound: true,
 		};
 	}
-
-	return {
-		props: {
-			dehydratedState: dehydrate(queryClient),
-		},
-		revalidate: 600,
-	};
 };
