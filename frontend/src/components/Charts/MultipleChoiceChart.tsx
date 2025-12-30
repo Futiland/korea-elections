@@ -10,6 +10,7 @@ import {
 	ResponsiveContainer,
 	Cell,
 } from 'recharts';
+import { CHART_COLORS } from './chartColors';
 
 type MultipleChoiceChartProps = {
 	data: OptionResultsDate[];
@@ -22,13 +23,13 @@ export default function MultipleChoiceChart({
 	totalResponses,
 	height = 300,
 }: MultipleChoiceChartProps) {
+	const colors = CHART_COLORS;
+
 	// 데이터를 투표 수 기준으로 내림차순 정렬
 	const sortedData = useMemo(
 		() => [...data].sort((a, b) => b.voteCount - a.voteCount),
 		[data]
 	);
-
-	const color = '#2b7fff'; // blue
 
 	const getTickStep = (maxValue: number) => {
 		if (maxValue <= 10) return 1;
@@ -64,7 +65,7 @@ export default function MultipleChoiceChart({
 			return (
 				<div className="bg-white py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg shadow-lg flex flex-col items-start gap-1 max-w-[260px]">
 					<p className="font-semibold text-gray-800 text-xs sm:text-sm break-words leading-snug">
-						{label}
+						{data.optionText}
 					</p>
 					<div className="flex items-baseline gap-1 text-xs sm:text-sm">
 						<p className="text-blue-600 font-bold">
@@ -80,6 +81,46 @@ export default function MultipleChoiceChart({
 		return null;
 	};
 
+	const CustomLegend = ({ payload }: any) => {
+		return (
+			<div className="flex flex-col gap-2 sm:mt-4 mb-6">
+				{payload?.map((entry: any, index: number) => (
+					<div key={index} className="flex items-start gap-2 text-sm min-w-0">
+						<div
+							className="w-4 h-4 rounded-full flex-shrink-0 mt-0.5"
+							style={{ backgroundColor: entry.color }}
+						/>
+						<div className="flex-1 min-w-0">
+							<div className="flex items-start justify-between gap-2 flex-wrap">
+								<span className="text-gray-700 break-words line-clamp-2 flex-1 min-w-0">
+									{entry.value}
+								</span>
+								<div className="text-right flex-shrink-0 whitespace-nowrap">
+									<span className="font-semibold text-gray-800">
+										{entry.payload.voteCount.toLocaleString()}명
+									</span>
+									<span className="text-gray-500 ml-1">
+										({Math.round(entry.payload.percentage)}%)
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+		);
+	};
+
+	// 각 옵션에 색상 할당
+	const dataWithColors = useMemo(
+		() =>
+			sortedData.map((item, index) => ({
+				...item,
+				color: colors[index % colors.length],
+			})),
+		[sortedData]
+	);
+
 	return (
 		<div className="w-full">
 			<div className="flex items-center justify-between mb-4">
@@ -88,44 +129,56 @@ export default function MultipleChoiceChart({
 					총 응답: {totalResponses.toLocaleString()}명
 				</span>
 			</div>
-			<ResponsiveContainer width="100%" height={height}>
-				<BarChart
-					data={sortedData}
-					layout="vertical"
-					margin={{
-						top: 20,
-						right: 30,
-						// left: 50,
-						bottom: 5,
-					}}
-				>
-					<CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-					<XAxis
-						type="number"
-						tick={{ fontSize: 12 }}
-						tickFormatter={(value) => value.toLocaleString()}
-						allowDecimals={false}
-						ticks={axisTicks}
-						domain={[0, axisTicks[axisTicks.length - 1] || 0]}
-						label={{ value: '', position: 'insideBottom', offset: -5 }}
-					/>
-					<YAxis
-						type="category"
-						dataKey="optionText"
-						tick={{ fontSize: 12 }}
-						max-width={200}
-						min-width={60}
-					/>
-					<Tooltip content={<CustomTooltip />} />
+			<div className="flex flex-col gap-3">
+				<div className="w-full flex justify-center">
+					<ResponsiveContainer width="100%" height={height}>
+						<BarChart
+							data={dataWithColors}
+							layout="vertical"
+							margin={{
+								top: 20,
+								right: 30,
+								bottom: 5,
+								left: 5,
+							}}
+						>
+							<CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+							<XAxis
+								type="number"
+								tick={{ fontSize: 12 }}
+								tickFormatter={(value) => value.toLocaleString()}
+								allowDecimals={false}
+								ticks={axisTicks}
+								domain={[0, axisTicks[axisTicks.length - 1] || 0]}
+								label={{ value: '', position: 'insideBottom', offset: -5 }}
+							/>
+							<YAxis
+								type="category"
+								dataKey="optionText"
+								tick={{ fontSize: 0 }}
+								width={20}
+								tickFormatter={() => ''}
+							/>
+							<Tooltip content={<CustomTooltip />} />
 
-					<Bar
-						dataKey="voteCount"
-						fill={color}
-						radius={[0, 8, 8, 0]}
-						barSize={28}
+							<Bar dataKey="voteCount" radius={[0, 8, 8, 0]} barSize={28}>
+								{dataWithColors.map((entry, index) => (
+									<Cell key={`cell-${index}`} fill={entry.color} />
+								))}
+							</Bar>
+						</BarChart>
+					</ResponsiveContainer>
+				</div>
+				<div className="w-full min-w-0">
+					<CustomLegend
+						payload={dataWithColors.map((d) => ({
+							value: d.optionText,
+							color: d.color,
+							payload: d,
+						}))}
 					/>
-				</BarChart>
-			</ResponsiveContainer>
+				</div>
+			</div>
 		</div>
 	);
 }
