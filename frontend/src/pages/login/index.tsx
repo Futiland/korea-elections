@@ -78,6 +78,15 @@ export default function LoginPage() {
 		useVerificationPortOne({ redirectUrl: '/change-password' });
 	};
 
+	const handleKakaoLogin = () => {
+		// 카카오 로그인 처리
+		// TODO: 백엔드 카카오 로그인 API 엔드포인트로 리다이렉트
+		const kakaoLoginUrl = `${
+			process.env.NEXT_PUBLIC_API_URL
+		}/rest/account/v1/kakao/login?redirect=${encodeURIComponent(redirectPath)}`;
+		window.location.href = kakaoLoginUrl;
+	};
+
 	if (!isReady) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
@@ -144,16 +153,42 @@ export default function LoginPage() {
 							)}
 							로그인
 						</Button>
-
-						{/* 회원가입 버튼 */}
-						<Button
-							onClick={handleSignup}
-							className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10"
-							disabled={loginMutation.isPending}
-						>
-							회원가입
-						</Button>
 					</form>
+
+					{/* 구분선 */}
+					<div className="relative my-6">
+						<div className="absolute inset-0 flex items-center">
+							<div className="w-full border-t border-slate-200"></div>
+						</div>
+						<div className="relative flex justify-center text-xs uppercase">
+							<span className="bg-white px-2 text-slate-500">또는</span>
+						</div>
+					</div>
+
+					{/* 카카오 로그인 버튼 */}
+					<Button
+						type="button"
+						onClick={handleKakaoLogin}
+						className="w-full bg-[#FEE500] hover:bg-[#F9D000] text-slate-900 h-10 flex items-center justify-center gap-2 font-medium"
+						disabled={loginMutation.isPending}
+					>
+						<Image
+							src="/img/icon-kakao.svg"
+							alt="카카오"
+							width={18}
+							height={18}
+						/>
+						카카오로 로그인
+					</Button>
+
+					{/* 회원가입 버튼 */}
+					<Button
+						onClick={handleSignup}
+						className="w-full bg-blue-100 text-blue-900 hover:bg-blue-200 h-10 mt-4"
+						disabled={loginMutation.isPending}
+					>
+						회원가입
+					</Button>
 
 					<div className="flex flex-col items-center my-6">
 						<Button
