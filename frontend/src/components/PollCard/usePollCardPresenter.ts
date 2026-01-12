@@ -15,6 +15,7 @@ import {
 import { getDateRangeDurationLabel } from '@/lib/date';
 import { getParticipationMessage } from '@/lib/utils';
 import { useRequireLogin } from '@/hooks/useRequireLogin';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 declare global {
 	interface Window {
@@ -147,6 +148,12 @@ export function usePollCardPresenter({
 	const onClickShare = useCallback(() => {
 		if (!pollData?.id) return;
 		setIsShareDialogOpen(true);
+		googleAnalyticsCustomEvent({
+			action: 'poll_card_share_button_click',
+			category: 'poll_share',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
 	}, [pollData?.id]);
 
 	const onCopyShareUrl = useCallback(async () => {
@@ -201,16 +208,29 @@ export function usePollCardPresenter({
 			);
 			onCopyShareUrl();
 		}
+
+		googleAnalyticsCustomEvent({
+			action: 'poll_card_share_kakao_button_click',
+			category: 'poll_share',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
 	}, [pollData?.title, shareUrl, onCopyShareUrl]);
 
-	const onClickShowResults = useCallback(
+	const onClickShowResults = useCallback(() => {
 		(show: boolean) =>
 			ensureLoggedIn({
 				onSuccess: () => setShowResults(show),
 				description: '로그인 후 투표 결과를 확인해보세요. 😃',
-			}),
-		[ensureLoggedIn]
-	);
+			});
+
+		googleAnalyticsCustomEvent({
+			action: 'poll_card_show_results_button_click',
+			category: 'poll_show_results',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
+	}, [ensureLoggedIn]);
 
 	const onSubmitPoll = useCallback(() => {
 		if (
@@ -231,6 +251,13 @@ export function usePollCardPresenter({
 		ensureLoggedIn({
 			onSuccess: submitPoll,
 			description: '투표 참여는 로그인 후 가능합니다.',
+		});
+
+		googleAnalyticsCustomEvent({
+			action: 'submit_poll',
+			category: 'poll',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
 		});
 	}, [
 		ensureLoggedIn,

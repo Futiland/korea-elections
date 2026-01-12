@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuthToken } from './useAuthToken';
 import { useAlertDialog } from '@/components/providers/AlertDialogProvider';
 import { Button } from '@/components/ui/button';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 interface EnsureLoggedInOptions {
 	onSuccess?: () => void;
@@ -35,6 +36,12 @@ export function useRequireLogin() {
 								router.push({
 									pathname: '/login',
 									query: { redirect: router.asPath },
+								});
+								googleAnalyticsCustomEvent({
+									action: 'require_login_dialog_login_button_click',
+									category: 'login_required_dialog',
+									label: 'require_login_dialog_login_button_click',
+									value: 'require_login_dialog_login_button_click',
 								});
 							}}
 						>

@@ -6,6 +6,8 @@ import { formatDateTimeLocal, getDateRangeDurationLabel } from '@/lib/date';
 import { getParticipationMessage } from '@/lib/utils';
 import { PollParticipationBadge } from '../../PollCard/PollParticipationBadge';
 import type { PollCardProps } from '../types';
+import { useCallback } from 'react';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 export default function PollCarouselEventCard({
 	pollData,
@@ -19,6 +21,16 @@ export default function PollCarouselEventCard({
 	const remainingTimeLabel = pollData?.endAt
 		? getDateRangeDurationLabel(pollData.endAt)
 		: null;
+
+	const handleClickPoll = useCallback(() => {
+		onClickPoll?.(pollData?.id.toString());
+		googleAnalyticsCustomEvent({
+			action: 'home_page_poll_carousel_event_card_click',
+			category: 'home_page_poll_carousel_event_card',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
+	}, [onClickPoll, pollData?.id, pollData?.title]);
 
 	return (
 		<Card className="group relative h-full overflow-hidden border-2 border-purple-200/60 bg-gradient-to-br from-purple-50 via-pink-50/50 to-orange-50/40 gap-1 shadow-lg transition-all hover:shadow-xl hover:border-purple-300/80">
@@ -80,7 +92,7 @@ export default function PollCarouselEventCard({
 						className="group/btn w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 px-5 py-3 text-[13px] font-bold text-white shadow-lg transition-all hover:from-purple-700 hover:via-pink-600 hover:to-orange-600 hover:scale-105 md:text-sm cursor-pointer"
 						onClick={(event) => {
 							event.stopPropagation();
-							onClickPoll?.(pollData?.id.toString());
+							handleClickPoll;
 						}}
 					>
 						<span className="inline-flex items-center gap-1.5">

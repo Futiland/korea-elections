@@ -145,7 +145,7 @@ export default function PollCardView({
 												{isSubmittingPoll || isRefreshingPolls ? (
 													<Loader2 className="w-6 h-6 animate-spin text-center" />
 												) : (
-													'투표하기'
+													'투표하고 결과보기'
 												)}
 											</button>
 										)}
