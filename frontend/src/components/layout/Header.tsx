@@ -6,12 +6,19 @@ import { useState } from 'react';
 import IntroduceLayout from '@/components/layout/IntroduceLayout';
 import { Dialog, DialogContent, DialogFooter } from '@/components/CustomDialog';
 import { Info, UserRound } from 'lucide-react';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 export default function Header() {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const visbleIntroduceDialog = () => {
 		setIsOpen(true);
+		googleAnalyticsCustomEvent({
+			action: 'header_introduce_dialog_open_button_click',
+			category: 'introduce_dialog',
+			label: 'header_introduce_dialog_open_button_click',
+			value: 'header_introduce_dialog_open_button_click',
+		});
 	};
 
 	return (

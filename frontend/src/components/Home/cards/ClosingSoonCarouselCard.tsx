@@ -6,6 +6,8 @@ import { formatDateTimeLocal, getDateRangeDurationLabel } from '@/lib/date';
 import { getParticipationMessage } from '@/lib/utils';
 import { PollParticipationBadge } from '../../PollCard/PollParticipationBadge';
 import type { PollCardProps } from '../types';
+import { useCallback } from 'react';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 export default function ClosingSoonCarouselCard({
 	pollData,
@@ -22,6 +24,16 @@ export default function ClosingSoonCarouselCard({
 
 	const isClosingSoon =
 		!!remainingTimeLabel && pollData?.status === 'IN_PROGRESS';
+
+	const handleClickPoll = useCallback(() => {
+		onClickPoll?.(pollData?.id.toString());
+		googleAnalyticsCustomEvent({
+			action: 'home_page_closing_soon_carousel_card_click',
+			category: 'home_page_closing_soon_carousel_card',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
+	}, [onClickPoll, pollData?.id, pollData?.title]);
 
 	return (
 		<Card className="group h-full border-amber-100/80 bg-gradient-to-br from-amber-50/80 via-orange-30/60 to-white py-3 transition-all hover:-translate-y-1 hover:border-amber-300 hover:bg-amber-50/90 hover:shadow-md gap-2">
@@ -59,7 +71,7 @@ export default function ClosingSoonCarouselCard({
 						className="cursor-pointer inline-flex items-center justify-between rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] font-semibold text-red-700  hover:border-red-300 hover:bg-red-100 hover:text-red-800"
 						onClick={(event) => {
 							event.stopPropagation();
-							onClickPoll?.(pollData?.id.toString());
+							handleClickPoll();
 						}}
 					>
 						<span className="inline-flex items-center gap-1">
