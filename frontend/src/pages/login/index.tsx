@@ -79,12 +79,14 @@ export default function LoginPage() {
 	};
 
 	const handleKakaoLogin = () => {
-		// 카카오 로그인 처리
-		// TODO: 백엔드 카카오 로그인 API 엔드포인트로 리다이렉트
-		const kakaoLoginUrl = `${
-			process.env.NEXT_PUBLIC_API_URL
-		}/rest/account/v1/kakao/login?redirect=${encodeURIComponent(redirectPath)}`;
-		window.location.href = kakaoLoginUrl;
+		// 소셜 로그인 전용 페이지로 이동
+		router.push({
+			pathname: '/social-login',
+			query: {
+				provider: 'kakao',
+				redirect: redirectPath,
+			},
+		});
 	};
 
 	if (!isReady) {
