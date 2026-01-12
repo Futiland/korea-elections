@@ -125,9 +125,9 @@ export default function PollCardView({
 							<button
 								className="w-full bg-blue-800 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors shadow-sm"
 								type="button"
-								onClick={() => onClickShowResults(false)}
+								onClick={() => onClickShowResults(false, 'show_result')}
 							>
-								투표 보기
+								결과 보기
 							</button>
 						) : (
 							<>
@@ -145,7 +145,7 @@ export default function PollCardView({
 												{isSubmittingPoll || isRefreshingPolls ? (
 													<Loader2 className="w-6 h-6 animate-spin text-center" />
 												) : (
-													'투표하고 결과보기'
+													'투표하기'
 												)}
 											</button>
 										)}
@@ -155,7 +155,7 @@ export default function PollCardView({
 											<button
 												className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 												type="button"
-												onClick={() => onClickShowResults(true)}
+												onClick={() => onClickShowResults(true, 'voted_result')}
 											>
 												<CheckCircle2 className="w-5 h-5" />
 												<span>투표 완료 · 결과 보기</span>
@@ -180,7 +180,9 @@ export default function PollCardView({
 												<button
 													className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 													type="button"
-													onClick={() => onClickShowResults(true)}
+													onClick={() =>
+														onClickShowResults(true, 'revote_result')
+													}
 												>
 													<span>결과 보기</span>
 												</button>
@@ -194,7 +196,9 @@ export default function PollCardView({
 									<button
 										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 										type="button"
-										onClick={() => onClickShowResults(true)}
+										onClick={() =>
+											onClickShowResults(true, 'voted_expired_result')
+										}
 									>
 										<CheckCircle2 className="w-5 h-5" />
 										<span>투표 완료 · 결과 보기</span>
@@ -206,7 +210,9 @@ export default function PollCardView({
 									<button
 										className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
 										type="button"
-										onClick={() => onClickShowResults(true)}
+										onClick={() =>
+											onClickShowResults(true, 'require_login_result')
+										}
 									>
 										<span>로그인 후 결과 보기</span>
 									</button>

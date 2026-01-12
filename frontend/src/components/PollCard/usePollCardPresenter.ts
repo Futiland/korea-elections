@@ -47,7 +47,7 @@ export interface PollCardViewProps {
 	onClickShare: () => void;
 	onCopyShareUrl: () => void;
 	onShareKakao: () => void;
-	onClickShowResults: (show: boolean) => void;
+	onClickShowResults: (show: boolean, resultBtnType: string) => void;
 	onSubmitPoll: () => void;
 	isSubmittingPoll: boolean;
 	isLoggedIn: boolean;
@@ -217,20 +217,22 @@ export function usePollCardPresenter({
 		});
 	}, [pollData?.title, shareUrl, onCopyShareUrl]);
 
-	const onClickShowResults = useCallback(() => {
-		(show: boolean) =>
+	const onClickShowResults = useCallback(
+		(show: boolean, resultBtnType: string) => {
 			ensureLoggedIn({
 				onSuccess: () => setShowResults(show),
 				description: '로그인 후 투표 결과를 확인해보세요. 😃',
 			});
 
-		googleAnalyticsCustomEvent({
-			action: 'poll_card_show_results_button_click',
-			category: 'poll_show_results',
-			label: pollData?.title ?? '',
-			value: pollData?.id,
-		});
-	}, [ensureLoggedIn]);
+			googleAnalyticsCustomEvent({
+				action: `poll_card_${resultBtnType}_button_click`,
+				category: 'poll_show_results',
+				label: pollData?.title ?? '',
+				value: pollData?.id,
+			});
+		},
+		[ensureLoggedIn]
+	);
 
 	const onSubmitPoll = useCallback(() => {
 		if (
