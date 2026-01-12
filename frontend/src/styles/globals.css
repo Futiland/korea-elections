@@ -175,3 +175,7 @@ textarea,
 select {
 	background: #fff;
 }
+
+button {
+	cursor: pointer !important;
+}
