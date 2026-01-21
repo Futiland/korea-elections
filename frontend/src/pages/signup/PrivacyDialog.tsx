@@ -2,11 +2,10 @@ import {
 	Dialog,
 	DialogContent,
 	DialogFooter,
-	DialogHeader,
+
 } from '@/components/CustomDialog';
-import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
+
 import { Button } from '@/components/ui/button';
-import TermsContent from './TermsContent';
 import PrivacyContents from '@/components/Policy/PrivacyContents';
 
 type PrivacyDialogProps = {

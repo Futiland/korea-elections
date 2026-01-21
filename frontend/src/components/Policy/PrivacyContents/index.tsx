@@ -2,7 +2,7 @@ import { Divider } from '@/components/ui/divider';
 
 export default function PrivacyContents() {
 	return (
-		<div className="">
+		<div className="p-6">
 			{/* 헤더 */}
 			<div className="mb-8">
 				<h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
