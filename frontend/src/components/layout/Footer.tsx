@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 export default function Footer() {
 	return (
 		<footer className="w-full bg-slate-100 text-slate-400 text-sm px-6 pb-20">
@@ -22,6 +23,11 @@ export default function Footer() {
 					<p>전화번호 : 070-8027-8679</p>
 				</div>
 			</div>
+
+			<div className="py-4">
+				<Link href="/policy/privacy">개인정보 처리방침</Link>
+			</div>
+
 			<div className="py-4 text-center">
 				&copy; {new Date().getFullYear()} Korea Elections. All rights reserved
 			</div>
