@@ -7,24 +7,20 @@ import {
 import { DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import TermsContent from './TermsContent';
+import PrivacyContents from '@/components/Policy/PrivacyContents';
 
-type TermsDialogProps = {
+type PrivacyDialogProps = {
 	isOpen: boolean;
 	setIsOpen: (isVisible: boolean) => void;
 };
 
-export default function TermsDialog({ isOpen, setIsOpen }: TermsDialogProps) {
+export default function PrivacyDialog({ isOpen, setIsOpen }: PrivacyDialogProps) {
 	return (
-		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogContent className="w-[calc(100%-40px)] bg-slate-100 px-5 py-6">
-				<DialogHeader>
-					<DialogTitle>개인정보 수집·이용에 대한 동의</DialogTitle>
-					<DialogDescription>
-						아래 내용을 충분히 읽으신 후 동의 여부를 결정해 주세요.
-					</DialogDescription>
-				</DialogHeader>
+		<Dialog open={isOpen} onOpenChange={setIsOpen} >
+			<DialogContent
+				className="w-[calc(100%-40px)] bg-slate-100 px-5 py-6 max-h-[calc(100vh-60px)] overflow-y-scroll	">
 
-				<TermsContent />
+				<PrivacyContents />
 
 				<DialogFooter>
 					<Button
