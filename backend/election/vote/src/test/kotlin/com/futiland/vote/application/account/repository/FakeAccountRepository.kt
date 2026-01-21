@@ -27,10 +27,23 @@ class FakeAccountRepository: AccountRepository {
         return map[id] ?: throw Exception("Account not found")
     }
 
+    override fun getByIds(ids: List<Long>): Map<Long, Account> {
+        TODO("Not yet implemented")
+    }
+
+    override fun findByCi(ci: String): Account? {
+        TODO("Not yet implemented")
+    }
+
     override fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account {
         val account = map.values.find { it.phoneNumber == phoneNumber && it.password == password }
             ?: throw Exception("Account not found")
         return account
+    }
+
+
+    override fun findAllPaged(page: Int, size: Int): List<Account> {
+        TODO("Not yet implemented")
     }
 
     private fun generateId(): Long {

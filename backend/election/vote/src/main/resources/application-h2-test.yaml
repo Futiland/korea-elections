@@ -3,8 +3,19 @@ server:
 
 access_token:
   ttl: 86400000 # 1 day(테스트용
+
+account:
+  re-signup-waiting-days: 30 # 탈퇴 후 재가입 대기 기간 (일)
+
 jwt:
-  secret-key: test
+  secret-key: test-jwt-secret-key-for-testing
+
+password:
+  secret-key: testpasswordaes!
+
+portone:
+  store-id: test-store-id
+  auth-token: test-auth-token
 
 spring:
   datasource:

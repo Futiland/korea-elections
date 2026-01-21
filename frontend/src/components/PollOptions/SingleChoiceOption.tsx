@@ -1,0 +1,44 @@
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { OptionData } from '@/lib/types/poll';
+
+interface SingleChoiceOptionProps {
+	options: OptionData[];
+	value?: string;
+	onValueChange?: (value: string) => void;
+	isVoted: boolean;
+}
+
+export default function SingleChoiceOption({
+	options,
+	value,
+	onValueChange,
+	isVoted,
+}: SingleChoiceOptionProps) {
+	return (
+		<RadioGroup
+			value={value}
+			onValueChange={onValueChange}
+			className="flex flex-wrap items-start gap-2 w-full"
+			disabled={isVoted}
+		>
+			{options.map((option) => {
+				const optionId = `option-${option.id}`;
+				return (
+					<div
+						key={option.id}
+						className="flex items-center gap-2 cursor-pointer p-2 rounded"
+					>
+						<RadioGroupItem value={option.id.toString()} id={optionId} />
+						<Label
+							htmlFor={optionId}
+							className={`cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
+						>
+							{option.optionText || ''}
+						</Label>
+					</div>
+				);
+			})}
+		</RadioGroup>
+	);
+}

@@ -14,3 +14,8 @@ export type ListResponseInfinity<T> = {
 	nextCursor: number;
 	content: Array<T>;
 };
+
+export type PageParam = {
+	size?: number;
+	page?: number;
+};

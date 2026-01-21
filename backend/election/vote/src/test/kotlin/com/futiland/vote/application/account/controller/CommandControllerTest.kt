@@ -4,6 +4,7 @@ import com.futiland.vote.application.account.dto.request.SignInRequest
 import com.futiland.vote.application.account.dto.request.SignUpRequest
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.entity.Gender
+import com.futiland.vote.domain.account.entity.VerificationType
 import com.futiland.vote.domain.account.repository.AccountRepository
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -27,12 +28,10 @@ class CommandControllerTest {
     fun `회원가입 성공`() {
         // Arrange
         val request = SignUpRequest(
-            name = "test",
             phoneNumber = "01012345678",
             password = "password",
-            gender = Gender.MALE,
-            birthDate = LocalDate.of(1970, 1, 1),
-            ci = "ci",
+            verificationId = "test_1748358421556_t8snky",
+            verificationType = VerificationType.MOBILE,
         )
         // Action
         val response = accountCommandController.signUp(

@@ -1,22 +1,64 @@
 server:
   port: 8080
 
-access_token:
-  ttl: 86400000 # 1 day(테스트용
-jwt:
-  secret-key: test
-
-
 spring:
+  config:
+    import: optional:file:.env.${spring.profiles.active:dev}[.properties]
+  jackson:
+    time-zone: Asia/Seoul
   datasource:
-    url: jdbc:mysql://elections.c9yky48gy7at.ap-northeast-2.rds.amazonaws.com:13306/dev_elections
-#    url: jdbc:mysql://localhost:13306/elections
+    url: ${DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          batch_size: 1000
+
+access_token:
+  ttl: 86400000 # 1 day(테스트용
+
+account:
+  re-signup-waiting-days: 30 # 탈퇴 후 재가입 대기 기간 (일)
+
+scheduler:
+  poll:
+    expiration-check-interval: 300000 # 만료 체크 주기 (ms) - 기본 5분
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+
+password:
+  secret-key: ${PASSWORD_SECRET_KEY}
+
+portone:
+  store-id: ${PORTONE_STORE_ID}
+  auth-token: ${PORTONE_AUTH_TOKEN}
+
+# Spring Security 디버깅용 (필요 시 주석 해제)
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+# dev 프로파일 전용 설정 (필요시 추가)
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+# prod 프로파일 전용 설정 (필요시 추가)
