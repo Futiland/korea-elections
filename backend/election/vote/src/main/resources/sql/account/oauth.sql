@@ -26,6 +26,7 @@ CREATE TABLE social_account (
 CREATE TABLE oauth_state (
     state VARCHAR(36) PRIMARY KEY COMMENT 'UUID State 값',
     provider ENUM('KAKAO', 'NAVER', 'GOOGLE') NOT NULL COMMENT 'OAuth Provider',
+    frontend_redirect_url VARCHAR(500) NOT NULL DEFAULT '' COMMENT '프론트엔드 리다이렉트 URL (전체 경로)',
     created_at DATETIME NOT NULL COMMENT '생성일',
     expires_at DATETIME NOT NULL COMMENT '만료 시간',
     INDEX idx_expires_at (expires_at)

@@ -30,15 +30,15 @@ class OAuthCommandService(
         oAuthProviderPorts.associateBy { it.getProvider() }
 
     @Transactional
-    override fun getOAuthLoginUrl(provider: OAuthProvider, redirectUri: String): String {
+    override fun getOAuthLoginUrl(provider: OAuthProvider, redirectUri: String, frontendRedirectUrl: String): String {
         val port = providerPortMap[provider]
             ?: throw ApplicationException(
                 code = CodeEnum.FRS_003,
                 message = "지원하지 않는 OAuth Provider입니다: ${provider.providerName}"
             )
 
-        // State 생성 및 저장
-        val oAuthState = OAuthState(provider = provider)
+        // State 생성 및 저장 (프론트엔드 리다이렉트 URL 포함)
+        val oAuthState = OAuthState(provider = provider, frontendRedirectUrl = frontendRedirectUrl)
         oAuthStateRepository.save(oAuthState)
 
         // Authorization URL 생성
@@ -58,8 +58,8 @@ class OAuthCommandService(
                 message = "지원하지 않는 OAuth Provider입니다: ${provider.providerName}"
             )
 
-        // State 검증
-        validateState(state, provider)
+        // State 검증 및 frontendRedirectUrl 추출
+        val oAuthState = validateAndGetState(state, provider)
 
         // Access Token 발급
         val tokenResponse = port.getAccessToken(code, redirectUri)
@@ -72,14 +72,14 @@ class OAuthCommandService(
 
         return if (existingAccount != null) {
             // 기존 사용자 로그인
-            handleExistingUserLogin(existingAccount, provider, userInfo.id, tokenResponse)
+            handleExistingUserLogin(existingAccount, provider, userInfo.id, tokenResponse, oAuthState.frontendRedirectUrl)
         } else {
             // 신규 사용자 가입
-            handleNewUserSignup(userInfo, provider, tokenResponse)
+            handleNewUserSignup(userInfo, provider, tokenResponse, oAuthState.frontendRedirectUrl)
         }
     }
 
-    private fun validateState(state: String, provider: OAuthProvider) {
+    private fun validateAndGetState(state: String, provider: OAuthProvider): OAuthState {
         val oAuthState = oAuthStateRepository.findByState(state)
             ?: throw ApplicationException(
                 code = CodeEnum.FRS_003,
@@ -102,6 +102,8 @@ class OAuthCommandService(
 
         // 1회용 State 삭제
         oAuthStateRepository.deleteByState(state)
+
+        return oAuthState
     }
 
     private fun getAccountJwtPayload(account: Account): Map<String, Any> {
@@ -114,7 +116,8 @@ class OAuthCommandService(
         account: Account,
         provider: OAuthProvider,
         providerAccountId: String,
-        tokenResponse: com.futiland.vote.domain.account.dto.oauth.OAuthTokenResponse
+        tokenResponse: com.futiland.vote.domain.account.dto.oauth.OAuthTokenResponse,
+        frontendRedirectUrl: String
     ): OAuthLoginResponse {
         // 1. ACTIVE 상태의 소셜 계정 확인
         val activeSocialAccount = socialAccountRepository.findActiveByProviderAndProviderAccountId(
@@ -169,14 +172,16 @@ class OAuthCommandService(
 
         return OAuthLoginResponse(
             token = jwtToken,
-            isNewUser = false
+            isNewUser = false,
+            frontendRedirectUrl = frontendRedirectUrl
         )
     }
 
     private fun handleNewUserSignup(
         userInfo: com.futiland.vote.domain.account.dto.oauth.OAuthUserInfoResponse,
         provider: OAuthProvider,
-        tokenResponse: com.futiland.vote.domain.account.dto.oauth.OAuthTokenResponse
+        tokenResponse: com.futiland.vote.domain.account.dto.oauth.OAuthTokenResponse,
+        frontendRedirectUrl: String
     ): OAuthLoginResponse {
         // 가입 조건 검증 (재가입 대기 기간 등)
         accountQueryUseCase.validateSignUpEligibility(userInfo.ci)
@@ -235,7 +240,8 @@ class OAuthCommandService(
 
         return OAuthLoginResponse(
             token = jwtToken,
-            isNewUser = true
+            isNewUser = true,
+            frontendRedirectUrl = frontendRedirectUrl
         )
     }
 }

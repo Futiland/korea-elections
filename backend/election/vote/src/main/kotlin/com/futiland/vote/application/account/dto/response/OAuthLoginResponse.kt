@@ -13,5 +13,11 @@ data class OAuthLoginResponse(
      * - 신규 가입자 대상 마케팅 (쿠폰, 포인트 지급)
      * - 분석/트래킹 (신규 가입 vs 재방문 구분)
      */
-    val isNewUser: Boolean
+    val isNewUser: Boolean,
+    /**
+     * 프론트엔드 리다이렉트 URL
+     * - OAuth 완료 후 프론트엔드가 지정한 리다이렉트 URL
+     * - State 기반으로 저장된 값 반환
+     */
+    val frontendRedirectUrl: String
 )
