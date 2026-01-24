@@ -43,6 +43,10 @@ class JwtAuthenticationFilter(
         AntPathRequestMatcher("/account/v1/change-password"),
         AntPathRequestMatcher("/account/v1/stopper"),
 
+        // OAuth 관련
+        AntPathRequestMatcher("/account/v1/oauth/*/login"),
+        AntPathRequestMatcher("/account/v1/oauth/*/callback"),
+
         // Actuator
         AntPathRequestMatcher("/actuator/health"),
 

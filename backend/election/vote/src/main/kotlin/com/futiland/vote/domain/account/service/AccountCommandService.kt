@@ -10,13 +10,16 @@ import com.futiland.vote.domain.account.dto.AccountJwtPayload
 import com.futiland.vote.domain.account.entity.Account
 import com.futiland.vote.domain.account.port.out.IdentityVerificationPort
 import com.futiland.vote.domain.account.repository.AccountRepository
+import com.futiland.vote.domain.account.repository.SocialAccountRepository
 import com.futiland.vote.domain.common.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AccountCommandService(
     private val accountRepository: AccountRepository,
+    private val socialAccountRepository: SocialAccountRepository,
     private val verificationPort: IdentityVerificationPort,
     private val jwtTokenProvider: JwtTokenProvider,
     @Value("\${access_token.ttl}")
@@ -76,10 +79,19 @@ class AccountCommandService(
         )
     }
 
+    @Transactional
     override fun deleteAccount(accountId: Long) {
+        // 1. Account 삭제
         val account = accountRepository.getById(accountId)
         account.delete()
         accountRepository.save(account)
+
+        // 2. 연동된 모든 SocialAccount 비활성화
+        val socialAccounts = socialAccountRepository.findAllByAccountId(accountId)
+        socialAccounts.forEach { socialAccount ->
+            socialAccount.delete()
+            socialAccountRepository.save(socialAccount)
+        }
     }
 
     override fun anonymizeDeletedAccountIfEligible(ci: String) {

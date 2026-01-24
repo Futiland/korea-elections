@@ -35,6 +35,10 @@ class FakeAccountRepository: AccountRepository {
         TODO("Not yet implemented")
     }
 
+    override fun findActiveByCi(ci: String): Account? {
+        TODO("Not yet implemented")
+    }
+
     override fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account {
         val account = map.values.find { it.phoneNumber == phoneNumber && it.password == password }
             ?: throw Exception("Account not found")

@@ -30,6 +30,10 @@ class AccountRepositoryImpl(
         return repository.findByCi(ci)
     }
 
+    override fun findActiveByCi(ci: String): Account? {
+        return repository.findByCiAndStatus(ci, AccountStatus.ACTIVE)
+    }
+
     override fun getByPhoneNumberAndPassword(phoneNumber: String, password: String): Account {
         return repository.findByPhoneNumberAndPasswordAndStatus(phoneNumber, password, status = AccountStatus.ACTIVE)
             ?: throw ApplicationException(
@@ -47,5 +51,6 @@ class AccountRepositoryImpl(
 interface JpaAccountRepository : JpaRepository<Account, Long> {
     fun findByPhoneNumberAndPasswordAndStatus(phoneNumber: String, password: String, status: AccountStatus): Account?
     fun findByCi(ci: String): Account?
+    fun findByCiAndStatus(ci: String, status: AccountStatus): Account?
     fun findByPhoneNumberAndName(phoneNumber: String, name: String): Account?
 }

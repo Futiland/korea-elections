@@ -22,6 +22,7 @@ class Account(
     val birthDate: LocalDate, // TODO 생년월일은 나중에 넣을 예정
     val createdAt: LocalDateTime = LocalDateTime.now(),
     ci: String,
+    signupType: SignupType = SignupType.PHONE_PASSWORD
 ) {
 
     var ci: String = ci
@@ -33,6 +34,10 @@ class Account(
 
     @Enumerated(EnumType.STRING)
     var status: AccountStatus = status
+        private set
+
+    @Enumerated(EnumType.STRING)
+    var signupType: SignupType = signupType
         private set
 
     var updatedAt: LocalDateTime? = null
@@ -75,6 +80,26 @@ class Account(
             )
             account.updatedAt = LocalDateTime.now()
             return account
+        }
+
+        fun createSocialAccount(
+            name: String,
+            phoneNumber: String,
+            gender: Gender,
+            birthDate: LocalDate,
+            ci: String,
+            signupType: SignupType
+        ): Account {
+            return Account(
+                name = name,
+                phoneNumber = phoneNumber,
+                status = AccountStatus.ACTIVE,
+                password = UUID.randomUUID().toString(),
+                gender = gender,
+                birthDate = birthDate,
+                ci = ci,
+                signupType = signupType
+            )
         }
     }
 
