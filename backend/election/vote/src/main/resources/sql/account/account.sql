@@ -10,8 +10,14 @@ CREATE TABLE account
     status       ENUM('ACTIVE', 'INACTIVE') not null comment '상태',
     created_at   DATETIME            not null comment '생성일',
     deleted_at   DATETIME null comment '삭제일',
-    updated_at   DATETIME null comment '수정일'
+    updated_at   DATETIME null comment '수정일',
+    signup_type  enum ('PHONE_PASSWORD', 'KAKAO', 'NAVER', 'GOOGLE') default 'PHONE_PASSWORD' not null comment '가입 유형'
 );
 
 ALTER TABLE account
     ADD COLUMN updated_at DATETIME NULL COMMENT '수정일';
+
+-- 2026-01-24
+ALTER TABLE account
+    ADD COLUMN signup_type ENUM('PHONE_PASSWORD', 'KAKAO', 'NAVER', 'GOOGLE')
+    NOT NULL DEFAULT 'PHONE_PASSWORD' COMMENT '가입 유형';
