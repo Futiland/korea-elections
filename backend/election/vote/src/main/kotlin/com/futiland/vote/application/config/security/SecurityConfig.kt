@@ -89,6 +89,7 @@ class SecurityConfig(
             httpRequest.requestMatchers("/account/v1/change-password").permitAll()
             httpRequest.requestMatchers("/account/v1/signup").permitAll()
             httpRequest.requestMatchers("/account/v1/signin").permitAll()
+            httpRequest.requestMatchers("/account/v1/oauth/**").permitAll()  // OAuth 로그인
 
             // Election - GET만 인증 불필요
             httpRequest.requestMatchers("GET", "/election/v1/*/vote").permitAll()
