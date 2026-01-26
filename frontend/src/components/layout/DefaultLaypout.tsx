@@ -6,6 +6,7 @@ import CreatePollDialog from '../CreatePoll';
 import TopButton from '../TopButton';
 import { Plus } from 'lucide-react';
 import { useRequireLogin } from '@/hooks/useRequireLogin';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 interface LayoutProps {
 	children: ReactNode;
@@ -29,12 +30,20 @@ export default function DefaultLaypout({ children }: LayoutProps) {
 	const visibleTopButton = !isLoginPage && !isSignUpPage && !isMaintenanceMode;
 	// const visibleBottomMenuBar = !isLoginPage && !isSignUpPage;
 
-	const handleCreatePollClick = () =>
+	const handleCreatePollClick = () => {
 		// 로그인 여부 체크
 		ensureLoggedIn({
 			onSuccess: () => setIsCreatePollOpen(true),
 			description: '로그인 후 모두의 투표를 생성해보세요. 😃',
 		});
+
+		googleAnalyticsCustomEvent({
+			action: 'create_poll_button_click',
+			category: 'create_poll',
+			label: 'create_poll_button_click',
+			value: 'create_poll_button_click',
+		});
+	};
 
 	return (
 		<>

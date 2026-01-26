@@ -16,6 +16,7 @@ import { Spinner } from '@/components/ui/spinner';
 import PasswordField from '@/components/PasswordField';
 import { REG_PHONE } from '@/lib/regex';
 import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 export default function LoginPage() {
 	const [phoneNumber, setPhoneNumber] = useState('');
@@ -65,6 +66,13 @@ export default function LoginPage() {
 			return;
 		}
 		loginMutation.mutate({ phoneNumber, password });
+
+		googleAnalyticsCustomEvent({
+			action: 'login_page_login_button_click',
+			category: 'login_page',
+			label: 'login_page_login_button_click',
+			value: 'login_page_login_button_click',
+		});
 	};
 
 	const handleSignup = (e: React.FormEvent) => {

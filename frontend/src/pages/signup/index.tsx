@@ -19,7 +19,7 @@ import PasswordField from '@/components/PasswordField';
 import { SignupInputData } from '@/lib/types/account';
 import { REG_PHONE } from '@/lib/regex';
 import Footer from '@/components/layout/Footer';
-import TermsDialog from './TermsDialog';
+import PrivacyDialog from './PrivacyDialog';
 import { useVerificationPortOne } from '@/hooks/useVerificationPortOne';
 
 export default function SignupPage() {
@@ -39,7 +39,7 @@ export default function SignupPage() {
 
 	const [isErrorPhoneNumber, setisErrorPhoneNumber] = useState(false);
 	const [identityVerificationId, setIdentityVerificationId] = useState('');
-	const [isVisibleTermsDialog, setIsVisibleTermsDialog] = useState(false);
+	const [isVisiblePrivacyDialog, setIsVisiblePrivacyDialog] = useState(false);
 
 	const {
 		data: stopper,
@@ -246,7 +246,7 @@ export default function SignupPage() {
 										</label>
 										<span
 											className="text-sm text-gray-500 underline cursor-pointer"
-											onClick={() => setIsVisibleTermsDialog(true)}
+											onClick={() => setIsVisiblePrivacyDialog(true)}
 										>
 											자세히 보기
 										</span>
@@ -275,9 +275,9 @@ export default function SignupPage() {
 				</div>
 			</div>
 
-			<TermsDialog
-				isOpen={isVisibleTermsDialog}
-				setIsOpen={setIsVisibleTermsDialog}
+			<PrivacyDialog
+				isOpen={isVisiblePrivacyDialog}
+				setIsOpen={setIsVisiblePrivacyDialog}
 			/>
 
 			<Footer />

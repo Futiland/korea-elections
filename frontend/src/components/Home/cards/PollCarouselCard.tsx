@@ -6,6 +6,8 @@ import { formatDateTimeLocal, getDateRangeDurationLabel } from '@/lib/date';
 import { getParticipationMessage } from '@/lib/utils';
 import { PollParticipationBadge } from '../../PollCard/PollParticipationBadge';
 import type { PollCardProps } from '../types';
+import { useCallback } from 'react';
+import { googleAnalyticsCustomEvent } from '@/lib/gtag';
 
 export default function PollCarouselCard({
 	pollData,
@@ -19,6 +21,16 @@ export default function PollCarouselCard({
 	const remainingTimeLabel = pollData?.endAt
 		? getDateRangeDurationLabel(pollData.endAt)
 		: null;
+
+	const handleClickPoll = useCallback(() => {
+		onClickPoll?.(pollData?.id.toString());
+		googleAnalyticsCustomEvent({
+			action: 'home_page_poll_carousel_card_click',
+			category: 'home_page_poll_carousel_card',
+			label: pollData?.title ?? '',
+			value: pollData?.id,
+		});
+	}, [onClickPoll, pollData?.id, pollData?.title]);
 
 	return (
 		<Card
@@ -65,7 +77,7 @@ export default function PollCarouselCard({
 						className="cursor-pointer inline-flex items-center justify-between rounded-full bg-blue-700 px-4 py-3 text-[13px] font-semibold text-white shadow-sm hover:bg-blue-700 hover:shadow-md md:text-sm"
 						onClick={(event) => {
 							event.stopPropagation();
-							onClickPoll?.(pollData?.id.toString());
+							handleClickPoll();
 						}}
 					>
 						<span className="inline-flex items-center gap-1">

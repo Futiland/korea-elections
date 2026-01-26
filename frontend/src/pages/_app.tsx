@@ -15,6 +15,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { AlertDialogProvider } from '@/components/providers/AlertDialogProvider';
 import Head from 'next/head';
 import MaintenancePage from './maintenance';
+import * as gtag from '@/lib/gtag';
 
 export default function App({ Component, pageProps }: AppProps) {
 	const [queryClient] = useState(() => new QueryClient());
@@ -30,6 +31,17 @@ export default function App({ Component, pageProps }: AppProps) {
 			router.replace('/maintenance');
 		}
 	}, [isMaintenanceMode, router.isReady, router.pathname, router]);
+
+	// Google Analytics 4 페이지뷰 추적
+	useEffect(() => {
+		const handleRouteChange = (url: string) => {
+			gtag.googleAnalyticsPageview(url);
+		};
+		router.events.on('routeChangeComplete', handleRouteChange);
+		return () => {
+			router.events.off('routeChangeComplete', handleRouteChange);
+		};
+	}, [router.events]);
 
 	// 점검 모드가 활성화되어 있으면 점검 페이지만 표시
 	if (isMaintenanceMode && router.pathname !== '/maintenance') {
