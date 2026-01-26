@@ -85,3 +85,16 @@ export type StatsResponse = {
 	message: string;
 	data: StatsData;
 };
+
+export type SocialLoginData = {
+	provider: string;
+	redirectUri: string;
+};
+
+export type SocialLoginResponse = {
+	code: string;
+	message: string;
+	data: {
+		token: string;
+	};
+};
