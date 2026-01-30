@@ -37,11 +37,12 @@ export const deleteAccount = () =>
 export const getStats = () =>
 	apiGet<StatsResponse>('/rest/account/v1/info/stats');
 
-// 소셜 로그인
+// 소셜 로그인 
 export const socialLogin = (data: SocialLoginData) => {
 	const url = `/rest/account/v1/oauth/${data.provider}/login`;
-	const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}${data.redirectUri}`;
+	const frontendRedirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${data.redirectUri}`;
+	// const frontendRedirectUrl = `http://localhost:3000/${data.redirectUri}`;
 
-	return apiGet<SocialLoginResponse>(url, {frontendRedirectUrl: redirectUri});
+	return apiGet<SocialLoginResponse>(url, {frontendRedirectUrl});
 }
 

@@ -95,6 +95,6 @@ export type SocialLoginResponse = {
 	code: string;
 	message: string;
 	data: {
-		token: string;
+		authorizationUrl: string;
 	};
 };
