@@ -40,6 +40,19 @@ portone:
   store-id: ${PORTONE_STORE_ID}
   auth-token: ${PORTONE_AUTH_TOKEN}
 
+oauth:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID:test_client_id}
+    client-secret: ${KAKAO_CLIENT_SECRET:test_client_secret}
+    callback-uri: ${KAKAO_CALLBACK_URI:http://localhost:8080/account/v1/oauth/kakao/callback}
+
+frontend:
+  urls:
+    - http://localhost:3000
+    - https://dev.korea-election.com
+    - https://korea-election.com
+    # - 추가 URL은 아래에 작성하거나 환경변수로 설정
+
 # Spring Security 디버깅용 (필요 시 주석 해제)
 logging:
   level:
@@ -53,12 +66,9 @@ spring:
     activate:
       on-profile: dev
 
-# dev 프로파일 전용 설정 (필요시 추가)
 
 ---
 spring:
   config:
     activate:
       on-profile: prod
-
-# prod 프로파일 전용 설정 (필요시 추가)

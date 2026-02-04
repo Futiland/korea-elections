@@ -10,8 +10,10 @@ import {
 	ChangePasswordResponse,
 	DeleteAccountResponse,
 	StatsResponse,
+	SocialLoginData,
+	SocialLoginResponse,
 } from '../types/account';
-import { PublicPollResponse } from '../types/poll';
+
 
 export const login = (data: LoginData) =>
 	apiPost<LoginResponse>('/rest/account/v1/signin', data);
@@ -34,3 +36,13 @@ export const deleteAccount = () =>
 
 export const getStats = () =>
 	apiGet<StatsResponse>('/rest/account/v1/info/stats');
+
+// 소셜 로그인 
+export const socialLogin = (data: SocialLoginData) => {
+	const url = `/rest/account/v1/oauth/${data.provider}/login`;
+	const frontendRedirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${data.redirectUri}`;
+	// const frontendRedirectUrl = `http://localhost:3000/${data.redirectUri}`;
+
+	return apiGet<SocialLoginResponse>(url, {frontendRedirectUrl});
+}
+

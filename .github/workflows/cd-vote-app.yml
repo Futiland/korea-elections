@@ -80,6 +80,9 @@ jobs:
             -e PASSWORD_SECRET_KEY="${{ secrets.PASSWORD_SECRET_KEY }}" \
             -e PORTONE_STORE_ID="${{ secrets.PORTONE_STORE_ID }}" \
             -e PORTONE_AUTH_TOKEN="${{ secrets.PORTONE_AUTH_TOKEN }}" \
+            -e KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}" \
+            -e KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}" \
+            -e KAKAO_CALLBACK_URI="${{ vars.KAKAO_CALLBACK_URI }}" \
             -e DB_URL="${{ secrets.DB_URL }}" \
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
@@ -231,6 +234,9 @@ jobs:
             -e PASSWORD_SECRET_KEY="${{ secrets.PASSWORD_SECRET_KEY }}" \
             -e PORTONE_STORE_ID="${{ secrets.PORTONE_STORE_ID }}" \
             -e PORTONE_AUTH_TOKEN="${{ secrets.PORTONE_AUTH_TOKEN }}" \
+            -e KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}" \
+            -e KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}" \
+            -e KAKAO_CALLBACK_URI="${{ vars.KAKAO_CALLBACK_URI }}" \
             -e DB_URL="${{ secrets.DB_URL }}" \
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
