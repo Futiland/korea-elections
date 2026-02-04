@@ -62,13 +62,13 @@ export default function MyPageView({
 							</Button>
 
 							{/* 회원가입 버튼 */}
-							<Button
+							{/* <Button
 								type="submit"
 								onClick={() => router.push('/signup')}
 								className="w-full bg-blue-200 text-blue-900 hover:bg-blue-200 h-10 mb-4"
 							>
 								회원가입
-							</Button>
+							</Button> */}
 						</div>
 					</div>
 				</div>
