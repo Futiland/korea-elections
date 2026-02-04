@@ -140,9 +140,17 @@ export function usePollCardPresenter({
 		return `everyone-polls/${pollData.id}`;
 	}, [pollData?.id]);
 
+	// 카카오 공유 링크는 반드시 절대 URL. 상대 경로면 공유된 쪽에서 버튼/이동 안 됨
+	// prod: NEXT_PUBLIC_BASE_URL 사용(빌드 시 설정). local/dev: currentOrigin 사용
 	const shareUrl = useMemo(() => {
 		if (!sharePath) return '';
-		return currentOrigin ? `${currentOrigin}/${sharePath}` : sharePath;
+		const base =
+			process.env.NEXT_PUBLIC_BASE_URL ||
+			currentOrigin ||
+			(typeof window !== 'undefined' ? window.location.origin : '');
+		if (!base) return sharePath;
+		const url = `${base.replace(/\/$/, '')}/${sharePath.replace(/^\//, '')}`;
+		return url.startsWith('http') ? url : sharePath;
 	}, [currentOrigin, sharePath]);
 
 	const onClickShare = useCallback(() => {
@@ -169,6 +177,13 @@ export function usePollCardPresenter({
 
 	const onShareKakao = useCallback(() => {
 		if (typeof window === 'undefined' || !shareUrl) return;
+		// 카카오는 절대 URL만 인식. 상대 경로면 수신 쪽에서 버튼/링크 무효
+		if (!shareUrl.startsWith('http')) {
+			toast.error(
+				'공유 링크를 불러오는 중이에요. 잠시 후 다시 시도해주세요.'
+			);
+			return;
+		}
 		const kakao = window.Kakao;
 
 		if (!kakao || !kakao.isInitialized() || !kakao.Share) {
