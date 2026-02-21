@@ -3,8 +3,10 @@ package com.futiland.vote.domain.poll.service
 import com.futiland.vote.application.common.httpresponse.CodeEnum
 import com.futiland.vote.application.exception.ApplicationException
 import com.futiland.vote.application.poll.dto.request.PollResponseSubmitRequest
+import com.futiland.vote.domain.poll.entity.Poll
 import com.futiland.vote.domain.poll.entity.PollResponse
 import com.futiland.vote.domain.poll.entity.PollStatus
+import com.futiland.vote.domain.poll.entity.PollType
 import com.futiland.vote.domain.poll.entity.deleteAll
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
@@ -20,8 +22,11 @@ class PollResponseCommandService(
 ) : PollResponseCommandUseCase {
 
     @Transactional
-    override fun submitResponse(pollId: Long, accountId: Long, request: PollResponseSubmitRequest): Long {
+    override fun submitResponse(pollId: Long, accountId: Long?, anonymousSessionId: String?, request: PollResponseSubmitRequest): Long {
         val poll = pollRepository.getById(pollId)
+
+        // 인증 검증
+        validateAuthentication(poll, accountId, anonymousSessionId)
 
         // 진행 중인 여론조사만 응답 가능
         if (poll.status != PollStatus.IN_PROGRESS) {
@@ -32,7 +37,7 @@ class PollResponseCommandService(
         }
 
         // 중복 응답 체크 및 재투표 처리
-        val existingResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        val existingResponses = findExistingResponses(pollId, accountId, anonymousSessionId)
         if (existingResponses.isNotEmpty()) {
             if (!poll.isRevotable) {
                 throw ApplicationException(
@@ -49,46 +54,17 @@ class PollResponseCommandService(
         poll.validateResponse(request)
 
         // 응답 저장
-        val responses = when (request) {
-            is PollResponseSubmitRequest.SingleChoice -> {
-                listOf(
-                    PollResponse.create(
-                        pollId = pollId,
-                        accountId = accountId,
-                        optionId = request.optionId,
-                        scoreValue = null
-                    )
-                )
-            }
-            is PollResponseSubmitRequest.MultipleChoice -> {
-                request.optionIds.map { optionId ->
-                    PollResponse.create(
-                        pollId = pollId,
-                        accountId = accountId,
-                        optionId = optionId,
-                        scoreValue = null
-                    )
-                }
-            }
-            is PollResponseSubmitRequest.Score -> {
-                listOf(
-                    PollResponse.create(
-                        pollId = pollId,
-                        accountId = accountId,
-                        optionId = null,
-                        scoreValue = request.scoreValue
-                    )
-                )
-            }
-        }
-
+        val responses = createResponses(pollId, accountId, anonymousSessionId, request)
         val savedResponses = pollResponseRepository.saveAll(responses)
         return savedResponses.first().id
     }
 
     @Transactional
-    override fun updateResponse(pollId: Long, accountId: Long, request: PollResponseSubmitRequest): Long {
+    override fun updateResponse(pollId: Long, accountId: Long?, anonymousSessionId: String?, request: PollResponseSubmitRequest): Long {
         val poll = pollRepository.getById(pollId)
+
+        // 인증 검증
+        validateAuthentication(poll, accountId, anonymousSessionId)
 
         // 진행 중인 여론조사만 수정 가능
         if (poll.status != PollStatus.IN_PROGRESS) {
@@ -107,7 +83,7 @@ class PollResponseCommandService(
         }
 
         // 기존 응답 조회 (다중 선택의 경우 여러 레코드 존재 가능)
-        val existingResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        val existingResponses = findExistingResponses(pollId, accountId, anonymousSessionId)
         if (existingResponses.isEmpty()) {
             throw ApplicationException(
                 code = CodeEnum.FRS_001,
@@ -124,12 +100,88 @@ class PollResponseCommandService(
         pollResponseRepository.saveAll(existingResponses)
 
         // 새로운 응답 생성
-        val responses = when (request) {
+        val responses = createResponses(pollId, accountId, anonymousSessionId, request)
+        val savedResponses = pollResponseRepository.saveAll(responses)
+        return savedResponses.first().id
+    }
+
+    @Transactional
+    override fun deleteResponse(pollId: Long, accountId: Long?, anonymousSessionId: String?) {
+        val poll = pollRepository.getById(pollId)
+
+        // 인증 검증
+        validateAuthentication(poll, accountId, anonymousSessionId)
+
+        val existingResponses = findExistingResponses(pollId, accountId, anonymousSessionId)
+        if (existingResponses.isEmpty()) {
+            throw ApplicationException(
+                code = CodeEnum.FRS_001,
+                message = "응답 내역이 없습니다"
+            )
+        }
+
+        existingResponses.deleteAll()
+        pollResponseRepository.saveAll(existingResponses)
+    }
+
+    /**
+     * 인증 검증: 비로그인 투표 허용 여부 확인
+     */
+    private fun validateAuthentication(poll: Poll, accountId: Long?, anonymousSessionId: String?) {
+        if (accountId != null) return // 로그인 사용자는 항상 허용
+
+        // 비로그인 사용자
+        if (anonymousSessionId == null) {
+            throw ApplicationException(
+                code = CodeEnum.FRS_002,
+                message = "로그인이 필요합니다"
+            )
+        }
+
+        if (poll.pollType == PollType.SYSTEM) {
+            throw ApplicationException(
+                code = CodeEnum.FRS_002,
+                message = "민심투표는 로그인이 필요합니다"
+            )
+        }
+
+        if (!poll.allowAnonymousVote) {
+            throw ApplicationException(
+                code = CodeEnum.FRS_002,
+                message = "이 여론조사는 로그인이 필요합니다"
+            )
+        }
+    }
+
+    /**
+     * 기존 응답 조회 (로그인/비로그인 분기)
+     */
+    private fun findExistingResponses(pollId: Long, accountId: Long?, anonymousSessionId: String?): List<PollResponse> {
+        return if (accountId != null) {
+            pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+        } else if (anonymousSessionId != null) {
+            pollResponseRepository.findAllByPollIdAndAnonymousSessionId(pollId, anonymousSessionId)
+        } else {
+            emptyList()
+        }
+    }
+
+    /**
+     * 응답 생성 (로그인/비로그인 분기)
+     */
+    private fun createResponses(
+        pollId: Long,
+        accountId: Long?,
+        anonymousSessionId: String?,
+        request: PollResponseSubmitRequest
+    ): List<PollResponse> {
+        return when (request) {
             is PollResponseSubmitRequest.SingleChoice -> {
                 listOf(
                     PollResponse.create(
                         pollId = pollId,
                         accountId = accountId,
+                        anonymousSessionId = anonymousSessionId,
                         optionId = request.optionId,
                         scoreValue = null
                     )
@@ -140,6 +192,7 @@ class PollResponseCommandService(
                     PollResponse.create(
                         pollId = pollId,
                         accountId = accountId,
+                        anonymousSessionId = anonymousSessionId,
                         optionId = optionId,
                         scoreValue = null
                     )
@@ -150,27 +203,13 @@ class PollResponseCommandService(
                     PollResponse.create(
                         pollId = pollId,
                         accountId = accountId,
+                        anonymousSessionId = anonymousSessionId,
                         optionId = null,
                         scoreValue = request.scoreValue
                     )
                 )
             }
         }
-
-        val savedResponses = pollResponseRepository.saveAll(responses)
-        return savedResponses.first().id
-    }
-
-    @Transactional
-    override fun deleteResponse(pollId: Long, accountId: Long) {
-        val pollResponse = pollResponseRepository.findByPollIdAndAccountId(pollId, accountId)
-            ?: throw ApplicationException(
-                code = CodeEnum.FRS_001,
-                message = "응답 내역이 없습니다"
-            )
-
-        pollResponse.delete()
-        pollResponseRepository.save(pollResponse)
     }
 
     private fun validateRequestedOptions(pollId: Long, request: PollResponseSubmitRequest) {

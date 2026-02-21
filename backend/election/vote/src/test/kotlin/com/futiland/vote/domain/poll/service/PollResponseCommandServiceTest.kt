@@ -88,6 +88,7 @@ class PollResponseCommandServiceTest {
             val responseId = pollResponseCommandUseCase.submitResponse(
                 pollId = poll.id,
                 accountId = 200L,
+                anonymousSessionId = null,
                 request = request
             )
 
@@ -127,6 +128,7 @@ class PollResponseCommandServiceTest {
                 pollResponseCommandUseCase.submitResponse(
                     pollId = poll.id,
                     accountId = 200L,
+                    anonymousSessionId = null,
                     request = request
                 )
             }
@@ -155,11 +157,11 @@ class PollResponseCommandServiceTest {
             )
 
             // 첫 번째 응답
-            pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, request)
 
             // Act & Assert - 두 번째 응답 시도
             assertThrows<Exception> {
-                pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
+                pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, request)
             }
         }
 
@@ -186,7 +188,7 @@ class PollResponseCommandServiceTest {
             )
 
             // 첫 번째 응답
-            pollResponseCommandUseCase.submitResponse(poll.id, 200L, firstRequest)
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, firstRequest)
 
             // 두 번째 응답 (재투표)
             val secondRequest = PollResponseSubmitRequest.SingleChoice(
@@ -194,7 +196,7 @@ class PollResponseCommandServiceTest {
             )
 
             // Act
-            val responseId = pollResponseCommandUseCase.submitResponse(poll.id, 200L, secondRequest)
+            val responseId = pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, secondRequest)
 
             // Assert
             assertThat(responseId).isGreaterThan(0)
@@ -233,6 +235,7 @@ class PollResponseCommandServiceTest {
             val responseId = pollResponseCommandUseCase.submitResponse(
                 pollId = poll.id,
                 accountId = 200L,
+                anonymousSessionId = null,
                 request = request
             )
 
@@ -266,7 +269,7 @@ class PollResponseCommandServiceTest {
 
             // Act & Assert
             assertThrows<IllegalArgumentException> {
-                pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
+                pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, request)
             }
         }
     }
@@ -296,6 +299,7 @@ class PollResponseCommandServiceTest {
             val responseId = pollResponseCommandUseCase.submitResponse(
                 pollId = poll.id,
                 accountId = 200L,
+                anonymousSessionId = null,
                 request = request
             )
 
@@ -325,7 +329,7 @@ class PollResponseCommandServiceTest {
 
             // Act & Assert
             val exception = assertThrows<ApplicationException> {
-                pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
+                pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, request)
             }
             assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
             assertThat(exception.message).contains("점수는 0~10 사이여야 합니다")
@@ -352,7 +356,7 @@ class PollResponseCommandServiceTest {
 
             // Act & Assert
             val exception = assertThrows<ApplicationException> {
-                pollResponseCommandUseCase.submitResponse(poll.id, 200L, request)
+                pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, request)
             }
             assertThat(exception.code).isEqualTo(CodeEnum.FRS_003)
             assertThat(exception.message).contains("점수는 0~10 사이여야 합니다")
@@ -383,7 +387,7 @@ class PollResponseCommandServiceTest {
             val firstRequest = PollResponseSubmitRequest.SingleChoice(
                 optionId = poll.options[0].id
             )
-            pollResponseCommandUseCase.submitResponse(poll.id, 200L, firstRequest)
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, firstRequest)
 
             // 응답 수정
             val updateRequest = PollResponseSubmitRequest.SingleChoice(
@@ -391,7 +395,7 @@ class PollResponseCommandServiceTest {
             )
 
             // Act
-            val responseId = pollResponseCommandUseCase.updateResponse(poll.id, 200L, updateRequest)
+            val responseId = pollResponseCommandUseCase.updateResponse(poll.id, 200L, null, updateRequest)
 
             // Assert
             val savedResponse = pollResponseRepository.findById(responseId)
@@ -420,7 +424,7 @@ class PollResponseCommandServiceTest {
             val firstRequest = PollResponseSubmitRequest.SingleChoice(
                 optionId = poll.options[0].id
             )
-            pollResponseCommandUseCase.submitResponse(poll.id, 200L, firstRequest)
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, firstRequest)
 
             // 응답 수정 시도
             val updateRequest = PollResponseSubmitRequest.SingleChoice(
@@ -429,7 +433,7 @@ class PollResponseCommandServiceTest {
 
             // Act & Assert
             assertThrows<Exception> {
-                pollResponseCommandUseCase.updateResponse(poll.id, 200L, updateRequest)
+                pollResponseCommandUseCase.updateResponse(poll.id, 200L, null, updateRequest)
             }
         }
     }
@@ -465,6 +469,7 @@ class PollResponseCommandServiceTest {
                 pollResponseCommandUseCase.submitResponse(
                     pollId = poll.id,
                     accountId = 200L,
+                    anonymousSessionId = null,
                     request = request
                 )
             }
@@ -500,6 +505,7 @@ class PollResponseCommandServiceTest {
                 pollResponseCommandUseCase.submitResponse(
                     pollId = poll.id,
                     accountId = 200L,
+                    anonymousSessionId = null,
                     request = request
                 )
             }
@@ -534,6 +540,7 @@ class PollResponseCommandServiceTest {
                 pollResponseCommandUseCase.submitResponse(
                     pollId = poll.id,
                     accountId = 200L,
+                    anonymousSessionId = null,
                     request = request
                 )
             }
@@ -562,7 +569,7 @@ class PollResponseCommandServiceTest {
             val validRequest = PollResponseSubmitRequest.SingleChoice(
                 optionId = poll.options[0].id
             )
-            pollResponseCommandUseCase.submitResponse(poll.id, 200L, validRequest)
+            pollResponseCommandUseCase.submitResponse(poll.id, 200L, null, validRequest)
 
             // 존재하지 않는 optionId로 수정 시도
             val invalidRequest = PollResponseSubmitRequest.SingleChoice(
@@ -574,6 +581,7 @@ class PollResponseCommandServiceTest {
                 pollResponseCommandUseCase.updateResponse(
                     pollId = poll.id,
                     accountId = 200L,
+                    anonymousSessionId = null,
                     request = invalidRequest
                 )
             }

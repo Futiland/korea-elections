@@ -63,8 +63,13 @@ class PollQueryController(
             - EXPIRED: 기간만료만
 
             **투표 여부 (isVoted):**
-            - 로그인한 경우: 각 여론조사에 투표했는지 여부 (true/false)
-            - 비로그인: 항상 false
+            - 로그인한 경우: accountId 기반으로 투표 여부 판단
+            - 비로그인 + anonymous_session 쿠키: 쿠키 기반으로 투표 여부 판단
+            - 비로그인 + 쿠키 없음: 항상 false
+
+            **비로그인 투표 (allowAnonymousVote):**
+            - allowAnonymousVote=true인 여론조사는 비로그인 사용자도 투표 가능
+            - anonymous_session 쿠키가 있으면 해당 쿠키로 투표 여부를 판단합니다
         """
     )
     @ApiResponses(
@@ -108,8 +113,15 @@ class PollQueryController(
         @RequestParam(defaultValue = "ALL") status: PollStatusFilter = PollStatusFilter.ALL,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (서버가 Set-Cookie로 발급, 브라우저가 자동 전송. 투표 여부 판단에 사용)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
     ): HttpApiResponse<SliceContent<PollListResponse>> {
         val accountId = userDetails?.user?.accountId
+        val anonymousSessionId = if (accountId == null) pollSession else null
         val response = pollQueryFacadeUseCase.getPollListByType(
             pollType = type,
             accountId = accountId,
@@ -117,7 +129,8 @@ class PollQueryController(
             nextCursor = nextCursor,
             keyword = keyword ?: "",
             sortType = sort,
-            statusFilter = status
+            statusFilter = status,
+            anonymousSessionId = anonymousSessionId
         )
         return HttpApiResponse.of(response)
     }
@@ -133,6 +146,8 @@ class PollQueryController(
             - 상태 정보 (DRAFT, IN_PROGRESS, EXPIRED, CANCELLED 등)
             - 기간 정보 (시작/종료 일시)
             - 생성자 정보
+            - allowAnonymousVote: 비로그인 투표 허용 여부
+            - isVoted: 현재 사용자의 투표 여부 (비로그인 시 anonymous_session 쿠키로 판단)
         """
     )
     @ApiResponses(
@@ -155,9 +170,16 @@ class PollQueryController(
         @PathVariable pollId: Long,
         @Parameter(hidden = true)
         @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (서버가 Set-Cookie로 발급, 브라우저가 자동 전송. 투표 여부 판단에 사용)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
     ): HttpApiResponse<PollDetailResponse> {
         val accountId = userDetails?.user?.accountId
-        val response = pollQueryFacadeUseCase.getPollDetail(pollId, accountId)
+        val anonymousSessionId = if (accountId == null) pollSession else null
+        val response = pollQueryFacadeUseCase.getPollDetail(pollId, accountId, anonymousSessionId)
         return HttpApiResponse.of(response)
     }
 

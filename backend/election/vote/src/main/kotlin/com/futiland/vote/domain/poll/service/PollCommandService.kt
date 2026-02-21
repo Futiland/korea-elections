@@ -29,6 +29,7 @@ class PollCommandService(
             responseType = request.responseType,
             pollType = PollType.PUBLIC,
             isRevotable = request.isRevotable,
+            allowAnonymousVote = request.allowAnonymousVote,
             creatorAccountId = creatorAccountId,
             endAt = request.endAt
         )
@@ -64,6 +65,7 @@ class PollCommandService(
             responseType = request.responseType,
             pollType = PollType.PUBLIC,
             isRevotable = request.isRevotable,
+            allowAnonymousVote = request.allowAnonymousVote,
             creatorAccountId = creatorAccountId
         )
 
@@ -97,6 +99,7 @@ class PollCommandService(
             responseType = request.responseType,
             pollType = PollType.SYSTEM,
             isRevotable = request.isRevotable,
+            allowAnonymousVote = false,
             creatorAccountId = creatorAccountId,
             endAt = request.endAt
         )
