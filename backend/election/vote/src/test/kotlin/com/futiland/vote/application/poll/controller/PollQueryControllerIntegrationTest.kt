@@ -120,7 +120,8 @@ class PollQueryControllerIntegrationTest {
                 size = 10,
                 nextCursor = null,
                 keyword = null,
-                userDetails = null
+                userDetails = null,
+                pollSession = null
             )
 
             // Assert
@@ -140,7 +141,8 @@ class PollQueryControllerIntegrationTest {
                 size = 10,
                 nextCursor = null,
                 keyword = null,
-                userDetails = createUserDetails(testAccount.id)
+                userDetails = createUserDetails(testAccount.id),
+                pollSession = null
             )
 
             // Assert
@@ -160,7 +162,8 @@ class PollQueryControllerIntegrationTest {
                 size = 10,
                 nextCursor = null,
                 keyword = null,
-                userDetails = null
+                userDetails = null,
+                pollSession = null
             )
 
             // Assert
@@ -183,7 +186,8 @@ class PollQueryControllerIntegrationTest {
                 size = 2,
                 nextCursor = null,
                 keyword = null,
-                userDetails = null
+                userDetails = null,
+                pollSession = null
             )
 
             // Assert
@@ -205,7 +209,8 @@ class PollQueryControllerIntegrationTest {
                 size = 2,
                 nextCursor = null,
                 keyword = null,
-                userDetails = null
+                userDetails = null,
+                pollSession = null
             )
 
             val nextCursor = firstPageResponse.data?.nextCursor
@@ -221,7 +226,8 @@ class PollQueryControllerIntegrationTest {
                     size = 2,
                     nextCursor = nextCursor,
                     keyword = null,
-                    userDetails = null
+                    userDetails = null,
+                    pollSession = null
                 )
 
                 // Assert - 두 번째 페이지
@@ -240,7 +246,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null, pollSession = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -257,7 +263,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null, pollSession = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -273,7 +279,7 @@ class PollQueryControllerIntegrationTest {
             createTestPollOptions(poll.id)
 
             // Act
-            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null)
+            val response = pollQueryController.getPollDetail(pollId = poll.id, userDetails = null, pollSession = null)
 
             // Assert
             assertThat(response.data).isNotNull
@@ -285,7 +291,7 @@ class PollQueryControllerIntegrationTest {
         fun `존재하지 않는 여론조사 조회 실패`() {
             // Act & Assert
             assertThrows<Exception> {
-                pollQueryController.getPollDetail(pollId = 999999L, userDetails = null)
+                pollQueryController.getPollDetail(pollId = 999999L, userDetails = null, pollSession = null)
             }
         }
     }

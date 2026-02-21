@@ -6,6 +6,7 @@ import com.futiland.vote.application.poll.dto.response.MyPollResponse
 import com.futiland.vote.application.poll.dto.response.OptionResultResponse
 import com.futiland.vote.application.poll.dto.response.PollResultResponse
 import com.futiland.vote.application.poll.dto.response.ScoreResultResponse
+import com.futiland.vote.domain.poll.entity.PollResponse
 import com.futiland.vote.domain.poll.entity.ResponseType
 import com.futiland.vote.domain.poll.repository.PollOptionRepository
 import com.futiland.vote.domain.poll.repository.PollRepository
@@ -23,11 +24,11 @@ class PollResultQueryService(
     private val pollResponseRepository: PollResponseRepository,
 ) : PollResultQueryUseCase {
 
-    override fun getPollResult(pollId: Long, accountId: Long): PollResultResponse {
+    override fun getPollResult(pollId: Long, accountId: Long?, anonymousSessionId: String?): PollResultResponse {
         val poll = pollRepository.getById(pollId)
         val totalResponseCount = pollResponseRepository.countDistinctParticipantsByPollId(pollId)
 
-        val myResponse = getMyResponse(pollId, accountId, poll.responseType)
+        val myResponse = getMyResponse(pollId, accountId, anonymousSessionId, poll.responseType)
 
         return when (poll.responseType) {
             ResponseType.SINGLE_CHOICE, ResponseType.MULTIPLE_CHOICE -> {
@@ -88,8 +89,13 @@ class PollResultQueryService(
         }
     }
 
-    private fun getMyResponse(pollId: Long, accountId: Long, responseType: ResponseType): MyPollResponse {
-        val myResponses = pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+    private fun getMyResponse(pollId: Long, accountId: Long?, anonymousSessionId: String?, responseType: ResponseType): MyPollResponse {
+        val myResponses: List<PollResponse> = when {
+            accountId != null -> pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId)
+            anonymousSessionId != null -> pollResponseRepository.findAllByPollIdAndAnonymousSessionId(pollId, anonymousSessionId)
+            else -> emptyList()
+        }
+
         if (myResponses.isEmpty()) {
             throw ApplicationException(
                 code = CodeEnum.FRS_002,

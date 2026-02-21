@@ -95,6 +95,17 @@ class SecurityConfig(
 
             // Poll - 내 여론조사 조회는 인증 필요 (더 구체적인 규칙을 먼저 선언)
             httpRequest.requestMatchers("GET", "/poll/v1/my").authenticated()
+            // Poll - 내가 참여한 투표 목록은 인증 필요
+            httpRequest.requestMatchers("GET", "/poll/v1/public/response/my").authenticated()
+            httpRequest.requestMatchers("GET", "/poll/v1/system/response/my").authenticated()
+
+            // Poll Response - 비로그인 투표 허용 (서비스에서 검증)
+            httpRequest.requestMatchers("POST", "/poll/v1/*/response").permitAll()
+            httpRequest.requestMatchers("PUT", "/poll/v1/*/response").permitAll()
+            httpRequest.requestMatchers("DELETE", "/poll/v1/*/response").permitAll()
+
+            // Poll Result 조회 - 비로그인도 허용 (서비스에서 참여 여부 검증)
+            httpRequest.requestMatchers("GET", "/poll/v1/*/result").permitAll()
 
             // Poll 조회 - GET만 인증 불필요
             httpRequest.requestMatchers("GET", "/poll/v1/**").permitAll()

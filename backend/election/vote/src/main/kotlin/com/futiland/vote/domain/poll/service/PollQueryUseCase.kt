@@ -10,8 +10,8 @@ import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 
 interface PollQueryUseCase {
-    fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse
-    fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse>
+    fun getPollDetail(pollId: Long, accountId: Long?, anonymousSessionId: String? = null): PollDetailResponse
+    fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?, anonymousSessionId: String? = null): SliceContent<PollListResponse>
 
     /**
      * 내가 만든 여론조사 목록 조회 (페이지 기반 방식)
@@ -37,7 +37,8 @@ interface PollQueryUseCase {
         size: Int,
         nextCursor: String?,
         sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL,
+        anonymousSessionId: String? = null
     ): SliceContent<PollListResponse>
 
     /**
@@ -49,6 +50,7 @@ interface PollQueryUseCase {
         size: Int,
         nextCursor: String?,
         sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL,
+        anonymousSessionId: String? = null
     ): SliceContent<PollListResponse>
 }

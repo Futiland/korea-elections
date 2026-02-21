@@ -7,6 +7,7 @@ CREATE TABLE poll
     poll_type          ENUM('SYSTEM', 'PUBLIC')          NOT NULL COMMENT '여론조사 타입',
     status             ENUM('DRAFT', 'IN_PROGRESS', 'EXPIRED', 'CANCELLED', 'DELETED') NOT NULL COMMENT '상태',
     is_revotable       BOOLEAN                           NOT NULL COMMENT '재투표 가능 여부',
+    allow_anonymous_vote BOOLEAN                         NOT NULL DEFAULT FALSE COMMENT '비로그인 투표 허용 여부',
     creator_account_id BIGINT                            NOT NULL COMMENT '생성자 ID',
     start_at           DATETIME                          NULL COMMENT '시작일시',
     end_at             DATETIME                          NULL COMMENT '종료일시',
@@ -14,3 +15,8 @@ CREATE TABLE poll
     updated_at         DATETIME                          NULL COMMENT '수정일',
     deleted_at         DATETIME                          NULL COMMENT '삭제일'
 );
+
+-- 2026-02-21 비로그인 투표 허용 여부 컬럼 추가
+ALTER TABLE poll
+ADD COLUMN allow_anonymous_vote BOOLEAN NOT NULL DEFAULT FALSE COMMENT '비로그인 투표 허용 여부'
+AFTER is_revotable;

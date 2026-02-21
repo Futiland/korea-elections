@@ -35,6 +35,10 @@ class PollCommandController(
             - MULTIPLE_CHOICE: 다중 선택 (options 필수, minSelections/maxSelections 설정 가능)
             - SCORE: 점수제 (options 불필요, minScore/maxScore 설정)
 
+            **비로그인 투표 (allowAnonymousVote):**
+            - true: 비로그인 사용자도 anonymous_session 쿠키로 투표 가능
+            - false (기본): 로그인한 사용자만 투표 가능
+
             **주의사항:**
             - startAt과 endAt은 필수입니다
             - 점수제가 아닌 경우 최소 2개 이상의 옵션이 필요합니다
@@ -87,6 +91,10 @@ class PollCommandController(
             - SINGLE_CHOICE: 단일 선택 (options 필수)
             - MULTIPLE_CHOICE: 다중 선택 (options 필수, minSelections/maxSelections 설정 가능)
             - SCORE: 점수제 (options 불필요, minScore/maxScore 설정)
+
+            **비로그인 투표 (allowAnonymousVote):**
+            - true: 비로그인 사용자도 anonymous_session 쿠키로 투표 가능
+            - false (기본): 로그인한 사용자만 투표 가능
 
             **주의사항:**
             - DRAFT 상태에서는 응답을 받을 수 없습니다
@@ -145,6 +153,7 @@ class PollCommandController(
             - endAt은 필수입니다
             - 점수제가 아닌 경우 최소 2개 이상의 옵션이 필요합니다
             - 시스템 여론조사는 공개 목록에 노출되지 않으며 별도 API로 조회합니다
+            - 비로그인 투표(allowAnonymousVote)는 지원하지 않습니다 (항상 로그인 필수)
         """
     )
     @ApiResponses(
