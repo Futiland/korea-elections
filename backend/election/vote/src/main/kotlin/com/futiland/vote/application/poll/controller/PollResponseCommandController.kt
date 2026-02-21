@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.core.env.Environment
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
@@ -22,6 +23,7 @@ import java.util.UUID
 @RequestMapping("/poll/v1")
 class PollResponseCommandController(
     private val pollResponseCommandUseCase: PollResponseCommandUseCase,
+    private val environment: Environment,
 ) {
     @Operation(
         summary = "여론조사 응답 제출",
@@ -262,11 +264,12 @@ class PollResponseCommandController(
     }
 
     private fun addPollSessionCookie(response: HttpServletResponse, sessionId: String) {
+        val isProduction = environment.activeProfiles.contains("prod")
         val cookie = Cookie("anonymous_session", sessionId).apply {
             path = "/"
             isHttpOnly = true
             maxAge = 365 * 24 * 60 * 60 // 1년
-            secure = true
+            secure = isProduction
         }
         response.addCookie(cookie)
     }
