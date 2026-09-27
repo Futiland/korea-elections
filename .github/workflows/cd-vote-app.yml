@@ -243,6 +243,8 @@ jobs:
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             -e SPRING_PROFILES_ACTIVE=prod \
+            -e SPRINGDOC_APIDOCS_ENABLED=false \
+            -e SPRINGDOC_SWAGGERUI_ENABLED=false \
             ${{ env.TARGET_IMAGE }}
 
           echo "✅ Production container started successfully"
