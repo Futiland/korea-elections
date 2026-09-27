@@ -1,8 +1,10 @@
 package com.futiland.vote.application.config.security
 
+import jakarta.servlet.DispatcherType
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer
@@ -74,12 +76,16 @@ class SecurityConfig(
 
         // 권한 규칙 작성
         // NOTE: 인증 필요 여부는 여기서만 관리 (JwtAuthenticationFilter와 중복 없음)
+        // requestMatchers(String, String)는 첫 인자도 경로 패턴으로 해석된다. 메서드 제한은 반드시 HttpMethod로 지정할 것.
         http.authorizeHttpRequests { httpRequest ->
+            // 에러/비동기(suspend 컨트롤러) 재디스패치는 최초 요청에서 이미 인가됨
+            httpRequest.dispatcherTypeMatchers(DispatcherType.ERROR, DispatcherType.ASYNC).permitAll()
+
             // CORS preflight 요청 허용
-            httpRequest.requestMatchers("OPTIONS", "/**").permitAll()
+            httpRequest.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
             // 기본 경로
-            httpRequest.requestMatchers("/").permitAll()
+            httpRequest.requestMatchers("/", "/error").permitAll()
 
             // Actuator health check (헬스체크용)
             httpRequest.requestMatchers("/actuator/health").permitAll()
@@ -91,25 +97,33 @@ class SecurityConfig(
             httpRequest.requestMatchers("/account/v1/signin").permitAll()
             httpRequest.requestMatchers("/account/v1/oauth/**").permitAll()  // OAuth 로그인
 
-            // Election - GET만 인증 불필요
-            httpRequest.requestMatchers("GET", "/election/v1/*/vote").permitAll()
+            // Election - 선거 목록/후보/결과 GET만 인증 불필요 (내 투표 결과는 인증 필요)
+            httpRequest.requestMatchers(HttpMethod.GET, "/election/v1/*/vote/mine").authenticated()
+            httpRequest.requestMatchers(
+                HttpMethod.GET,
+                "/election/v1",
+                "/election/v1/*/vote",
+                "/election/v1/*/vote/result",
+                "/election/v1/*/vote/results",
+                "/election/v1/*/vote/results2",
+            ).permitAll()
 
             // Poll - 내 여론조사 조회는 인증 필요 (더 구체적인 규칙을 먼저 선언)
-            httpRequest.requestMatchers("GET", "/poll/v1/my").authenticated()
+            httpRequest.requestMatchers(HttpMethod.GET, "/poll/v1/my").authenticated()
             // Poll - 내가 참여한 투표 목록은 인증 필요
-            httpRequest.requestMatchers("GET", "/poll/v1/public/response/my").authenticated()
-            httpRequest.requestMatchers("GET", "/poll/v1/system/response/my").authenticated()
+            httpRequest.requestMatchers(HttpMethod.GET, "/poll/v1/public/response/my").authenticated()
+            httpRequest.requestMatchers(HttpMethod.GET, "/poll/v1/system/response/my").authenticated()
 
             // Poll Response - 비로그인 투표 허용 (서비스에서 검증)
-            httpRequest.requestMatchers("POST", "/poll/v1/*/response").permitAll()
-            httpRequest.requestMatchers("PUT", "/poll/v1/*/response").permitAll()
-            httpRequest.requestMatchers("DELETE", "/poll/v1/*/response").permitAll()
+            httpRequest.requestMatchers(HttpMethod.POST, "/poll/v1/*/response").permitAll()
+            httpRequest.requestMatchers(HttpMethod.PUT, "/poll/v1/*/response").permitAll()
+            httpRequest.requestMatchers(HttpMethod.DELETE, "/poll/v1/*/response").permitAll()
 
             // Poll Result 조회 - 비로그인도 허용 (서비스에서 참여 여부 검증)
-            httpRequest.requestMatchers("GET", "/poll/v1/*/result").permitAll()
+            httpRequest.requestMatchers(HttpMethod.GET, "/poll/v1/*/result").permitAll()
 
             // Poll 조회 - GET만 인증 불필요
-            httpRequest.requestMatchers("GET", "/poll/v1/**").permitAll()
+            httpRequest.requestMatchers(HttpMethod.GET, "/poll/v1/**").permitAll()
 
             // Swagger (dev 프로파일일 때만)
             val activeProfiles = environment.activeProfiles
