@@ -24,22 +24,24 @@ class PollQueryService(
     private val accountForPollRepository: AccountForPollRepository,
 ) : PollQueryUseCase {
 
-    override fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse {
+    override fun getPollDetail(pollId: Long, accountId: Long?, anonymousSessionId: String?): PollDetailResponse {
         val poll = pollRepository.getById(pollId)
         val options = pollOptionRepository.findAllByPollId(pollId)
         val creatorInfo = accountForPollRepository.getCreatorInfoById(poll.creatorAccountId)
 
         val responseCount = pollResponseRepository.countDistinctParticipantsByPollId(pollId)
-        val isVoted = accountId?.let {
-            pollResponseRepository.findAllByPollIdAndAccountId(pollId, it).isNotEmpty()
-        } ?: false
+        val isVoted = when {
+            accountId != null -> pollResponseRepository.findAllByPollIdAndAccountId(pollId, accountId).isNotEmpty()
+            anonymousSessionId != null -> pollResponseRepository.findAllByPollIdAndAnonymousSessionId(pollId, anonymousSessionId).isNotEmpty()
+            else -> false
+        }
 
         return PollDetailResponse.from(poll, options, responseCount, isVoted, creatorInfo)
     }
 
-    override fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?): SliceContent<PollListResponse> {
+    override fun getPublicPollList(accountId: Long?, size: Int, nextCursor: String?, anonymousSessionId: String?): SliceContent<PollListResponse> {
         val pollsSlice = pollRepository.findAllPublicDisplayable(size, nextCursor)
-        return toPollListResponses(pollsSlice, accountId)
+        return toPollListResponses(pollsSlice, accountId, anonymousSessionId)
     }
 
     override fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse> {
@@ -111,10 +113,11 @@ class PollQueryService(
         size: Int,
         nextCursor: String?,
         sortType: PollSortType,
-        statusFilter: PollStatusFilter
+        statusFilter: PollStatusFilter,
+        anonymousSessionId: String?
     ): SliceContent<PollListResponse> {
         val pollsSlice = pollRepository.searchPublicPolls(keyword, size, nextCursor, sortType, statusFilter)
-        return toPollListResponses(pollsSlice, accountId)
+        return toPollListResponses(pollsSlice, accountId, anonymousSessionId)
     }
 
     override fun searchSystemPolls(
@@ -123,16 +126,17 @@ class PollQueryService(
         size: Int,
         nextCursor: String?,
         sortType: PollSortType,
-        statusFilter: PollStatusFilter
+        statusFilter: PollStatusFilter,
+        anonymousSessionId: String?
     ): SliceContent<PollListResponse> {
         val pollsSlice = pollRepository.searchSystemPolls(keyword, size, nextCursor, sortType, statusFilter)
-        return toPollListResponses(pollsSlice, accountId)
+        return toPollListResponses(pollsSlice, accountId, anonymousSessionId)
     }
 
     /**
      * Poll 목록을 PollListResponse 목록으로 변환 (N+1 최적화 포함)
      */
-    private fun toPollListResponses(pollsSlice: SliceContent<Poll>, accountId: Long?): SliceContent<PollListResponse> {
+    private fun toPollListResponses(pollsSlice: SliceContent<Poll>, accountId: Long?, anonymousSessionId: String? = null): SliceContent<PollListResponse> {
         val polls = pollsSlice.content
 
         val pollIds = polls.map { it.id }
@@ -140,9 +144,11 @@ class PollQueryService(
         val allOptions = pollOptionRepository.findAllByPollIdIn(pollIds)
         val optionsByPollId = allOptions.groupBy { it.pollId }
 
-        val votedPollIds = accountId?.let {
-            pollResponseRepository.findVotedPollIds(it, pollIds)
-        } ?: emptySet()
+        val votedPollIds = when {
+            accountId != null -> pollResponseRepository.findVotedPollIds(accountId, pollIds)
+            anonymousSessionId != null -> pollResponseRepository.findVotedPollIdsBySessionId(anonymousSessionId, pollIds)
+            else -> emptySet()
+        }
 
         val creatorIds = polls.map { it.creatorAccountId }.distinct()
         val creatorInfoMap = accountForPollRepository.getCreatorInfoByIds(creatorIds)

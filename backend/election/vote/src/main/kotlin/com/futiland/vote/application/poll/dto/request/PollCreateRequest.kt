@@ -41,6 +41,9 @@ data class PublicPollCreateRequest(
     @Schema(description = "여론조사 종료 일시", example = "2025-01-17T23:59:59", required = true)
     val endAt: LocalDateTime,
 
+    @Schema(description = "비로그인 투표 허용 여부 (기본: false)", example = "false", required = false)
+    val allowAnonymousVote: Boolean = false,
+
     @field:Valid
     @Schema(description = "선택지 목록 (SINGLE_CHOICE, MULTIPLE_CHOICE일 때 필수)", required = false)
     val options: List<PollOptionRequest>? = null,
@@ -74,6 +77,9 @@ data class PublicPollDraftCreateRequest(
     @field:NotNull(message = "isRevotable은 필수 입력 항목입니다")
     @Schema(description = "재투표 가능 여부", example = "false", required = true)
     val isRevotable: Boolean,
+
+    @Schema(description = "비로그인 투표 허용 여부 (기본: false)", example = "false", required = false)
+    val allowAnonymousVote: Boolean = false,
 
     @field:Valid
     @Schema(description = "선택지 목록 (SINGLE_CHOICE, MULTIPLE_CHOICE일 때 필수)", required = false)

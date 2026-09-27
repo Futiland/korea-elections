@@ -11,14 +11,19 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.core.env.Environment
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @Tag(name = "여론조사 응답", description = "여론조사 응답 제출, 수정, 삭제 API")
 @RestController
 @RequestMapping("/poll/v1")
 class PollResponseCommandController(
     private val pollResponseCommandUseCase: PollResponseCommandUseCase,
+    private val environment: Environment,
 ) {
     @Operation(
         summary = "여론조사 응답 제출",
@@ -30,11 +35,19 @@ class PollResponseCommandController(
             - MULTIPLE_CHOICE: {"responseType": "MULTIPLE_CHOICE", "optionIds": [1, 2, 3]}
             - SCORE: {"responseType": "SCORE", "scoreValue": 8}
 
+            **비로그인 투표 (anonymous_session 쿠키):**
+            - 여론조사의 allowAnonymousVote=true인 경우, 로그인 없이도 투표 가능
+            - 비로그인 사용자는 서버가 발급하는 anonymous_session 쿠키로 식별됩니다
+            - 최초 투표 시 쿠키가 없으면 서버가 자동 발급 (Set-Cookie 응답 헤더)
+            - 이후 요청 시 브라우저가 쿠키를 자동 전송하여 동일 사용자 식별
+            - 쿠키 속성: HttpOnly, Secure, Max-Age=1년
+            - 민심투표(SYSTEM)는 비로그인 투표 불가 (항상 로그인 필수)
+
             **주의사항:**
             - responseType은 여론조사의 responseType과 일치해야 합니다
             - 이미 응답한 경우 에러가 발생합니다 (updateResponse 사용)
             - 투표 기간(startAt ~ endAt)에만 응답 가능합니다
-            - 인증된 사용자만 응답 가능합니다
+            - isRevotable 설정은 로그인/비로그인 동일하게 적용됩니다
         """
     )
     @ApiResponses(
@@ -51,7 +64,7 @@ class PollResponseCommandController(
             ),
             ApiResponse(
                 responseCode = "401",
-                description = "인증 실패",
+                description = "인증 실패 (비로그인 투표가 허용되지 않는 경우)",
                 content = [Content(schema = Schema(implementation = HttpApiResponse::class))]
             ),
             ApiResponse(
@@ -72,11 +85,31 @@ class PollResponseCommandController(
         )
         @RequestBody request: PollResponseSubmitRequest,
         @Parameter(hidden = true)
-        @AuthenticationPrincipal userDetails: CustomUserDetails,
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (최초 투표 시 서버가 Set-Cookie로 발급, 이후 브라우저가 자동 전송)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
+        @Parameter(hidden = true)
+        response: HttpServletResponse,
     ): HttpApiResponse<Long> {
+        val accountId = userDetails?.user?.accountId
+
+        // 비로그인 사용자: 쿠키 없으면 새로 발급
+        val anonymousSessionId = if (accountId == null) {
+            val sessionId = pollSession ?: UUID.randomUUID().toString()
+            if (pollSession == null) {
+                addPollSessionCookie(response, sessionId)
+            }
+            sessionId
+        } else null
+
         val responseId = pollResponseCommandUseCase.submitResponse(
             pollId = pollId,
-            accountId = userDetails.user.accountId,
+            accountId = accountId,
+            anonymousSessionId = anonymousSessionId,
             request = request
         )
         return HttpApiResponse.of(responseId)
@@ -92,11 +125,15 @@ class PollResponseCommandController(
             - MULTIPLE_CHOICE: {"responseType": "MULTIPLE_CHOICE", "optionIds": [1, 2, 3]}
             - SCORE: {"responseType": "SCORE", "scoreValue": 8}
 
+            **비로그인 사용자:**
+            - anonymous_session 쿠키로 기존 응답을 식별하여 수정합니다
+            - 쿠키가 없는 경우 서버가 새로 발급합니다
+
             **주의사항:**
             - responseType은 여론조사의 responseType과 일치해야 합니다
             - 응답하지 않은 경우 에러가 발생합니다 (submitResponse 사용)
             - 투표 기간(startAt ~ endAt)에만 수정 가능합니다
-            - 재투표가 허용된 여론조사만 수정 가능합니다
+            - 재투표가 허용된(isRevotable=true) 여론조사만 수정 가능합니다
         """
     )
     @ApiResponses(
@@ -134,11 +171,30 @@ class PollResponseCommandController(
         )
         @RequestBody request: PollResponseSubmitRequest,
         @Parameter(hidden = true)
-        @AuthenticationPrincipal userDetails: CustomUserDetails,
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (최초 투표 시 서버가 Set-Cookie로 발급, 이후 브라우저가 자동 전송)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
+        @Parameter(hidden = true)
+        response: HttpServletResponse,
     ): HttpApiResponse<Long> {
+        val accountId = userDetails?.user?.accountId
+
+        val anonymousSessionId = if (accountId == null) {
+            val sessionId = pollSession ?: UUID.randomUUID().toString()
+            if (pollSession == null) {
+                addPollSessionCookie(response, sessionId)
+            }
+            sessionId
+        } else null
+
         val responseId = pollResponseCommandUseCase.updateResponse(
             pollId = pollId,
-            accountId = userDetails.user.accountId,
+            accountId = accountId,
+            anonymousSessionId = anonymousSessionId,
             request = request
         )
         return HttpApiResponse.of(responseId)
@@ -149,10 +205,13 @@ class PollResponseCommandController(
         description = """
             이미 제출한 여론조사 응답을 삭제합니다.
 
+            **비로그인 사용자:**
+            - anonymous_session 쿠키로 기존 응답을 식별하여 삭제합니다
+
             **주의사항:**
             - 응답하지 않은 경우 에러가 발생합니다
             - 투표 기간(startAt ~ endAt)에만 삭제 가능합니다
-            - 재투표가 허용된 여론조사만 삭제 가능합니다
+            - 재투표가 허용된(isRevotable=true) 여론조사만 삭제 가능합니다
             - 삭제 후 다시 응답하려면 submitResponse를 사용하세요
         """
     )
@@ -185,12 +244,33 @@ class PollResponseCommandController(
         @Parameter(description = "여론조사 ID", required = true)
         @PathVariable pollId: Long,
         @Parameter(hidden = true)
-        @AuthenticationPrincipal userDetails: CustomUserDetails,
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (최초 투표 시 서버가 Set-Cookie로 발급, 이후 브라우저가 자동 전송)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
     ): HttpApiResponse<Unit> {
+        val accountId = userDetails?.user?.accountId
+        val anonymousSessionId = if (accountId == null) pollSession else null
+
         pollResponseCommandUseCase.deleteResponse(
             pollId = pollId,
-            accountId = userDetails.user.accountId
+            accountId = accountId,
+            anonymousSessionId = anonymousSessionId
         )
         return HttpApiResponse.of(Unit)
+    }
+
+    private fun addPollSessionCookie(response: HttpServletResponse, sessionId: String) {
+        val isProduction = environment.activeProfiles.contains("prod")
+        val cookie = Cookie("anonymous_session", sessionId).apply {
+            path = "/"
+            isHttpOnly = true
+            maxAge = 365 * 24 * 60 * 60 // 1년
+            secure = isProduction
+        }
+        response.addCookie(cookie)
     }
 }

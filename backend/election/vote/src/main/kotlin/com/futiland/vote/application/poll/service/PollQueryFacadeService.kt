@@ -21,8 +21,8 @@ class PollQueryFacadeService(
     private val pollQueryUseCase: PollQueryUseCase,
 ) : PollQueryFacadeUseCase {
 
-    override fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse {
-        return pollQueryUseCase.getPollDetail(pollId, accountId)
+    override fun getPollDetail(pollId: Long, accountId: Long?, anonymousSessionId: String?): PollDetailResponse {
+        return pollQueryUseCase.getPollDetail(pollId, accountId, anonymousSessionId)
     }
 
     override fun getPollListByType(
@@ -32,7 +32,8 @@ class PollQueryFacadeService(
         nextCursor: String?,
         keyword: String,
         sortType: PollSortType,
-        statusFilter: PollStatusFilter
+        statusFilter: PollStatusFilter,
+        anonymousSessionId: String?
     ): SliceContent<PollListResponse> {
         return when (pollType) {
             PollType.PUBLIC -> pollQueryUseCase.searchPublicPolls(
@@ -41,7 +42,8 @@ class PollQueryFacadeService(
                 size = size,
                 nextCursor = nextCursor,
                 sortType = sortType,
-                statusFilter = statusFilter
+                statusFilter = statusFilter,
+                anonymousSessionId = anonymousSessionId
             )
             PollType.SYSTEM -> pollQueryUseCase.searchSystemPolls(
                 accountId = accountId,
@@ -49,7 +51,8 @@ class PollQueryFacadeService(
                 size = size,
                 nextCursor = nextCursor,
                 sortType = sortType,
-                statusFilter = statusFilter
+                statusFilter = statusFilter,
+                anonymousSessionId = anonymousSessionId
             )
         }
     }

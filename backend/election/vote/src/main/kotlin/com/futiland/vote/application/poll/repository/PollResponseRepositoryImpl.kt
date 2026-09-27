@@ -32,6 +32,10 @@ class PollResponseRepositoryImpl(
         return repository.findAllByPollIdAndAccountIdAndDeletedAtIsNull(pollId, accountId)
     }
 
+    override fun findAllByPollIdAndAnonymousSessionId(pollId: Long, anonymousSessionId: String): List<PollResponse> {
+        return repository.findAllByPollIdAndAnonymousSessionIdAndDeletedAtIsNull(pollId, anonymousSessionId)
+    }
+
     override fun findAllByPollId(pollId: Long): List<PollResponse> {
         return repository.findAllByPollIdAndDeletedAtIsNull(pollId)
     }
@@ -41,7 +45,7 @@ class PollResponseRepositoryImpl(
     }
 
     override fun countDistinctParticipantsByPollId(pollId: Long): Long {
-        return repository.countDistinctAccountIdByPollIdAndDeletedAtIsNull(pollId)
+        return repository.countDistinctParticipantsByPollId(pollId)
     }
 
     override fun countByOptionId(optionId: Long): Long {
@@ -66,21 +70,28 @@ class PollResponseRepositoryImpl(
         if (pollIds.isEmpty()) return emptySet()
         return repository.findPollIdsByAccountIdAndPollIdIn(accountId, pollIds).toSet()
     }
+
+    override fun findVotedPollIdsBySessionId(anonymousSessionId: String, pollIds: List<Long>): Set<Long> {
+        if (pollIds.isEmpty()) return emptySet()
+        return repository.findPollIdsByAnonymousSessionIdAndPollIdIn(anonymousSessionId, pollIds).toSet()
+    }
 }
 
 interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
     fun findByPollIdAndAccountIdAndDeletedAtIsNull(pollId: Long, accountId: Long): PollResponse?
     fun findAllByPollIdAndAccountIdAndDeletedAtIsNull(pollId: Long, accountId: Long): List<PollResponse>
+    fun findAllByPollIdAndAnonymousSessionIdAndDeletedAtIsNull(pollId: Long, anonymousSessionId: String): List<PollResponse>
     fun findAllByPollIdAndDeletedAtIsNull(pollId: Long): List<PollResponse>
     fun countByPollIdAndDeletedAtIsNull(pollId: Long): Long
     fun countByOptionIdAndDeletedAtIsNull(optionId: Long): Long
 
     @Query("""
-        SELECT COUNT(DISTINCT pr.accountId) FROM PollResponse pr
-        WHERE pr.pollId = :pollId
-        AND pr.deletedAt IS NULL
+        SELECT
+            (SELECT COUNT(DISTINCT pr.accountId) FROM PollResponse pr WHERE pr.pollId = :pollId AND pr.deletedAt IS NULL AND pr.accountId IS NOT NULL)
+            +
+            (SELECT COUNT(DISTINCT pr.anonymousSessionId) FROM PollResponse pr WHERE pr.pollId = :pollId AND pr.deletedAt IS NULL AND pr.anonymousSessionId IS NOT NULL)
     """)
-    fun countDistinctAccountIdByPollIdAndDeletedAtIsNull(pollId: Long): Long
+    fun countDistinctParticipantsByPollId(pollId: Long): Long
 
     // No Offset 페이지네이션 (커버링 인덱스: idx_account_id)
     @Query("""
@@ -121,4 +132,12 @@ interface JpaPollResponseRepository : JpaRepository<PollResponse, Long> {
         AND pr.deletedAt IS NULL
     """)
     fun findPollIdsByAccountIdAndPollIdIn(accountId: Long, pollIds: List<Long>): List<Long>
+
+    @Query("""
+        SELECT DISTINCT pr.pollId FROM PollResponse pr
+        WHERE pr.anonymousSessionId = :anonymousSessionId
+        AND pr.pollId IN :pollIds
+        AND pr.deletedAt IS NULL
+    """)
+    fun findPollIdsByAnonymousSessionIdAndPollIdIn(anonymousSessionId: String, pollIds: List<Long>): List<Long>
 }

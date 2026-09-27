@@ -14,6 +14,7 @@ class Poll(
     val pollType: PollType,
     initialStatus: PollStatus,
     val isRevotable: Boolean,
+    val allowAnonymousVote: Boolean = false,
     val creatorAccountId: Long,
     var startAt: LocalDateTime? = null,
     var endAt: LocalDateTime? = null,
@@ -40,8 +41,12 @@ class Poll(
             responseType: ResponseType,
             pollType: PollType,
             isRevotable: Boolean,
+            allowAnonymousVote: Boolean = false,
             creatorAccountId: Long,
         ): Poll {
+            require(!(pollType == PollType.SYSTEM && allowAnonymousVote)) {
+                "민심투표(SYSTEM)는 비로그인 투표를 허용할 수 없습니다"
+            }
             return Poll(
                 title = title,
                 description = description,
@@ -49,6 +54,7 @@ class Poll(
                 pollType = pollType,
                 initialStatus = PollStatus.DRAFT,
                 isRevotable = isRevotable,
+                allowAnonymousVote = allowAnonymousVote,
                 creatorAccountId = creatorAccountId,
                 startAt = null,
                 endAt = null
@@ -61,9 +67,13 @@ class Poll(
             responseType: ResponseType,
             pollType: PollType,
             isRevotable: Boolean,
+            allowAnonymousVote: Boolean = false,
             creatorAccountId: Long,
             endAt: LocalDateTime,
         ): Poll {
+            require(!(pollType == PollType.SYSTEM && allowAnonymousVote)) {
+                "민심투표(SYSTEM)는 비로그인 투표를 허용할 수 없습니다"
+            }
             return Poll(
                 title = title,
                 description = description,
@@ -71,6 +81,7 @@ class Poll(
                 pollType = pollType,
                 initialStatus = PollStatus.IN_PROGRESS,
                 isRevotable = isRevotable,
+                allowAnonymousVote = allowAnonymousVote,
                 creatorAccountId = creatorAccountId,
                 startAt = LocalDateTime.now(), // 현재 시간으로 자동 설정
                 endAt = endAt

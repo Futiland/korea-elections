@@ -43,12 +43,10 @@ class FakePollResponseRepository : PollResponseRepository {
     }
 
     override fun countDistinctParticipantsByPollId(pollId: Long): Long {
-        return responses.values
-            .filter { it.pollId == pollId && it.deletedAt == null }
-            .map { it.accountId }
-            .distinct()
-            .count()
-            .toLong()
+        val activeResponses = responses.values.filter { it.pollId == pollId && it.deletedAt == null }
+        val accountCount = activeResponses.mapNotNull { it.accountId }.distinct().count()
+        val sessionCount = activeResponses.mapNotNull { it.anonymousSessionId }.distinct().count()
+        return (accountCount + sessionCount).toLong()
     }
 
     override fun countByOptionId(optionId: Long): Long {
@@ -58,6 +56,12 @@ class FakePollResponseRepository : PollResponseRepository {
     override fun findAllByPollIdAndAccountId(pollId: Long, accountId: Long): List<PollResponse> {
         return responses.values.filter {
             it.pollId == pollId && it.accountId == accountId && it.deletedAt == null
+        }
+    }
+
+    override fun findAllByPollIdAndAnonymousSessionId(pollId: Long, anonymousSessionId: String): List<PollResponse> {
+        return responses.values.filter {
+            it.pollId == pollId && it.anonymousSessionId == anonymousSessionId && it.deletedAt == null
         }
     }
 
@@ -82,6 +86,13 @@ class FakePollResponseRepository : PollResponseRepository {
     override fun findVotedPollIds(accountId: Long, pollIds: List<Long>): Set<Long> {
         return responses.values
             .filter { it.accountId == accountId && it.pollId in pollIds && it.deletedAt == null }
+            .map { it.pollId }
+            .toSet()
+    }
+
+    override fun findVotedPollIdsBySessionId(anonymousSessionId: String, pollIds: List<Long>): Set<Long> {
+        return responses.values
+            .filter { it.anonymousSessionId == anonymousSessionId && it.pollId in pollIds && it.deletedAt == null }
             .map { it.pollId }
             .toSet()
     }

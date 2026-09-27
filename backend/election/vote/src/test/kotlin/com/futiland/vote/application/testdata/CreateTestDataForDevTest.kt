@@ -146,7 +146,7 @@ class CreateTestDataForDevTest {
 
             try {
                 val request = PollResponseSubmitRequest.SingleChoice(optionId = selectedOption.id)
-                pollResponseCommandService.submitResponse(pollId, account.id, request)
+                pollResponseCommandService.submitResponse(pollId, account.id, null, request)
                 logger.info("투표 완료: 계정ID=${account.id} -> '${selectedOption.optionText}'")
                 voteCount++
             } catch (e: Exception) {
@@ -179,7 +179,7 @@ class CreateTestDataForDevTest {
 
             try {
                 val request = PollResponseSubmitRequest.MultipleChoice(optionIds = selectedOptions.map { it.id })
-                pollResponseCommandService.submitResponse(pollId, account.id, request)
+                pollResponseCommandService.submitResponse(pollId, account.id, null, request)
                 logger.info("투표 완료: 계정ID=${account.id} -> ${selectedOptions.map { it.optionText }}")
                 voteCount++
             } catch (e: Exception) {
@@ -206,7 +206,7 @@ class CreateTestDataForDevTest {
 
             try {
                 val request = PollResponseSubmitRequest.Score(scoreValue = score)
-                pollResponseCommandService.submitResponse(pollId, account.id, request)
+                pollResponseCommandService.submitResponse(pollId, account.id, null, request)
                 logger.info("투표 완료: 계정ID=${account.id} -> ${score}점")
                 voteCount++
             } catch (e: Exception) {

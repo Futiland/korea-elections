@@ -9,7 +9,7 @@ import com.futiland.vote.util.PageContent
 import com.futiland.vote.util.SliceContent
 
 interface PollQueryFacadeUseCase {
-    fun getPollDetail(pollId: Long, accountId: Long?): PollDetailResponse
+    fun getPollDetail(pollId: Long, accountId: Long?, anonymousSessionId: String? = null): PollDetailResponse
 
     /**
      * 여론조사 목록 조회/검색 (타입별)
@@ -24,7 +24,8 @@ interface PollQueryFacadeUseCase {
         nextCursor: String?,
         keyword: String = "",
         sortType: PollSortType = PollSortType.LATEST,
-        statusFilter: PollStatusFilter = PollStatusFilter.ALL
+        statusFilter: PollStatusFilter = PollStatusFilter.ALL,
+        anonymousSessionId: String? = null
     ): SliceContent<PollListResponse>
 
     fun getMyPolls(accountId: Long, page: Int, size: Int): PageContent<PollListResponse>

@@ -8,11 +8,13 @@ interface PollResponseRepository {
     fun findById(id: Long): PollResponse?
     fun findByPollIdAndAccountId(pollId: Long, accountId: Long): PollResponse?
     fun findAllByPollIdAndAccountId(pollId: Long, accountId: Long): List<PollResponse>
+    fun findAllByPollIdAndAnonymousSessionId(pollId: Long, anonymousSessionId: String): List<PollResponse>
     fun findAllByPollId(pollId: Long): List<PollResponse>
     fun countByPollId(pollId: Long): Long
 
     /**
      * 해당 Poll에 참여한 고유 사용자 수 (multichoice에서 중복 카운트 방지)
+     * accountId + anonymousSessionId 모두 카운트
      */
     fun countDistinctParticipantsByPollId(pollId: Long): Long
     fun countByOptionId(optionId: Long): Long
@@ -36,4 +38,9 @@ interface PollResponseRepository {
      * 주어진 pollIds 중 해당 사용자가 투표한 pollId 목록 조회
      */
     fun findVotedPollIds(accountId: Long, pollIds: List<Long>): Set<Long>
+
+    /**
+     * 주어진 pollIds 중 해당 세션이 투표한 pollId 목록 조회 (비로그인 사용자용)
+     */
+    fun findVotedPollIdsBySessionId(anonymousSessionId: String, pollIds: List<Long>): Set<Long>
 }

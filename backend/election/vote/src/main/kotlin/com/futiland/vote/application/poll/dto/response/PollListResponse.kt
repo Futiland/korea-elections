@@ -20,17 +20,19 @@ data class PollListResponse(
     val status: PollStatus,
     @Schema(description = "재투표 가능 여부", example = "true")
     val isRevotable: Boolean,
+    @Schema(description = "비로그인 투표 허용 여부", example = "false")
+    val allowAnonymousVote: Boolean,
     @Schema(description = "시작 일시", example = "2024-01-01T00:00:00")
     val startAt: LocalDateTime?,
     @Schema(description = "종료 일시", example = "2024-12-31T23:59:59")
     val endAt: LocalDateTime?,
     @Schema(description = "생성 일시", example = "2024-01-01T00:00:00")
     val createdAt: LocalDateTime,
-    @Schema(description = "응답 수", example = "1234")
+    @Schema(description = "전체 응답 수 (로그인 + 비로그인 합산)", example = "1234")
     val responseCount: Long,
     @Schema(description = "선택지 목록")
     val options: List<PollOptionResponse>,
-    @Schema(description = "현재 사용자의 투표 여부 (비로그인 시 false)", example = "true")
+    @Schema(description = "현재 사용자의 투표 여부 (로그인: accountId 기반, 비로그인: anonymous_session 쿠키 기반, 쿠키 없으면 false)", example = "true")
     val isVoted: Boolean,
     @Schema(description = "작성자 정보")
     val creatorInfo: CreatorInfoResponse,
@@ -44,6 +46,7 @@ data class PollListResponse(
                 responseType = poll.responseType,
                 status = poll.status,
                 isRevotable = poll.isRevotable,
+                allowAnonymousVote = poll.allowAnonymousVote,
                 startAt = poll.startAt,
                 endAt = poll.endAt,
                 createdAt = poll.createdAt,

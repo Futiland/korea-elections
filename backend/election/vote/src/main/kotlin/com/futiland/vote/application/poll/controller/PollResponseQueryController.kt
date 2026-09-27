@@ -41,6 +41,10 @@ class PollResponseQueryController(
               - SCORE: scoreValue
               - 공통: createdAt, updatedAt
 
+            **비로그인 사용자:**
+            - anonymous_session 쿠키가 있으면 해당 쿠키로 myResponse를 조회합니다
+            - 비로그인 투표 후 같은 브라우저에서 결과 조회 시 내 응답 정보 확인 가능
+
             **주의사항:**
             - 투표에 참여한 사용자만 결과를 조회할 수 있습니다
             - 진행 중이거나 종료된 여론조사의 결과를 확인할 수 있습니다
@@ -94,9 +98,17 @@ class PollResponseQueryController(
         @Parameter(description = "여론조사 ID", required = true)
         @PathVariable pollId: Long,
         @Parameter(hidden = true)
-        @AuthenticationPrincipal userDetails: CustomUserDetails,
+        @AuthenticationPrincipal userDetails: CustomUserDetails?,
+        @Parameter(
+            description = "비로그인 사용자 식별용 쿠키 (서버가 Set-Cookie로 발급, 브라우저가 자동 전송. 내 응답 조회에 사용)",
+            example = "550e8400-e29b-41d4-a716-446655440000",
+            required = false
+        )
+        @CookieValue("anonymous_session", required = false) pollSession: String?,
     ): HttpApiResponse<PollResultResponse> {
-        val response = pollResultQueryUseCase.getPollResult(pollId, userDetails.user.accountId)
+        val accountId = userDetails?.user?.accountId
+        val anonymousSessionId = if (accountId == null) pollSession else null
+        val response = pollResultQueryUseCase.getPollResult(pollId, accountId, anonymousSessionId)
         return HttpApiResponse.of(response)
     }
 
